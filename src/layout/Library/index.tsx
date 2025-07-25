@@ -1,11 +1,12 @@
 import styled from 'styled-components'
-import { Text } from '../components/Text'
+import { FileList } from './FileList'
+import { VDivider } from '../../components/Dividers'
 
 export const Library = () => {
   return (
     <LibraryStyle>
-      <Text onClick={() => {}}>Play</Text>
-      <Text onClick={() => {}}>Pause</Text>
+      <FileList />
+      <VDivider />
     </LibraryStyle>
   )
 }

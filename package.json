@@ -13,7 +13,9 @@
     "react": "^19.1.0",
     "react-dom": "^19.1.0",
     "singleton-state-hook": "^1.2.2",
-    "styled-components": "^6.1.19"
+    "styled-components": "^6.1.19",
+    "tone": "^15.1.22",
+    "wavefile": "^11.0.0"
   },
   "devDependencies": {
     "@eslint/js": "^9.30.1",

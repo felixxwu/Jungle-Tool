@@ -6,14 +6,14 @@ export const Text = (p: {
   onClick?: () => void
   selected?: boolean
   disabled?: boolean
-  fullWidth?: boolean
+  $fullWidth?: boolean
 }) => {
   return (
     <TextStyle
       onClick={p.onClick}
       selected={p.selected}
       disabled={p.disabled}
-      fullWidth={p.fullWidth}
+      $fullWidth={p.$fullWidth}
     >
       {p.children}
     </TextStyle>
@@ -24,11 +24,11 @@ const TextStyle = styled('div')<{
   onClick?: () => void
   selected?: boolean
   disabled?: boolean
-  fullWidth?: boolean
+  $fullWidth?: boolean
 }>`
-  width: ${p => (p.fullWidth ? '100%' : 'auto')};
+  width: ${p => (p.$fullWidth ? '100%' : 'auto')};
   color: ${p => {
-    if (p.disabled) return colors.grey
+    if (p.disabled) return colors.darkGrey
     if (p.selected) return colors.white
     return colors.black
   }};

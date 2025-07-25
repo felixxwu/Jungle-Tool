@@ -1,10 +1,11 @@
 import styled from 'styled-components'
 import { Text } from '../components/Text'
 import { VDivider } from '../components/Dividers'
-import { Tab } from '../lib/store'
+import { LoadedFiles, Tab } from '../lib/store'
 
 export const TopBar = () => {
   const tab = Tab.useState()
+  const loadedFiles = LoadedFiles.useState()
 
   return (
     <TopBarStyle>
@@ -13,7 +14,7 @@ export const TopBar = () => {
       </Text>
       <VDivider />
       <Text onClick={() => Tab.set('library')} selected={tab === 'library'}>
-        Library
+        Library ({loadedFiles.length})
       </Text>
       <VDivider />
       <VDivider style={{ marginLeft: 'auto' }} />

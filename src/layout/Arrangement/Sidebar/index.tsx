@@ -12,14 +12,14 @@ export const Sidebar = () => {
   return (
     <SidebarStyle>
       <Row>
-        <Text fullWidth>BPM</Text>
+        <Text $fullWidth={true}>BPM</Text>
         <Text>{bpm}</Text>
       </Row>
       <HDivider />
       <Slider min={minBPM} max={maxBPM} value={bpm} onInput={BPM.set} />
       <HDivider />
       <Row>
-        <Text fullWidth>Pitch</Text>
+        <Text $fullWidth={true}>Pitch</Text>
         <Text>{pitch > 0 ? `+${pitch}` : pitch}</Text>
       </Row>
       <HDivider />
