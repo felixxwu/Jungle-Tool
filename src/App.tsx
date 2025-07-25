@@ -1,10 +1,10 @@
 import styled from 'styled-components'
 import { colors } from './lib/colors'
-import { library, lineThickness } from './lib/consts'
+import { appHeight, appWidth, library, lineThickness } from './lib/consts'
 import { HDivider } from './components/Dividers'
 import { TopBar } from './layout/TopBar'
 import { Arrangement } from './layout/Arrangement'
-import { LoadedFiles, Tab } from './lib/store'
+import { LoadedFiles, Tab, WindowSize } from './lib/store'
 import { Library } from './layout/Library'
 import { useEffect } from 'react'
 import { fetchFile, normalize } from './lib/audio'
@@ -25,10 +25,15 @@ export default function App() {
             artist: file.artist,
             year: file.year,
             samples: normalize(samples),
+            slices: [],
           },
         ])
       }
     })()
+
+    window.addEventListener('resize', () => {
+      WindowSize.set({ width: window.innerWidth, height: window.innerHeight })
+    })
   }, [])
 
   return (
@@ -44,7 +49,8 @@ export default function App() {
 }
 
 const AppStyle = styled('div')`
-  width: 800px;
+  width: ${appWidth}px;
+  height: ${appHeight}px;
   max-width: 100vw;
   border: ${lineThickness}px solid ${colors.black};
   box-shadow: 10px 10px 0 0 ${colors.black};

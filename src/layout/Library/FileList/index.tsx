@@ -1,34 +1,30 @@
 import styled from 'styled-components'
 import { createPlayer } from '../../../lib/audio'
-import { LoadedFiles, Player, SelectedFile } from '../../../lib/store'
+import { LoadedFiles, Player, SelectedFileIndex } from '../../../lib/store'
 import { Tone } from '../../../lib/tone'
-import type { LoadedFile } from '../../../lib/types'
 import { Text } from '../../../components/Text'
 import { HDivider } from '../../../components/Dividers'
 import { colors } from '../../../lib/colors'
+import { librarySidebarWidth } from '../../../lib/consts'
 
 export const FileList = () => {
   const loadedFiles = LoadedFiles.useState()
-  const selectedFile = SelectedFile.useState()
+  const selectedFile = SelectedFileIndex.useState()
 
-  const handlePlay = async (file: LoadedFile) => {
+  const handlePlay = async (index: number) => {
     await Tone.start()
     Player.ref()?.dispose()
-    const player = await createPlayer(file.samples)
+    const player = await createPlayer(loadedFiles[index].samples)
     Player.set(player)
     player.start()
-    SelectedFile.set(file)
+    SelectedFileIndex.set(index)
   }
 
   return (
     <FileListStyle>
-      {loadedFiles.map(file => (
+      {loadedFiles.map((file, index) => (
         <>
-          <Text
-            key={file.path}
-            onClick={() => handlePlay(file)}
-            selected={selectedFile?.path === file.path}
-          >
+          <Text key={file.path} onClick={() => handlePlay(index)} selected={selectedFile === index}>
             <FileListItemStyle>
               <div>{file.name}</div>
               <ArtistAndYear>
@@ -47,7 +43,7 @@ export const FileList = () => {
 const FileListStyle = styled('div')`
   display: flex;
   flex-direction: column;
-  width: 250px;
+  min-width: ${librarySidebarWidth}px;
 `
 
 const FileListItemStyle = styled('div')`

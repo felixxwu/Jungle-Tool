@@ -1,22 +1,45 @@
-import { mono } from '../../../lib/audio'
-import { SelectedFile } from '../../../lib/store'
+import styled from 'styled-components'
+import { LoadedFiles, SelectedFileIndex } from '../../../lib/store'
+import type { SliceType } from '../../../lib/types'
+import { HDivider } from '../../../components/Dividers'
+import { Text } from '../../../components/Text'
+import { Slice } from './Slice'
+import { Waveform } from './Waveform'
 
 export const FileEditor = () => {
-  const selectedFile = SelectedFile.useState()
-  const monoSamples = mono(selectedFile?.samples)
-  const width = 550
-  const height = 200
-  const scaleX = width / (monoSamples.length - 1)
-  const scaleY = height / Math.pow(2, 16)
+  const selectedFileIndex = SelectedFileIndex.useState()
+  const loadedFiles = LoadedFiles.useState()
 
-  let path = 'M'
-  for (let i = 0; i < monoSamples.length; i++) {
-    path += `${i * scaleX},${monoSamples[i] * scaleY + height / 2} `
+  if (selectedFileIndex === null) return null
+
+  const selectedFile = loadedFiles[selectedFileIndex]
+
+  const handleAddSlice = () => {
+    const lastSlice = selectedFile.slices[selectedFile.slices.length - 1]
+    const newLoadedFiles = [...loadedFiles]
+    newLoadedFiles[selectedFileIndex].slices.push({
+      start: lastSlice?.start ? lastSlice.start + 5000 : 0,
+      type: 'Kick' as SliceType,
+    })
+    LoadedFiles.set(newLoadedFiles)
   }
 
   return (
-    <svg width={width} height={height}>
-      <path d={path} stroke='black' fill='none' strokeWidth={1} />
-    </svg>
+    <FileEditorStyle>
+      <Waveform />
+      <HDivider />
+      <Text>Slices:</Text>
+      <HDivider />
+      {selectedFile.slices.map((slice, index) => (
+        <Slice key={slice.start + '-' + slice.type + '-' + index} sliceIndex={index} />
+      ))}
+      <Text onClick={handleAddSlice}>+</Text>
+      <HDivider />
+    </FileEditorStyle>
   )
 }
+
+const FileEditorStyle = styled('div')`
+  display: flex;
+  flex-direction: column;
+`

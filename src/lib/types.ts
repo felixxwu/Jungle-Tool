@@ -5,6 +5,10 @@ export type File = {
   year: number
 }
 
+export type SliceType = 'Kick' | 'Snare' | 'Hat'
+export type Slice = { start: number; type: SliceType }
+
 export type LoadedFile = File & {
   samples: [Float64Array, Float64Array]
+  slices: Slice[]
 }

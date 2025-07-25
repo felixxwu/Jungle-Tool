@@ -10,7 +10,7 @@ export const Text = (p: {
 }) => {
   return (
     <TextStyle
-      onClick={p.onClick}
+      onClick={p.disabled ? undefined : p.onClick}
       selected={p.selected}
       disabled={p.disabled}
       $fullWidth={p.$fullWidth}
