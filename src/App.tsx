@@ -7,7 +7,7 @@ import { Arrangement } from './layout/Arrangement'
 import { LoadedFiles, Tab } from './lib/store'
 import { Library } from './layout/Library'
 import { useEffect } from 'react'
-import { fetchFile } from './lib/audio'
+import { fetchFile, normalize } from './lib/audio'
 
 export default function App() {
   const tab = Tab.useState()
@@ -24,7 +24,7 @@ export default function App() {
             name: file.name,
             artist: file.artist,
             year: file.year,
-            samples: samples,
+            samples: normalize(samples),
           },
         ])
       }

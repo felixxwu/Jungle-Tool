@@ -1,6 +1,6 @@
 import styled from 'styled-components'
 import { createPlayer } from '../../../lib/audio'
-import { LoadedFiles, Player } from '../../../lib/store'
+import { LoadedFiles, Player, SelectedFile } from '../../../lib/store'
 import { Tone } from '../../../lib/tone'
 import type { LoadedFile } from '../../../lib/types'
 import { Text } from '../../../components/Text'
@@ -9,6 +9,7 @@ import { colors } from '../../../lib/colors'
 
 export const FileList = () => {
   const loadedFiles = LoadedFiles.useState()
+  const selectedFile = SelectedFile.useState()
 
   const handlePlay = async (file: LoadedFile) => {
     await Tone.start()
@@ -16,13 +17,18 @@ export const FileList = () => {
     const player = await createPlayer(file.samples)
     Player.set(player)
     player.start()
+    SelectedFile.set(file)
   }
 
   return (
     <FileListStyle>
-      {loadedFiles.map((file, i) => (
+      {loadedFiles.map(file => (
         <>
-          <Text key={file.path} onClick={() => handlePlay(file)}>
+          <Text
+            key={file.path}
+            onClick={() => handlePlay(file)}
+            selected={selectedFile?.path === file.path}
+          >
             <FileListItemStyle>
               <div>{file.name}</div>
               <ArtistAndYear>
@@ -31,7 +37,7 @@ export const FileList = () => {
               </ArtistAndYear>
             </FileListItemStyle>
           </Text>
-          {i < loadedFiles.length - 1 && <HDivider />}
+          <HDivider />
         </>
       ))}
     </FileListStyle>
