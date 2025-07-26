@@ -6,7 +6,6 @@ import {
   Modal,
   SelectedFileIndex,
 } from '../../../lib/store'
-import type { SliceType } from '../../../lib/types'
 import { HDivider, VDivider } from '../../../components/Dividers'
 import { Text } from '../../../components/Text'
 import { Slice } from './Slice'
@@ -15,6 +14,7 @@ import { AutoSliceModal } from '../../../modals/AutoSliceModal'
 import { SensitivitySlider } from './SensitivitySlider'
 import { autoSlice } from '../../../actions/autoSlice'
 import { DownloadFileModal } from '../../../modals/DownloadFileModal'
+import { addSlice } from '../../../actions/addSlice'
 
 export const FileEditor = () => {
   const selectedFileIndex = SelectedFileIndex.useState()
@@ -25,16 +25,6 @@ export const FileEditor = () => {
   if (selectedFileIndex === null) return null
 
   const selectedFile = loadedFiles[selectedFileIndex]
-
-  const handleAddSlice = () => {
-    const lastSlice = selectedFile.slices[selectedFile.slices.length - 1]
-    const newLoadedFiles = [...loadedFiles]
-    newLoadedFiles[selectedFileIndex].slices.push({
-      start: lastSlice?.start ? lastSlice.start + 5000 : 0,
-      type: 'Kick' as SliceType,
-    })
-    LoadedFiles.set(newLoadedFiles)
-  }
 
   const handleOpenAutoSliceModal = () => {
     if (selectedFile.slices.length === 0) {
@@ -63,7 +53,7 @@ export const FileEditor = () => {
         </>
       ) : (
         <Row>
-          <Text $fullWidth>Slices:</Text>
+          <Text $fullWidth>Slices: ({selectedFile.slices.length})</Text>
           <VDivider />
           {editSliceMode ? (
             <Text onClick={handleOpenAutoSliceModal}>Auto-slice</Text>
@@ -79,13 +69,13 @@ export const FileEditor = () => {
         {selectedFile.slices.map((slice, index) => (
           <Slice key={slice.start + '-' + slice.type + '-' + index} sliceIndex={index} />
         ))}
-        {editSliceMode && !autoSliceMode && (
-          <>
-            <Text onClick={handleAddSlice}>+</Text>
-            <HDivider />
-          </>
-        )}
       </Slices>
+      {editSliceMode && !autoSliceMode && (
+        <>
+          <HDivider />
+          <Text onClick={addSlice}>Add Slice +</Text>
+        </>
+      )}
     </FileEditorStyle>
   )
 }
@@ -94,6 +84,7 @@ const FileEditorStyle = styled('div')`
   display: flex;
   flex-direction: column;
   overflow-y: auto;
+  height: 100%;
 `
 
 const Row = styled('div')`
@@ -104,4 +95,5 @@ const Slices = styled('div')`
   display: flex;
   flex-direction: column;
   overflow-y: auto;
+  height: 100%;
 `

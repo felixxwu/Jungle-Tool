@@ -1,7 +1,13 @@
 import styled from 'styled-components'
 import { appWidth, librarySidebarWidth, waveformHeight, zoomInFactor } from '../../../lib/consts'
 import { colors } from '../../../lib/colors'
-import { LoadedFiles, SelectedFileIndex, SelectedSliceIndex, WindowSize } from '../../../lib/store'
+import {
+  HoveredSliceIndex,
+  LoadedFiles,
+  SelectedFileIndex,
+  SelectedSliceIndex,
+  WindowSize,
+} from '../../../lib/store'
 import { mono } from '../../../lib/audio'
 import { Fragment } from 'react/jsx-runtime'
 
@@ -10,6 +16,7 @@ export const Waveform = () => {
   const loadedFiles = LoadedFiles.useState()
   const selectedSliceIndex = SelectedSliceIndex.useState()
   const windowSize = WindowSize.useState()
+  const hoveredSliceIndex = HoveredSliceIndex.useState()
 
   if (selectedFileIndex === null) return null
 
@@ -51,7 +58,11 @@ export const Waveform = () => {
             >
               <path
                 d='M 0 0 L 10 5 L 0 10 z'
-                fill={selectedSliceIndex === index ? colors.black : colors.darkGrey}
+                fill={
+                  selectedSliceIndex === index || hoveredSliceIndex === index
+                    ? colors.black
+                    : colors.darkGrey
+                }
               />
             </marker>
             <line
@@ -59,7 +70,11 @@ export const Waveform = () => {
               y1={0}
               x2={(slice.start + sampleOffset) * scaleX}
               y2={waveformHeight}
-              stroke={selectedSliceIndex === index ? colors.black : colors.darkGrey}
+              stroke={
+                selectedSliceIndex === index || hoveredSliceIndex === index
+                  ? colors.black
+                  : colors.darkGrey
+              }
               strokeWidth={1}
               markerStart={`url(#marker-${index})`}
             />

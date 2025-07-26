@@ -6,6 +6,7 @@ import { useState } from 'react'
 import {
   AutoSliceMode,
   EditSliceMode,
+  HoveredSliceIndex,
   LoadedFiles,
   SelectedFileIndex,
   SelectedSliceIndex,
@@ -47,6 +48,7 @@ export const Slice = (p: { sliceIndex: number }) => {
   const handleUpdateSliceStart = async (start: number) => {
     const newLoadedFiles = [...loadedFiles]
     newLoadedFiles[selectedFileIndex].slices[p.sliceIndex].start += start
+    newLoadedFiles[selectedFileIndex].slices.sort((a, b) => a.start - b.start)
     LoadedFiles.set(newLoadedFiles)
     setEditMode(false)
     await playSlice(selectedFileIndex, p.sliceIndex)
@@ -109,7 +111,12 @@ export const Slice = (p: { sliceIndex: number }) => {
   return (
     <>
       <SliceStyle>
-        <Text $fullWidth selected={selectedSliceIndex === p.sliceIndex} onClick={handleSelectSlice}>
+        <Text
+          $fullWidth
+          selected={selectedSliceIndex === p.sliceIndex}
+          onClick={handleSelectSlice}
+          onPointerEnter={() => HoveredSliceIndex.set(p.sliceIndex)}
+        >
           {slice.type}
         </Text>
         {editSliceMode && !autoSliceMode && (

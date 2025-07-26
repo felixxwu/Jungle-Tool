@@ -2,6 +2,7 @@ import styled from 'styled-components'
 import {
   AutoSliceMode,
   EditSliceMode,
+  HoveredSliceIndex,
   LoadedFiles,
   SelectedFileIndex,
   SelectedSliceIndex,
@@ -23,6 +24,7 @@ export const FileList = () => {
     SelectedSliceIndex.set(null)
     AutoSliceMode.set(false)
     EditSliceMode.set(false)
+    HoveredSliceIndex.set(null)
 
     await playFile(index)
   }

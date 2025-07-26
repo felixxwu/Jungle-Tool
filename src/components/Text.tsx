@@ -7,6 +7,8 @@ export const Text = (p: {
   selected?: boolean
   disabled?: boolean
   $fullWidth?: boolean
+  onPointerEnter?: () => void
+  onPointerLeave?: () => void
 }) => {
   return (
     <TextStyle
@@ -14,6 +16,9 @@ export const Text = (p: {
       selected={p.selected}
       disabled={p.disabled}
       $fullWidth={p.$fullWidth}
+      onPointerEnter={p.onPointerEnter}
+      onPointerLeave={p.onPointerLeave}
+      onPointerCancel={p.onPointerLeave}
     >
       {p.children}
     </TextStyle>
