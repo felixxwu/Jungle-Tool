@@ -16,4 +16,5 @@ export const Arrangement = () => {
 
 const ArrangementStyle = styled('div')`
   display: flex;
+  height: 100%;
 `

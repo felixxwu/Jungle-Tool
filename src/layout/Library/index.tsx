@@ -44,5 +44,6 @@ const LibraryStyle = styled('div')`
 const LibraryMobileStyle = styled('div')`
   display: flex;
   overflow-y: auto;
+  height: 100%;
   flex-direction: column;
 `
