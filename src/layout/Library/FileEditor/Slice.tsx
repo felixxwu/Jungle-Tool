@@ -4,6 +4,7 @@ import { Text } from '../../../components/Text'
 import type { SliceType } from '../../../lib/types'
 import { useState } from 'react'
 import {
+  AutoSliceMode,
   EditSliceMode,
   LoadedFiles,
   SelectedFileIndex,
@@ -19,6 +20,7 @@ export const Slice = (p: { sliceIndex: number }) => {
   const selectedSliceIndex = SelectedSliceIndex.useState()
   const windowSize = WindowSize.useState()
   const editSliceMode = EditSliceMode.useState()
+  const autoSliceMode = AutoSliceMode.useState()
 
   if (selectedFileIndex === null) return null
 
@@ -110,7 +112,7 @@ export const Slice = (p: { sliceIndex: number }) => {
         <Text $fullWidth selected={selectedSliceIndex === p.sliceIndex} onClick={handleSelectSlice}>
           {slice.type}
         </Text>
-        {editSliceMode && (
+        {editSliceMode && !autoSliceMode && (
           <>
             <VDivider />
             <Text onClick={() => setEditMode(true)}>Edit</Text>

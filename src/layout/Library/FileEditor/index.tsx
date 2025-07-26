@@ -11,8 +11,10 @@ import { HDivider, VDivider } from '../../../components/Dividers'
 import { Text } from '../../../components/Text'
 import { Slice } from './Slice'
 import { Waveform } from './Waveform'
-import { AutoSliceModal } from './AutoSliceModal'
+import { AutoSliceModal } from '../../../modals/AutoSliceModal'
 import { SensitivitySlider } from './SensitivitySlider'
+import { autoSlice } from '../../../actions/autoSlice'
+import { DownloadFileModal } from '../../../modals/DownloadFileModal'
 
 export const FileEditor = () => {
   const selectedFileIndex = SelectedFileIndex.useState()
@@ -35,7 +37,12 @@ export const FileEditor = () => {
   }
 
   const handleOpenAutoSliceModal = () => {
-    Modal.set(<AutoSliceModal />)
+    if (selectedFile.slices.length === 0) {
+      AutoSliceMode.set(true)
+      autoSlice()
+    } else {
+      Modal.set(<AutoSliceModal />)
+    }
   }
 
   return (
@@ -63,6 +70,8 @@ export const FileEditor = () => {
           ) : (
             <Text onClick={() => EditSliceMode.set(true)}>Edit</Text>
           )}
+          <VDivider />
+          <Text onClick={() => Modal.set(<DownloadFileModal />)}>Download</Text>
         </Row>
       )}
       <HDivider />
@@ -70,7 +79,7 @@ export const FileEditor = () => {
         {selectedFile.slices.map((slice, index) => (
           <Slice key={slice.start + '-' + slice.type + '-' + index} sliceIndex={index} />
         ))}
-        {editSliceMode && (
+        {editSliceMode && !autoSliceMode && (
           <>
             <Text onClick={handleAddSlice}>+</Text>
             <HDivider />

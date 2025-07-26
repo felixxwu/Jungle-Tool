@@ -1,5 +1,10 @@
 import { mono } from '../lib/audio'
-import { AutoSliceSensitivity, LoadedFiles, SelectedFileIndex } from '../lib/store'
+import {
+  AutoSliceSensitivity,
+  LoadedFiles,
+  SelectedFileIndex,
+  SelectedSliceIndex,
+} from '../lib/store'
 
 export const autoSlice = () => {
   const loadedFiles = LoadedFiles.ref()
@@ -40,4 +45,5 @@ export const autoSlice = () => {
 
   // selectedFile.samples = [transients, transients]
   LoadedFiles.set([...loadedFiles])
+  SelectedSliceIndex.set(null)
 }

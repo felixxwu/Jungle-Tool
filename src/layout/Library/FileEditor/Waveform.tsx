@@ -3,6 +3,7 @@ import { appWidth, librarySidebarWidth, waveformHeight, zoomInFactor } from '../
 import { colors } from '../../../lib/colors'
 import { LoadedFiles, SelectedFileIndex, SelectedSliceIndex, WindowSize } from '../../../lib/store'
 import { mono } from '../../../lib/audio'
+import { Fragment } from 'react/jsx-runtime'
 
 export const Waveform = () => {
   const selectedFileIndex = SelectedFileIndex.useState()
@@ -37,7 +38,7 @@ export const Waveform = () => {
       <svg width={width} height={waveformHeight}>
         <path d={path} stroke='black' fill='none' strokeWidth={1} />
         {selectedFile.slices.map((slice, index) => (
-          <>
+          <Fragment key={slice.start + '-' + slice.type + '-' + index}>
             <marker
               id={`marker-${index}`}
               viewBox='0 0 10 10'
@@ -54,7 +55,6 @@ export const Waveform = () => {
               />
             </marker>
             <line
-              key={slice.start + '-' + slice.type + '-' + index + '-line'}
               x1={(slice.start + sampleOffset) * scaleX}
               y1={0}
               x2={(slice.start + sampleOffset) * scaleX}
@@ -63,7 +63,7 @@ export const Waveform = () => {
               strokeWidth={1}
               markerStart={`url(#marker-${index})`}
             />
-          </>
+          </Fragment>
         ))}
       </svg>
     </WaveformStyle>

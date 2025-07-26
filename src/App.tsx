@@ -7,7 +7,7 @@ import { Arrangement } from './layout/Arrangement'
 import { LoadedFiles, Modal, Tab, WindowSize } from './lib/store'
 import { Library } from './layout/Library'
 import { useEffect } from 'react'
-import { fetchFile, normalize } from './lib/audio'
+import { loadJson } from './actions/loadJson'
 
 export default function App() {
   const tab = Tab.useState()
@@ -16,19 +16,10 @@ export default function App() {
   useEffect(() => {
     ;(async () => {
       LoadedFiles.set([])
-      for (const file of library) {
-        const samples = await fetchFile(`${file.path}.wav`)
-        LoadedFiles.set([
-          ...LoadedFiles.ref(),
-          {
-            path: file.path,
-            name: file.name,
-            artist: file.artist,
-            year: file.year,
-            samples: normalize(samples),
-            slices: [],
-          },
-        ])
+      for (const path of library) {
+        const response = await fetch(path)
+        const json = await response.text()
+        loadJson(json)
       }
     })()
 
@@ -39,7 +30,12 @@ export default function App() {
 
   return (
     <>
-      {modal && <ModalStyle>{modal}</ModalStyle>}
+      {modal && (
+        <>
+          <ModalBackground />
+          <ModalStyle>{modal}</ModalStyle>
+        </>
+      )}
       <AppStyle>
         <TopBar />
         <HDivider />
@@ -62,8 +58,30 @@ const AppStyle = styled('div')`
 `
 
 const ModalStyle = styled('div')`
-  position: absolute;
   border: ${lineThickness}px solid ${colors.black};
   box-shadow: 10px 10px 0 0 ${colors.black};
+  position: fixed;
+  top: 50%;
+  left: 50%;
+  transform: translate(-50%, -50%);
+  padding: 20px;
+  width: 100%;
+  max-width: 400px;
+  text-align: center;
+  z-index: 1000;
   background-color: ${colors.white};
+  border: 1px solid ${colors.black};
+  box-shadow: 10px 10px 0 0 ${colors.black};
+  line-height: 1.2;
+`
+
+const ModalBackground = styled('div')`
+  position: fixed;
+  top: 0;
+  left: 0;
+  width: 100vw;
+  height: 100svh;
+  background-color: ${colors.black};
+  opacity: 0.5;
+  z-index: 999;
 `

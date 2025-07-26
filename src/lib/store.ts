@@ -3,7 +3,7 @@ import type { Tone } from './tone'
 import type { LoadedFile } from './types'
 
 export const WindowSize = singletonState({ width: window.innerWidth, height: window.innerHeight })
-export const Tab = singletonState<'arrangement' | 'library'>('arrangement')
+export const Tab = singletonState<'arrangement' | 'library'>('library')
 export const BPM = singletonState(170)
 export const Pitch = singletonState(0)
 export const Player = singletonState<Tone.Player | null>(null)
