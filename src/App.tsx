@@ -4,13 +4,14 @@ import { appHeight, appWidth, library, lineThickness } from './lib/consts'
 import { HDivider } from './components/Dividers'
 import { TopBar } from './layout/TopBar'
 import { Arrangement } from './layout/Arrangement'
-import { LoadedFiles, Tab, WindowSize } from './lib/store'
+import { LoadedFiles, Modal, Tab, WindowSize } from './lib/store'
 import { Library } from './layout/Library'
 import { useEffect } from 'react'
 import { fetchFile, normalize } from './lib/audio'
 
 export default function App() {
   const tab = Tab.useState()
+  const modal = Modal.useState()
 
   useEffect(() => {
     ;(async () => {
@@ -38,6 +39,7 @@ export default function App() {
 
   return (
     <>
+      {modal && <ModalStyle>{modal}</ModalStyle>}
       <AppStyle>
         <TopBar />
         <HDivider />
@@ -56,5 +58,12 @@ const AppStyle = styled('div')`
   box-shadow: 10px 10px 0 0 ${colors.black};
   background-color: ${colors.grey};
   display: flex;
-  flex-direction: column;
+  flex-flow: column;
+`
+
+const ModalStyle = styled('div')`
+  position: absolute;
+  border: ${lineThickness}px solid ${colors.black};
+  box-shadow: 10px 10px 0 0 ${colors.black};
+  background-color: ${colors.white};
 `

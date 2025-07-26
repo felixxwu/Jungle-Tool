@@ -37,9 +37,11 @@ export const Library = () => {
 
 const LibraryStyle = styled('div')`
   display: flex;
+  overflow-y: auto;
 `
 
 const LibraryMobileStyle = styled('div')`
   display: flex;
+  overflow-y: auto;
   flex-direction: column;
 `

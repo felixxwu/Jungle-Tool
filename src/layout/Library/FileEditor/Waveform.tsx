@@ -20,7 +20,7 @@ export const Waveform = () => {
   const factor = selectedSliceIndex === null ? 1 : (zoomInFactor * fullWidth) / width
   const sampleOffset = (() => {
     if (selectedSliceIndex === null) return 0
-    if (selectedSlice === null) return 0
+    if (!selectedSlice) return 0
     const halfSamples = monoSamples.length / 2
     return halfSamples / factor - selectedSlice.start
   })()
@@ -71,7 +71,6 @@ export const Waveform = () => {
 }
 
 const WaveformStyle = styled('div')`
-  overflow-x: auto;
   height: ${waveformHeight}px;
   background-color: ${colors.white};
 `

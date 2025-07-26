@@ -27,13 +27,14 @@ const TextStyle = styled('div')<{
   $fullWidth?: boolean
 }>`
   width: ${p => (p.$fullWidth ? '100%' : 'auto')};
+  padding: 6px 15px 5px 15px;
+  background-color: ${p => (p.selected ? colors.black : colors.white)};
+  white-space: nowrap;
   color: ${p => {
     if (p.disabled) return colors.darkGrey
     if (p.selected) return colors.white
     return colors.black
   }};
-  padding: 6px 15px 5px 15px;
-  background-color: ${p => (p.selected ? colors.black : colors.white)};
   cursor: ${p => {
     if (p.disabled) return 'default'
     if (p.onClick) return 'pointer'

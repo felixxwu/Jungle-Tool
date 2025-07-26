@@ -5,7 +5,7 @@ export type File = {
   year: number
 }
 
-export type SliceType = 'Kick' | 'Snare' | 'Hat'
+export type SliceType = 'Kick' | 'Snare' | 'Hat' | 'End'
 export type Slice = { start: number; type: SliceType }
 
 export type LoadedFile = File & {
