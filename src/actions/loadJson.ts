@@ -11,7 +11,6 @@ export const loadJson = (jsonString: string) => {
   const right = samples[1] as unknown as Float64Array
 
   LoadedFiles.ref().push({
-    path: json.name,
     name: json.name,
     artist: json.artist,
     year: json.year,

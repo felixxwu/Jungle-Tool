@@ -5,6 +5,26 @@ import {
   SelectedFileIndex,
   SelectedSliceIndex,
 } from '../lib/store'
+import type { SliceType } from '../lib/types'
+
+const expectedSlices: SliceType[] = [
+  'Kick',
+  'Hat',
+  'Hat',
+  'Hat',
+  'Snare',
+  'Hat',
+  'Hat',
+  'Hat',
+  'Hat',
+  'Hat',
+  'Kick',
+  'Hat',
+  'Snare',
+  'Hat',
+  'Hat',
+  'Hat',
+]
 
 export const autoSlice = () => {
   const loadedFiles = LoadedFiles.ref()
@@ -28,16 +48,18 @@ export const autoSlice = () => {
     peakFollowerA *= decay
     peakFollowerB *= decay
 
-    transients[i] = peakFollowerB - peakFollowerA
+    transients[i + peakOffset] = peakFollowerB - peakFollowerA
   }
 
   selectedFile.slices = []
 
   for (let i = 0; i < transients.length; i++) {
     if (transients[i] > AutoSliceSensitivity.ref()) {
+      const fractionalPosition = i / transients.length
+      const estimatedStepNum = Math.round(fractionalPosition * 16)
       selectedFile.slices.push({
-        start: i + peakOffset,
-        type: 'Kick',
+        start: i,
+        type: expectedSlices[estimatedStepNum],
       })
       i += minTransientDistance
     }

@@ -4,7 +4,6 @@ import { Text } from '../../../components/Text'
 import type { SliceType } from '../../../lib/types'
 import { useState } from 'react'
 import {
-  AutoSliceMode,
   EditSliceMode,
   HoveredSliceIndex,
   LoadedFiles,
@@ -14,20 +13,21 @@ import {
 } from '../../../lib/store'
 import { largeSliceAdjustment, smallSliceAdjustment } from '../../../lib/consts'
 import { playSlice } from '../../../actions/playSlice'
+import { playTrim } from '../../../actions/playTrim'
 
-export const Slice = (p: { sliceIndex: number }) => {
+export const Slice = (p: { sliceIndex: number; forceEditSliceMode?: boolean }) => {
   const selectedFileIndex = SelectedFileIndex.useState()
   const loadedFiles = LoadedFiles.useState()
   const selectedSliceIndex = SelectedSliceIndex.useState()
   const windowSize = WindowSize.useState()
-  const editSliceMode = EditSliceMode.useState()
-  const autoSliceMode = AutoSliceMode.useState()
+  const editSliceMode = EditSliceMode.useState() || p.forceEditSliceMode
 
   if (selectedFileIndex === null) return null
 
   const selectedFile = loadedFiles[selectedFileIndex]
   const slice = selectedFile.slices[p.sliceIndex]
   const [editMode, setEditMode] = useState(false)
+  const isTrimmer = slice.type === 'Start' || slice.type === 'End'
 
   const handleSelectSlice = async () => {
     if (selectedSliceIndex === p.sliceIndex) {
@@ -35,7 +35,12 @@ export const Slice = (p: { sliceIndex: number }) => {
     } else {
       SelectedSliceIndex.set(p.sliceIndex)
     }
-    await playSlice(selectedFileIndex, p.sliceIndex)
+
+    if (isTrimmer) {
+      await playTrim(selectedFileIndex)
+    } else {
+      await playSlice(selectedFileIndex, p.sliceIndex)
+    }
   }
 
   const handleSetSliceType = (type: SliceType) => {
@@ -51,7 +56,12 @@ export const Slice = (p: { sliceIndex: number }) => {
     newLoadedFiles[selectedFileIndex].slices.sort((a, b) => a.start - b.start)
     LoadedFiles.set(newLoadedFiles)
     setEditMode(false)
-    await playSlice(selectedFileIndex, p.sliceIndex)
+
+    if (isTrimmer) {
+      await playTrim(selectedFileIndex)
+    } else {
+      await playSlice(selectedFileIndex, p.sliceIndex)
+    }
   }
 
   const handleDeleteSlice = () => {
@@ -70,8 +80,6 @@ export const Slice = (p: { sliceIndex: number }) => {
         <Text onClick={() => handleSetSliceType('Snare')}>Snare</Text>
         <VDivider />
         <Text onClick={() => handleSetSliceType('Hat')}>Hat</Text>
-        <VDivider />
-        <Text onClick={() => handleSetSliceType('End')}>End</Text>
         <VDivider />
         <VDivider style={{ marginLeft: 'auto' }} />
         <Text onClick={handleDeleteSlice}>Delete</Text>
@@ -119,10 +127,14 @@ export const Slice = (p: { sliceIndex: number }) => {
         >
           {slice.type}
         </Text>
-        {editSliceMode && !autoSliceMode && (
+        {editSliceMode && (
           <>
-            <VDivider />
-            <Text onClick={() => setEditMode(true)}>Edit</Text>
+            {!isTrimmer && (
+              <>
+                <VDivider />
+                <Text onClick={() => setEditMode(true)}>Edit</Text>
+              </>
+            )}
             <VDivider />
             <Text
               onClick={() => handleUpdateSliceStart(-largeSliceAdjustment)}

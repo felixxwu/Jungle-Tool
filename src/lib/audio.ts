@@ -47,3 +47,26 @@ export const normalizeMono = (samples: Float64Array) => {
   const max = Math.max(...samples)
   return samples.map(sample => sample / max)
 }
+
+export const stereoSlice = (samples: [Float64Array, Float64Array], start: number, end: number) => {
+  const left = samples[0].slice(start, end)
+  const right = samples[1].slice(start, end)
+
+  if (start < 0) {
+    const padding = new Float64Array(Math.abs(start))
+    return [
+      new Float64Array([...padding, ...left]),
+      new Float64Array([...padding, ...right]),
+    ] as const satisfies [Float64Array, Float64Array]
+  }
+
+  if (end > samples[0].length) {
+    const padding = new Float64Array(end - samples[0].length)
+    return [
+      new Float64Array([...left, ...padding]),
+      new Float64Array([...right, ...padding]),
+    ] as const satisfies [Float64Array, Float64Array]
+  }
+
+  return [left, right] as const satisfies [Float64Array, Float64Array]
+}

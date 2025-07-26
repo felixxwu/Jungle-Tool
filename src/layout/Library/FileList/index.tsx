@@ -33,7 +33,7 @@ export const FileList = () => {
     <FileListStyle>
       <Scrollable>
         {loadedFiles.map((file, index) => (
-          <Fragment key={file.path}>
+          <Fragment key={file.name}>
             <Text onClick={() => handleSelectFile(index)} selected={selectedFile === index}>
               <FileListItemStyle>
                 <div>{file.name}</div>
