@@ -1,12 +1,23 @@
 import styled from 'styled-components'
 import { HDivider, VDivider } from '../../../components/Dividers'
 import { Text } from '../../../components/Text'
-import { Layers, Tab } from '../../../lib/store'
+import { Layers, Player, Tab } from '../../../lib/store'
 import { Slider } from '../../../components/Slider'
 import { Fragment } from 'react/jsx-runtime'
+import { playArrangement } from '../../../actions/playArrangement'
+import type { Layer } from '../../../lib/types'
 
 export const LayerControls = () => {
   const layers = Layers.useState()
+
+  const handleVolumeChange = (layer: Layer, volume: number) => {
+    layer.volume = volume / 100
+    Layers.set([...layers])
+
+    if (Player.ref()?.state === 'started') {
+      playArrangement()
+    }
+  }
 
   return (
     <>
@@ -29,10 +40,7 @@ export const LayerControls = () => {
             min={0}
             max={100}
             value={layer.volume * 100}
-            onInput={value => {
-              layer.volume = value / 100
-              Layers.set([...layers])
-            }}
+            onInput={value => handleVolumeChange(layer, value)}
           />
         </Fragment>
       ))}

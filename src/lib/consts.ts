@@ -6,6 +6,7 @@ export const maxPitch = 12
 export const appWidth = 1000
 export const appHeight = 600
 export const librarySidebarWidth = 300
+export const arrangementSidebarWidth = 300
 export const smallSliceAdjustment = 75
 export const largeSliceAdjustment = 1000
 export const zoomInFactor = 7

@@ -1,5 +1,6 @@
 import { WaveFile } from 'wavefile'
 import { LoadedFiles } from '../lib/store'
+import { normalize } from '../lib/audio'
 
 export const loadJson = (jsonString: string) => {
   const json = JSON.parse(jsonString)
@@ -14,7 +15,7 @@ export const loadJson = (jsonString: string) => {
     name: json.name,
     artist: json.artist,
     year: json.year,
-    samples: [left, right],
+    samples: normalize([left, right]),
     slices: json.slices,
   })
   LoadedFiles.set([...LoadedFiles.ref()])

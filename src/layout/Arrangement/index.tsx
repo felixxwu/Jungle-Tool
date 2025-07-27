@@ -1,13 +1,12 @@
 import styled from 'styled-components'
-import { Text } from '../../components/Text'
 import { VDivider } from '../../components/Dividers'
 import { Sidebar } from './Sidebar'
+import { Main } from './Main'
 
 export const Arrangement = () => {
   return (
     <ArrangementStyle>
-      <Text>Arrangement</Text>
-      <VDivider />
+      <Main />
       <VDivider style={{ marginLeft: 'auto' }} />
       <Sidebar />
     </ArrangementStyle>

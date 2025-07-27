@@ -1,8 +1,9 @@
 import { createPlayer } from '../lib/audio'
-import { LoadedFiles, Player } from '../lib/store'
+import { LoadedFiles, Player, Playing } from '../lib/store'
 import { Tone } from '../lib/tone'
 
 export const playFile = async (fileIndex: number) => {
+  Playing.set(false)
   const loadedFiles = LoadedFiles.ref()
 
   await Tone.start()

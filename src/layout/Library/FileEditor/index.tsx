@@ -1,7 +1,7 @@
 import styled from 'styled-components'
 import { LoadedFiles, SelectedFileIndex } from '../../../lib/store'
 import { HDivider } from '../../../components/Dividers'
-import { Waveform } from './Waveform'
+import { LibraryWaveform } from './LibraryWaveform'
 import { TrimEditor } from './TrimEditor'
 import { SliceEditor } from './SliceEditor'
 
@@ -15,7 +15,7 @@ export const FileEditor = () => {
 
   return (
     <FileEditorStyle>
-      <Waveform />
+      <LibraryWaveform />
       <HDivider />
       {trimMode ? <TrimEditor /> : <SliceEditor />}
     </FileEditorStyle>

@@ -47,9 +47,9 @@ export default function App() {
 }
 
 const AppStyle = styled('div')`
-  width: ${appWidth}px;
+  width: 100vw;
+  max-width: ${appWidth}px;
   height: ${appHeight}px;
-  max-width: 100vw;
   border: ${lineThickness}px solid ${colors.black};
   box-shadow: 10px 10px 0 0 ${colors.black};
   background-color: ${colors.grey};

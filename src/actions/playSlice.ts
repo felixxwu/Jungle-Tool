@@ -1,23 +1,19 @@
+import { getSliceSamples } from '../helpers/getSliceSamples'
 import { createPlayer } from '../lib/audio'
-import { LoadedFiles, Player } from '../lib/store'
+import { LoadedFiles, Player, Playing } from '../lib/store'
 import { Tone } from '../lib/tone'
 
 export const playSlice = async (fileIndex: number, sliceIndex: number) => {
+  Playing.set(false)
   const loadedFiles = LoadedFiles.ref()
 
   const file = loadedFiles[fileIndex]
-  const slice = file.slices[sliceIndex]
-  const nextSlice = file.slices[sliceIndex + 1]
-  const sliceStart = slice.start
-  const sliceEnd = nextSlice ? nextSlice.start : file.samples[0].length
+  const samples = getSliceSamples(file, sliceIndex)
 
   await Tone.start()
   Player.ref()?.dispose()
 
-  const player = await createPlayer([
-    file.samples[0].slice(sliceStart, sliceEnd),
-    file.samples[1].slice(sliceStart, sliceEnd),
-  ])
+  const player = await createPlayer(samples)
   Player.set(player)
   player.start()
 }
