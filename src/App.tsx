@@ -12,6 +12,7 @@ import { loadJson } from './actions/loadJson'
 export default function App() {
   const tab = Tab.useState()
   const modal = Modal.useState()
+  const windowSize = WindowSize.useState()
 
   useEffect(() => {
     ;(async () => {
@@ -36,7 +37,7 @@ export default function App() {
           <ModalStyle>{modal}</ModalStyle>
         </>
       )}
-      <AppStyle>
+      <AppStyle style={windowSize.width < appWidth ? { boxShadow: 'none' } : {}}>
         <TopBar />
         <HDivider />
         {tab === 'arrangement' && <Arrangement />}

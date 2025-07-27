@@ -36,6 +36,7 @@ const SliderStyle = styled('input')`
   background: transparent;
   -webkit-appearance: none;
   appearance: none;
+  cursor: pointer;
   --slider-fill: 50%;
 
   &::-webkit-slider-runnable-track {

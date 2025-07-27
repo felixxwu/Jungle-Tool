@@ -56,22 +56,24 @@ export const LayerControl = (p: { layer: Layer }) => {
       </Row>
       <HDivider />
       {editMode && (
-        <Row>
-          <Text disabled={pitch <= minPitch} onClick={() => handlePitchChange(p.layer.pitch - 1)}>
-            ‹
-          </Text>
-          <Text style={{ width: '90px', textAlign: 'center' }}>
-            Pitch {pitch > 0 ? `+${pitch}` : pitch}
-          </Text>
-          <Text disabled={pitch >= maxPitch} onClick={() => handlePitchChange(p.layer.pitch + 1)}>
-            ›
-          </Text>
-          <VDivider />
-          <VDivider style={{ marginLeft: 'auto' }} />
-          <Text onClick={handleDelete}>Delete</Text>
-        </Row>
+        <>
+          <Row>
+            <Text disabled={pitch <= minPitch} onClick={() => handlePitchChange(p.layer.pitch - 1)}>
+              ‹
+            </Text>
+            <Text style={{ width: '90px', textAlign: 'center' }}>
+              Pitch {pitch > 0 ? `+${pitch}` : pitch}
+            </Text>
+            <Text disabled={pitch >= maxPitch} onClick={() => handlePitchChange(p.layer.pitch + 1)}>
+              ›
+            </Text>
+            <VDivider />
+            <VDivider style={{ marginLeft: 'auto' }} />
+            <Text onClick={handleDelete}>Delete</Text>
+          </Row>
+          <HDivider />
+        </>
       )}
-      <HDivider />
       <Slider
         min={0}
         max={100}

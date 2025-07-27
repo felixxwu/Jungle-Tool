@@ -136,6 +136,7 @@ export const Slice = (p: { sliceIndex: number; forceEditSliceMode?: boolean }) =
           </Text>
         )}
         <Text
+          disabled={!editSliceMode}
           onClick={() => setStepEditMode(!stepEditMode)}
           style={{ width: '45px', textAlign: 'center' }}
         >

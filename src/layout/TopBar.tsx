@@ -24,7 +24,7 @@ export const TopBar = () => {
       right={
         <>
           <VDivider style={{ marginLeft: 'auto' }} />
-          <Text>Volume</Text>
+          <Text disabled>Volume</Text>
         </>
       }
     />

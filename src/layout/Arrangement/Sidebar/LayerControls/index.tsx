@@ -8,11 +8,11 @@ export const LayerControls = () => {
 
   return (
     <>
-      <HDivider style={{ marginTop: 'auto' }} />
-      <Text onClick={() => Tab.set('library')}>Add Layer +</Text>
       {layers.map(layer => (
         <LayerControl key={layer.filename} layer={layer} />
       ))}
+      <HDivider />
+      <Text onClick={() => Tab.set('library')}>Add Layer +</Text>
     </>
   )
 }

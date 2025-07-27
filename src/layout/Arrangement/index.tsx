@@ -1,20 +1,23 @@
 import styled from 'styled-components'
-import { VDivider } from '../../components/Dividers'
+import { HDivider, VDivider } from '../../components/Dividers'
 import { Sidebar } from './Sidebar'
 import { Main } from './Main'
-import { WindowSize } from '../../lib/store'
+import { ArrangementSidebarOpen, WindowSize } from '../../lib/store'
 import { Text } from '../../components/Text'
+import { appWidth, arrangementSidebarWidth } from '../../lib/consts'
 
 export const Arrangement = () => {
   const windowSize = WindowSize.useState()
+  const arrangementSidebarOpen = ArrangementSidebarOpen.useState()
 
-  if (windowSize.width < 768) {
+  if (windowSize.width < appWidth - arrangementSidebarWidth) {
     return (
       <ArrangementMobileStyle>
-        <Text>Edit</Text>
-        <Main />
-        <VDivider style={{ marginLeft: 'auto' }} />
-        <Sidebar />
+        <Text onClick={() => ArrangementSidebarOpen.set(!arrangementSidebarOpen)}>
+          {arrangementSidebarOpen ? '‹ Back' : 'Edit layers / BPM ›'}
+        </Text>
+        <HDivider />
+        {arrangementSidebarOpen ? <Sidebar /> : <Main />}
       </ArrangementMobileStyle>
     )
   }

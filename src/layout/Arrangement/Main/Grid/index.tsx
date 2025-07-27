@@ -7,7 +7,7 @@ import type { Note as NoteStyle } from '../../../../lib/types'
 import { restartPlayback } from '../../../../actions/restartPlayback'
 
 const gridWidth = appWidth - arrangementSidebarWidth - 1
-const gridHeight = 400
+const gridHeight = 325
 const cellWidth = gridWidth / 16
 const cellHeight = gridHeight / 16
 
@@ -61,7 +61,6 @@ const GridStyle = styled('div')`
   width: ${gridWidth}px;
   height: ${gridHeight}px;
   background-color: ${colors.white};
-  overflow-x: auto;
 `
 
 const NoteStyle = styled('div')`

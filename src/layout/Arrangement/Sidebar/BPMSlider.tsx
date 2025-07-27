@@ -22,7 +22,6 @@ export const BPMSlider = () => {
       </Row>
       <HDivider />
       <Slider min={minBPM} max={maxBPM} value={bpm} onInput={handleBPMChange} />
-      <HDivider />
     </>
   )
 }
