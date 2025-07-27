@@ -7,8 +7,9 @@ export const loadWav = (arrayBuffer: ArrayBuffer, fileName: string) => {
   const wavefile = new WaveFile()
   wavefile.fromBuffer(uint8Array)
   const samples = wavefile.getSamples()
-  const left = samples[0] as unknown as Float64Array
-  const right = samples[1] as unknown as Float64Array
+  const isStereo = samples.length === 2
+  const left = isStereo ? (samples[0] as unknown as Float64Array) : samples
+  const right = isStereo ? (samples[1] as unknown as Float64Array) : samples
 
   LoadedFiles.ref().unshift({
     name: fileName,
@@ -19,10 +20,12 @@ export const loadWav = (arrayBuffer: ArrayBuffer, fileName: string) => {
       {
         start: 0,
         type: 'Start',
+        stepNum: 0,
       },
       {
         start: left.length - 1,
         type: 'End',
+        stepNum: 0,
       },
     ],
   })

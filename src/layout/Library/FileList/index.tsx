@@ -56,7 +56,7 @@ export const FileList = () => {
 const FileListStyle = styled('div')`
   display: flex;
   flex-direction: column;
-  min-width: ${librarySidebarWidth}px;
+  width: ${librarySidebarWidth}px;
   height: 100%;
 `
 

@@ -22,6 +22,7 @@ export const getArrangementLayerSamples = (p: {
     waveformLengthInSamples
   )
 
+  p.arrangement.sort((a, b) => a.startStep - b.startStep)
   for (const note of p.arrangement) {
     const sliceIndex = getSliceIndexFromStepNum(firstLoadedFile, note.stepNumToPlay)
     if (sliceIndex === null) continue

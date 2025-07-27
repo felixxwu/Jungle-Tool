@@ -22,11 +22,13 @@ export const Slice = (p: { sliceIndex: number; forceEditSliceMode?: boolean }) =
   const windowSize = WindowSize.useState()
   const editSliceMode = EditSliceMode.useState() || p.forceEditSliceMode
 
+  const [editMode, setEditMode] = useState(false)
+  const [stepEditMode, setStepEditMode] = useState(false)
+
   if (selectedFileIndex === null) return null
 
   const selectedFile = loadedFiles[selectedFileIndex]
   const slice = selectedFile.slices[p.sliceIndex]
-  const [editMode, setEditMode] = useState(false)
   const isTrimmer = slice.type === 'Start' || slice.type === 'End'
 
   const handleSelectSlice = async () => {
@@ -70,6 +72,13 @@ export const Slice = (p: { sliceIndex: number; forceEditSliceMode?: boolean }) =
     LoadedFiles.set(newLoadedFiles)
     setEditMode(false)
     SelectedSliceIndex.set(null)
+  }
+
+  const handleUpdateSliceStepNum = (stepNum: number) => {
+    if (stepNum < 0) return
+    if (stepNum > 15) return
+    loadedFiles[selectedFileIndex].slices[p.sliceIndex].stepNum = stepNum
+    LoadedFiles.set([...loadedFiles])
   }
 
   const Selection = () => {
@@ -116,9 +125,29 @@ export const Slice = (p: { sliceIndex: number; forceEditSliceMode?: boolean }) =
     )
   }
 
+  const stemNum = slice.stepNum ?? 0
+
   return (
     <>
       <SliceStyle>
+        {stepEditMode && (
+          <Text disabled={stemNum === 0} onClick={() => handleUpdateSliceStepNum(stemNum - 1)}>
+            ‹
+          </Text>
+        )}
+        <Text
+          onClick={() => setStepEditMode(!stepEditMode)}
+          style={{ width: '45px', textAlign: 'center' }}
+        >
+          {stemNum < 10 ? '0' : ''}
+          {stemNum}
+        </Text>
+        {stepEditMode && (
+          <Text disabled={stemNum === 15} onClick={() => handleUpdateSliceStepNum(stemNum + 1)}>
+            ›
+          </Text>
+        )}
+        <VDivider />
         <Text
           $fullWidth
           selected={selectedSliceIndex === p.sliceIndex}
@@ -127,7 +156,7 @@ export const Slice = (p: { sliceIndex: number; forceEditSliceMode?: boolean }) =
         >
           {slice.type}
         </Text>
-        {editSliceMode && (
+        {editSliceMode && !stepEditMode && (
           <>
             {!isTrimmer && (
               <>

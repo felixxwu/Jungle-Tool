@@ -10,7 +10,6 @@ export const Main = () => {
       <Grid />
       <HDivider />
       <ArragementWaveform />
-      <HDivider />
       <BottomBar />
     </MainStyle>
   )

@@ -1,5 +1,6 @@
 import { WaveFile } from 'wavefile'
 import { Tone } from './tone'
+import { max } from '../helpers/max'
 
 export const fetchFile = async (path: string) => {
   const response = await fetch(path)
@@ -35,8 +36,10 @@ export const mono = (samples?: [Float64Array, Float64Array]) => {
 export const normalize = (samples: [Float64Array, Float64Array]) => {
   const left = samples[0]
   const right = samples[1]
-  const max = Math.max(Math.max(...left), Math.max(...right))
-  const gain = (Math.pow(2, 15) - 1) / max
+  const maxLeft = max(left)
+  const maxRight = max(right)
+  const maxNum = Math.max(maxLeft, maxRight)
+  const gain = (Math.pow(2, 15) - 1) / maxNum
   return [left.map(sample => sample * gain), right.map(sample => sample * gain)] as [
     Float64Array,
     Float64Array

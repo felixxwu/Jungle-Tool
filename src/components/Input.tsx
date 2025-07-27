@@ -1,33 +1,30 @@
 import styled from 'styled-components'
 import { colors } from '../lib/colors'
 
-export const Text = (p: {
-  children: React.ReactNode
-  onClick?: () => void
+export const Input = (p: {
+  value: string
+  onChange: (value: string) => void
   selected?: boolean
   disabled?: boolean
   $fullWidth?: boolean
   onPointerEnter?: () => void
   onPointerLeave?: () => void
-  style?: React.CSSProperties
 }) => {
   return (
-    <TextStyle
-      onClick={p.disabled ? undefined : p.onClick}
+    <InputStyle
+      value={p.value}
+      onChange={e => p.onChange(e.target.value)}
       selected={p.selected}
       disabled={p.disabled}
       $fullWidth={p.$fullWidth}
       onPointerEnter={p.onPointerEnter}
       onPointerLeave={p.onPointerLeave}
       onPointerCancel={p.onPointerLeave}
-      style={p.style}
-    >
-      {p.children}
-    </TextStyle>
+    />
   )
 }
 
-const TextStyle = styled('div')<{
+const InputStyle = styled('input')<{
   onClick?: () => void
   selected?: boolean
   disabled?: boolean

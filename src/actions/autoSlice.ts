@@ -60,6 +60,7 @@ export const autoSlice = () => {
       selectedFile.slices.push({
         start: i,
         type: expectedSlices[estimatedStepNum],
+        stepNum: estimatedStepNum,
       })
       i += minTransientDistance
     }

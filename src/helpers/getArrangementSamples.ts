@@ -1,6 +1,7 @@
 import { normalize, stereoSlice } from '../lib/audio'
 import { Arrangement, BPM, Layers, LoadedFiles } from '../lib/store'
 import { getArrangementLayerSamples } from './getArrangementLayerSamples'
+import { max } from './max'
 
 export const getArrangementSamples = (p: {
   arrangement: ReturnType<typeof Arrangement.ref>
@@ -32,8 +33,8 @@ export const getArrangementSamples = (p: {
     }
   }
 
-  const peakLeft = Math.max(...arrangementSamples[0])
-  const peakRight = Math.max(...arrangementSamples[1])
+  const peakLeft = max(arrangementSamples[0])
+  const peakRight = max(arrangementSamples[1])
   if (peakLeft > Math.pow(2, 15) || peakRight > Math.pow(2, 15)) {
     return normalize(arrangementSamples)
   }
