@@ -2,9 +2,9 @@ import styled from 'styled-components'
 import { appWidth, arrangementSidebarWidth } from '../../../../lib/consts'
 import { colors } from '../../../../lib/colors'
 import { Fragment } from 'react/jsx-runtime'
-import { Arrangement, Player } from '../../../../lib/store'
+import { Arrangement } from '../../../../lib/store'
 import type { Note as NoteStyle } from '../../../../lib/types'
-import { playArrangement } from '../../../../actions/playArrangement'
+import { restartPlayback } from '../../../../actions/restartPlayback'
 
 const gridWidth = appWidth - arrangementSidebarWidth - 1
 const gridHeight = 400
@@ -16,7 +16,7 @@ export const Grid = () => {
 
   const handleAddNote = (note: NoteStyle) => {
     Arrangement.set([...arrangement.filter(n => n.startStep !== note.startStep), note])
-    if (Player.ref()?.state === 'started') playArrangement()
+    restartPlayback()
   }
 
   const handleRemoveNote = (note: NoteStyle) => {
@@ -25,7 +25,7 @@ export const Grid = () => {
         n => !(n.stepNumToPlay === note.stepNumToPlay && n.startStep === note.startStep)
       ),
     ])
-    if (Player.ref()?.state === 'started') playArrangement()
+    restartPlayback()
   }
 
   return (

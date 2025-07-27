@@ -60,7 +60,7 @@ export const SliceEditor = () => {
           left={
             <>
               <Text onClick={addToArrangement} disabled={alreadyAdded}>
-                Add to arrangement
+                Add to arrangement +
               </Text>
               <VDivider />
             </>

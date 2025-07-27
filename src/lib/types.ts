@@ -1,6 +1,6 @@
 export type SliceType = 'Kick' | 'Snare' | 'Hat' | 'Start' | 'End'
 export type Slice = { start: number; type: SliceType; stepNum: number }
-export type Layer = { filename: string; volume: number }
+export type Layer = { filename: string; volume: number; pitch: number }
 export type Note = { stepNumToPlay: number; startStep: number }
 
 export type LoadedFile = {

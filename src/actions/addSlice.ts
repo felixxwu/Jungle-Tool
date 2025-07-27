@@ -23,7 +23,16 @@ export const addSlice = () => {
     }
     return 0
   })()
-  loadedFiles[selectedFileIndex].slices.push({ start, type: 'Hat' as SliceType })
+  const stepNum = (() => {
+    if (selectedSlice) {
+      return selectedSlice.stepNum
+    }
+    if (lastSlice) {
+      return lastSlice.stepNum
+    }
+    return 0
+  })()
+  loadedFiles[selectedFileIndex].slices.push({ start, type: 'Hat' as SliceType, stepNum })
   loadedFiles[selectedFileIndex].slices.sort((a, b) => a.start - b.start)
   LoadedFiles.set([...loadedFiles])
 }

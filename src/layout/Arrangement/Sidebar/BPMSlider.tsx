@@ -1,19 +1,17 @@
 import styled from 'styled-components'
 import { Slider } from '../../../components/Slider'
-import { BPM, Player } from '../../../lib/store'
+import { BPM } from '../../../lib/store'
 import { HDivider } from '../../../components/Dividers'
 import { Text } from '../../../components/Text'
 import { maxBPM, minBPM } from '../../../lib/consts'
-import { playArrangement } from '../../../actions/playArrangement'
+import { restartPlayback } from '../../../actions/restartPlayback'
 
 export const BPMSlider = () => {
   const bpm = BPM.useState()
 
   const handleBPMChange = (value: number) => {
     BPM.set(value)
-    if (Player.ref()?.state === 'started') {
-      playArrangement()
-    }
+    restartPlayback()
   }
 
   return (

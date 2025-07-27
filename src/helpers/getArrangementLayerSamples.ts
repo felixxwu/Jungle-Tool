@@ -1,3 +1,4 @@
+import { WaveFile } from 'wavefile'
 import { stereoSlice } from '../lib/audio'
 import type { Arrangement, BPM, LoadedFiles } from '../lib/store'
 import type { Layer } from '../lib/types'
@@ -29,11 +30,21 @@ export const getArrangementLayerSamples = (p: {
 
     const sliceSamples = getSliceSamples(firstLoadedFile, sliceIndex)
 
-    for (let i = 0; i < sliceSamples[0].length; i++) {
-      currentLayer[0][i + Math.round(stepSize * note.startStep)] =
-        sliceSamples[0][i] * p.layer.volume
-      currentLayer[1][i + Math.round(stepSize * note.startStep)] =
-        sliceSamples[1][i] * p.layer.volume
+    const pitchMult = 1 / Math.pow(2, p.layer.pitch / 12)
+
+    const wavLeft = new WaveFile()
+    wavLeft.fromScratch(1, 44100, '16', sliceSamples[0])
+    wavLeft.toSampleRate(44100 * pitchMult, { method: 'sinc' })
+    const newLeft = wavLeft.getSamples()
+
+    const wavRight = new WaveFile()
+    wavRight.fromScratch(1, 44100, '16', sliceSamples[1])
+    wavRight.toSampleRate(44100 * pitchMult, { method: 'sinc' })
+    const newRight = wavRight.getSamples()
+
+    for (let i = 0; i < newLeft.length; i++) {
+      currentLayer[0][i + Math.round(stepSize * note.startStep)] = newLeft[i] * p.layer.volume
+      currentLayer[1][i + Math.round(stepSize * note.startStep)] = newRight[i] * p.layer.volume
     }
   }
 

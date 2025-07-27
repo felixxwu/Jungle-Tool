@@ -6,7 +6,6 @@ export const WindowSize = singletonState({ width: window.innerWidth, height: win
 export const Tab = singletonState<'arrangement' | 'library'>('arrangement')
 export const ArrangementSidebarOpen = singletonState(false)
 export const BPM = singletonState(160)
-export const Pitch = singletonState(0)
 export const Player = singletonState<Tone.Player | null>(null)
 export const LoadedFiles = singletonState<LoadedFile[]>([])
 export const SelectedFileIndex = singletonState<number | null>(null)
@@ -16,7 +15,9 @@ export const EditSliceMode = singletonState(false)
 export const AutoSliceMode = singletonState(false)
 export const AutoSliceSensitivity = singletonState(2000)
 export const Modal = singletonState<React.ReactNode | null>(null)
-export const Layers = singletonState<Layer[]>([{ filename: 'Think (About It)', volume: 1 }])
+export const Layers = singletonState<Layer[]>([
+  { filename: 'Think (About It)', volume: 1, pitch: 5 },
+])
 export const Arrangement = singletonState<Note[]>([
   { stepNumToPlay: 0, startStep: 0 },
   { stepNumToPlay: 1, startStep: 1 },

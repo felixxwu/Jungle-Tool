@@ -2,6 +2,7 @@ import { Fragment } from 'react/jsx-runtime'
 import type { Slice } from '../lib/types'
 import styled from 'styled-components'
 import { colors } from '../lib/colors'
+import { useEffect, useState } from 'react'
 
 export const Waveform = (p: {
   samples: Float64Array
@@ -11,12 +12,20 @@ export const Waveform = (p: {
   scaleX: number
   slices: { slice: Slice; color: string }[]
 }) => {
-  const scaleX = (p.width / (p.samples.length - 1)) * p.scaleX
+  const [samples, setSamples] = useState(p.samples)
+
+  useEffect(() => {
+    setTimeout(() => {
+      setSamples(p.samples)
+    })
+  }, [p.samples])
+
+  const scaleX = (p.width / (samples.length - 1)) * p.scaleX
   const scaleY = p.height / Math.pow(2, 16)
 
   let path = 'M'
-  for (let i = 0; i < p.samples.length; i++) {
-    path += `${(i + p.offset) * scaleX},${p.samples[i] * scaleY + p.height / 2} `
+  for (let i = 0; i < samples.length; i++) {
+    path += `${(i + p.offset) * scaleX},${samples[i] * scaleY + p.height / 2} `
   }
 
   return (

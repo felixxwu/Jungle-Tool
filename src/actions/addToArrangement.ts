@@ -10,6 +10,7 @@ export const addToArrangement = () => {
   layers.push({
     filename: loadedFiles[selectedFileIndex].name,
     volume: 1,
+    pitch: 0,
   })
   Layers.set([...layers])
 }
