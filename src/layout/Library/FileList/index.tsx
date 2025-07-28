@@ -6,11 +6,12 @@ import {
   LoadedFiles,
   SelectedFileIndex,
   SelectedSliceIndex,
+  WindowSize,
 } from '../../../lib/store'
 import { Text } from '../../../components/Text'
 import { HDivider } from '../../../components/Dividers'
 import { colors } from '../../../lib/colors'
-import { librarySidebarWidth } from '../../../lib/consts'
+import { appWidth, librarySidebarWidth } from '../../../lib/consts'
 import { playFile } from '../../../actions/playFile'
 import { importFile } from '../../../actions/importFile'
 import { Fragment } from 'react/jsx-runtime'
@@ -18,7 +19,7 @@ import { Fragment } from 'react/jsx-runtime'
 export const FileList = () => {
   const loadedFiles = LoadedFiles.useState()
   const selectedFile = SelectedFileIndex.useState()
-
+  const windowSize = WindowSize.useState()
   const handleSelectFile = async (index: number) => {
     SelectedFileIndex.set(index)
     SelectedSliceIndex.set(null)
@@ -30,7 +31,7 @@ export const FileList = () => {
   }
 
   return (
-    <FileListStyle>
+    <FileListStyle style={windowSize.width < appWidth ? { width: '100%' } : {}}>
       <Scrollable>
         {loadedFiles.map((file, index) => (
           <Fragment key={file.name}>

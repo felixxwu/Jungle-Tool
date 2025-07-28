@@ -22,6 +22,8 @@ export const BottomBar = () => {
         <VDivider />
         <Text onClick={handleStop}>Stop</Text>
         <VDivider />
+        <VDivider style={{ marginLeft: 'auto' }} />
+        <Text disabled>Randomise</Text>
       </Row>
     </>
   )
