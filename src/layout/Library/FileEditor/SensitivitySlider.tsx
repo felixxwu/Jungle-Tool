@@ -17,6 +17,7 @@ export const SensitivitySlider = () => {
         AutoSliceSensitivity.set(Math.pow(2, 15) - value)
         handleAutoSlice.current()
       }}
+      label='Auto-slice Sensitivity'
     />
   )
 }

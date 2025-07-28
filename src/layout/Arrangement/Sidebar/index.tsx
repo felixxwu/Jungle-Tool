@@ -3,7 +3,6 @@ import { BPMSlider } from './BPMSlider'
 import { LayerControls } from './LayerControls'
 import { appWidth, arrangementSidebarWidth } from '../../../lib/consts'
 import { WindowSize } from '../../../lib/store'
-import { HDivider } from '../../../components/Dividers'
 
 export const Sidebar = () => {
   const windowSize = WindowSize.useState()
@@ -12,9 +11,8 @@ export const Sidebar = () => {
     <SidebarStyle
       style={windowSize.width < appWidth - arrangementSidebarWidth ? { width: '100%' } : {}}
     >
-      <BPMSlider />
-      <HDivider style={{ marginBottom: 'auto' }} />
       <LayerControls />
+      <BPMSlider />
     </SidebarStyle>
   )
 }

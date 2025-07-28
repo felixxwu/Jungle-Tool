@@ -21,15 +21,21 @@ export const BottomBar = () => {
     Playing.set(false)
   }
 
+  const handlePlayPause = () => {
+    if (playing) {
+      handleStop()
+    } else {
+      playArrangement()
+    }
+  }
+
   return (
     <>
       <HDivider style={{ marginTop: 'auto' }} />
       <Row>
-        <Text onClick={playArrangement} selected={playing}>
-          Play
+        <Text onClick={handlePlayPause} selected={playing} style={{ height: '35px' }}>
+          {playing ? 'Pause' : 'Play'}
         </Text>
-        <VDivider />
-        <Text onClick={handleStop}>Stop</Text>
         <VDivider />
         <VDivider style={{ marginLeft: 'auto' }} />
         <Text

@@ -21,7 +21,7 @@ export const ArragementWaveform = () => {
     <Waveform
       samples={monoSamples}
       width={waveformWidth}
-      height={150}
+      height={125}
       offset={0}
       scaleX={1}
       slices={[]}

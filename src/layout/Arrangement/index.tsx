@@ -13,7 +13,10 @@ export const Arrangement = () => {
   if (windowSize.width < appWidth - arrangementSidebarWidth) {
     return (
       <ArrangementMobileStyle>
-        <Text onClick={() => ArrangementSidebarOpen.set(!arrangementSidebarOpen)}>
+        <Text
+          style={{ height: '35px' }}
+          onClick={() => ArrangementSidebarOpen.set(!arrangementSidebarOpen)}
+        >
           {arrangementSidebarOpen ? '‹ Back' : 'Edit layers / BPM ›'}
         </Text>
         <HDivider />

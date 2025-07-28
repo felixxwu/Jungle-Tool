@@ -32,4 +32,5 @@ const Scrollable = styled('div')`
   display: flex;
   flex-direction: column;
   overflow-x: auto;
+  overflow-y: hidden;
 `

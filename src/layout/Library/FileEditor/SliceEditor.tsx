@@ -43,25 +43,25 @@ export const SliceEditor = () => {
   return (
     <>
       {autoSliceMode ? (
-        <>
-          <Row>
-            <Text $fullWidth>Auto-slice Sensitivity:</Text>
-            <VDivider />
-            <Text onClick={() => AutoSliceMode.set(false)}>Done</Text>
-          </Row>
-          <HDivider />
-          <Row>
-            <SensitivitySlider />
-          </Row>
-        </>
+        <Row>
+          <SensitivitySlider />
+          <VDivider />
+          <Text onClick={() => AutoSliceMode.set(false)}>Done</Text>
+        </Row>
       ) : (
         <CollapsableRow
           collapse={450}
           left={
             <>
-              <Text onClick={addToArrangement} disabled={alreadyAdded}>
-                Add to arrangement +
-              </Text>
+              {alreadyAdded ? (
+                <Text style={{ height: '35px' }} disabled>
+                  Already added
+                </Text>
+              ) : (
+                <Text style={{ height: '35px' }} onClick={addToArrangement}>
+                  Add to arrangement +
+                </Text>
+              )}
               <VDivider />
             </>
           }

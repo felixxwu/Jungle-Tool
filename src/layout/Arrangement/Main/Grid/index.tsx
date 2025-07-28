@@ -6,8 +6,8 @@ import { Arrangement } from '../../../../lib/store'
 import type { Note as NoteStyle } from '../../../../lib/types'
 import { useDebouncedLocalState } from '../../../../hooks/useDebouncedLocalState'
 
-const gridWidth = appWidth - arrangementSidebarWidth - 1
-const gridHeight = 325
+const gridWidth = appWidth - arrangementSidebarWidth - 2
+const gridHeight = 350
 const cellWidth = gridWidth / 16
 const cellHeight = gridHeight / 16
 

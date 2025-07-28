@@ -22,9 +22,12 @@ export const LayerControls = () => {
 
   return (
     <>
+      <Text>Layers:</Text>
       {layers.map(layer => (
         <LayerControl key={layer.filename} layer={layer} />
       ))}
+
+      <HDivider style={{ marginBottom: 'auto' }} />
       <HDivider />
       <Text onClick={() => Tab.set('library')}>Add Layer +</Text>
       <HDivider />

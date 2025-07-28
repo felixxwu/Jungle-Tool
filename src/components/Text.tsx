@@ -37,6 +37,10 @@ const TextStyle = styled('div')<{
   padding: 6px 15px 5px 15px;
   background-color: ${p => (p.selected ? colors.black : colors.white)};
   white-space: nowrap;
+  box-sizing: border-box;
+  display: flex;
+  align-items: center;
+
   color: ${p => {
     if (p.disabled) return colors.darkGrey
     if (p.selected) return colors.white

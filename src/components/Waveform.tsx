@@ -11,6 +11,7 @@ export const Waveform = (p: {
   offset: number
   scaleX: number
   slices: { slice: Slice; color: string }[]
+  onClick?: () => void
 }) => {
   const [samples, setSamples] = useState(p.samples)
 
@@ -29,7 +30,7 @@ export const Waveform = (p: {
   }
 
   return (
-    <WaveformStyle style={{ width: p.width, height: p.height }}>
+    <WaveformStyle style={{ width: p.width, height: p.height }} onClick={p.onClick}>
       <svg width={p.width} height={p.height}>
         <path d={path} stroke='black' fill='none' strokeWidth={1} />
         {p.slices.map(({ slice, color }, index) => (

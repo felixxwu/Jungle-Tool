@@ -9,6 +9,8 @@ import {
 } from '../../../lib/store'
 import { mono } from '../../../lib/audio'
 import { Waveform } from '../../../components/Waveform'
+import { playFile } from '../../../actions/playFile'
+import { playSlice } from '../../../actions/playSlice'
 
 export const LibraryWaveform = () => {
   const selectedFileIndex = SelectedFileIndex.useState()
@@ -32,6 +34,14 @@ export const LibraryWaveform = () => {
     return halfSamples / factor - selectedSlice.start
   })()
 
+  const handleClick = () => {
+    if (selectedSliceIndex === null) {
+      playFile(selectedFileIndex)
+    } else {
+      playSlice(selectedFileIndex, selectedSliceIndex)
+    }
+  }
+
   return (
     <Waveform
       samples={monoSamples}
@@ -46,6 +56,7 @@ export const LibraryWaveform = () => {
             ? colors.black
             : colors.darkGrey,
       }))}
+      onClick={handleClick}
     />
   )
 }
