@@ -3,6 +3,7 @@ import { HDivider, VDivider } from '../../../../components/Dividers'
 import { Text } from '../../../../components/Text'
 import { Player, Playing } from '../../../../lib/store'
 import { playArrangement } from '../../../../actions/playArrangement'
+import { randomiseArrangement } from '../../../../actions/randomiseArrangement'
 
 export const BottomBar = () => {
   const playing = Playing.useState()
@@ -23,7 +24,7 @@ export const BottomBar = () => {
         <Text onClick={handleStop}>Stop</Text>
         <VDivider />
         <VDivider style={{ marginLeft: 'auto' }} />
-        <Text disabled>Randomise</Text>
+        <Text onClick={randomiseArrangement}>Randomise</Text>
       </Row>
     </>
   )
