@@ -9,11 +9,11 @@ export const throttle = (func: () => void, delay: number) => {
   }
 }
 
-export const debounce = (func: () => void, delay: number) => {
+export const debounce = <T extends any[]>(func: (...args: T) => void, delay: number) => {
   let timeout: number
-  return () => {
+  return (...args: T) => {
     clearTimeout(timeout)
-    timeout = setTimeout(func, delay)
+    timeout = setTimeout(() => func(...args), delay)
   }
 }
 

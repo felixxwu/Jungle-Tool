@@ -5,6 +5,7 @@ import { Fragment } from 'react/jsx-runtime'
 import { Arrangement } from '../../../../lib/store'
 import type { Note as NoteStyle } from '../../../../lib/types'
 import { restartPlayback } from '../../../../actions/restartPlayback'
+import { useDebouncedLocalState } from '../../../../hooks/useDebouncedLocalState'
 
 const gridWidth = appWidth - arrangementSidebarWidth - 1
 const gridHeight = 325
@@ -14,18 +15,21 @@ const cellHeight = gridHeight / 16
 export const Grid = () => {
   const arrangement = Arrangement.useState()
 
-  const handleAddNote = (note: NoteStyle) => {
-    Arrangement.set([...arrangement.filter(n => n.startStep !== note.startStep), note])
+  const [localArrangement, setLocalArrangement] = useDebouncedLocalState(arrangement, value => {
+    Arrangement.set(value)
     restartPlayback()
+  })
+
+  const handleAddNote = (note: NoteStyle) => {
+    setLocalArrangement([...localArrangement.filter(n => n.startStep !== note.startStep), note])
   }
 
   const handleRemoveNote = (note: NoteStyle) => {
-    Arrangement.set([
-      ...arrangement.filter(
+    setLocalArrangement([
+      ...localArrangement.filter(
         n => !(n.stepNumToPlay === note.stepNumToPlay && n.startStep === note.startStep)
       ),
     ])
-    restartPlayback()
   }
 
   return (
@@ -45,7 +49,7 @@ export const Grid = () => {
           <VLine style={{ left: (index + 1) * cellWidth }} />
         </Fragment>
       ))}
-      {arrangement.map(({ stepNumToPlay, startStep }) => (
+      {localArrangement.map(({ stepNumToPlay, startStep }) => (
         <NoteStyle
           key={stepNumToPlay + '-' + startStep + 'note'}
           onClick={() => handleRemoveNote({ stepNumToPlay, startStep })}

@@ -5,7 +5,6 @@ import { Tone } from '../lib/tone'
 
 export const playArrangement = async () => {
   await Tone.start()
-  Player.ref()?.dispose()
 
   const samples = getArrangementSamples({
     arrangement: Arrangement.ref(),
@@ -17,6 +16,8 @@ export const playArrangement = async () => {
 
   const player = await createPlayer(samples)
   player.loop = true
+
+  Player.ref()?.dispose()
   Player.set(player)
   player.start()
 

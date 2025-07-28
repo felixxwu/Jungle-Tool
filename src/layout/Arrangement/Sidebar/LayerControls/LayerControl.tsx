@@ -7,38 +7,44 @@ import type { Layer } from '../../../../lib/types'
 import { useState } from 'react'
 import { maxPitch, minPitch } from '../../../../lib/consts'
 import { restartPlayback } from '../../../../actions/restartPlayback'
+import { useDebouncedLocalState } from '../../../../hooks/useDebouncedLocalState'
 
 export const LayerControl = (p: { layer: Layer }) => {
   const [editMode, setEditMode] = useState(false)
 
-  const handleVolumeChange = (volume: number) => {
+  const [localVolume, setLocalVolume] = useDebouncedLocalState(p.layer.volume, value => {
     const layers = Layers.ref()
     const layer = layers.find(l => l.filename === p.layer.filename)
     if (!layer) return
 
-    layer.volume = volume / 100
+    layer.volume = value
     Layers.set([...layers])
 
     restartPlayback()
-  }
+  })
+
+  const [localPitch, setLocalPitch] = useDebouncedLocalState(
+    p.layer.pitch,
+    value => {
+      const layers = Layers.ref()
+      const layer = layers.find(l => l.filename === p.layer.filename)
+      if (!layer) return
+
+      layer.pitch = value
+      Layers.set([...layers])
+
+      restartPlayback()
+    },
+    300
+  )
 
   const handleDelete = () => {
     const layers = Layers.ref()
     Layers.set(layers.filter(l => l.filename !== p.layer.filename))
-  }
-
-  const handlePitchChange = (pitch: number) => {
-    const layers = Layers.ref()
-    const layer = layers.find(l => l.filename === p.layer.filename)
-    if (!layer) return
-
-    layer.pitch = pitch
-    Layers.set([...layers])
-
     restartPlayback()
   }
 
-  const pitch = p.layer.pitch
+  const pitch = localPitch
 
   return (
     <>
@@ -58,13 +64,13 @@ export const LayerControl = (p: { layer: Layer }) => {
       {editMode && (
         <>
           <Row>
-            <Text disabled={pitch <= minPitch} onClick={() => handlePitchChange(p.layer.pitch - 1)}>
+            <Text disabled={pitch <= minPitch} onClick={() => setLocalPitch(localPitch - 1)}>
               ‹
             </Text>
             <Text style={{ width: '90px', textAlign: 'center' }}>
               Pitch {pitch > 0 ? `+${pitch}` : pitch}
             </Text>
-            <Text disabled={pitch >= maxPitch} onClick={() => handlePitchChange(p.layer.pitch + 1)}>
+            <Text disabled={pitch >= maxPitch} onClick={() => setLocalPitch(localPitch + 1)}>
               ›
             </Text>
             <VDivider />
@@ -74,12 +80,7 @@ export const LayerControl = (p: { layer: Layer }) => {
           <HDivider />
         </>
       )}
-      <Slider
-        min={0}
-        max={100}
-        value={p.layer.volume * 100}
-        onInput={value => handleVolumeChange(value)}
-      />
+      <Slider min={0} max={100} value={localVolume} onInput={setLocalVolume} />
     </>
   )
 }

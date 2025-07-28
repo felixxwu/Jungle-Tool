@@ -8,11 +8,14 @@ import { LoadedFiles, Modal, Tab, WindowSize } from './lib/store'
 import { Library } from './layout/Library'
 import { useEffect } from 'react'
 import { loadJson } from './actions/loadJson'
+import { useWindowListeners } from './hooks/useWindowListeners'
 
 export default function App() {
   const tab = Tab.useState()
   const modal = Modal.useState()
   const windowSize = WindowSize.useState()
+
+  useWindowListeners()
 
   useEffect(() => {
     ;(async () => {
@@ -23,10 +26,6 @@ export default function App() {
         loadJson(json)
       }
     })()
-
-    window.addEventListener('resize', () => {
-      WindowSize.set({ width: window.innerWidth, height: window.innerHeight })
-    })
   }, [])
 
   return (

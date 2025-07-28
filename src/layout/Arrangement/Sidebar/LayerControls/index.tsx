@@ -1,3 +1,4 @@
+import { useState } from 'react'
 import { restartPlayback } from '../../../../actions/restartPlayback'
 import { HDivider } from '../../../../components/Dividers'
 import { Text } from '../../../../components/Text'
@@ -6,6 +7,8 @@ import { LayerControl } from './LayerControl'
 
 export const LayerControls = () => {
   const layers = Layers.useState()
+
+  const [loading, setLoading] = useState(false)
 
   const randomiseLayers = () => {
     const loadedFiles = LoadedFiles.ref()
@@ -28,7 +31,16 @@ export const LayerControls = () => {
       <HDivider />
       <Text onClick={() => Tab.set('library')}>Add Layer +</Text>
       <HDivider />
-      <Text onClick={randomiseLayers}>Randomise Layers ›</Text>
+      <Text
+        onClick={async () => {
+          setLoading(true)
+          await new Promise(r => setTimeout(r, 300))
+          randomiseLayers()
+          setLoading(false)
+        }}
+      >
+        {loading ? '...' : 'Randomise Layers ›'}
+      </Text>
     </>
   )
 }

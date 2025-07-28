@@ -16,7 +16,7 @@ export const AutoSliceMode = singletonState(false)
 export const AutoSliceSensitivity = singletonState(2000)
 export const Modal = singletonState<React.ReactNode | null>(null)
 export const Layers = singletonState<Layer[]>([
-  { filename: 'Think (About It)', volume: 0.9, pitch: 5 },
+  { filename: 'Think (About It)', volume: 90, pitch: 5 },
 ])
 export const Arrangement = singletonState<Note[]>([
   { stepNumToPlay: 0, startStep: 0 },

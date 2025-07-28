@@ -24,6 +24,7 @@ export const getArrangementLayerSamples = (p: {
   )
 
   p.arrangement.sort((a, b) => a.startStep - b.startStep)
+
   for (const note of p.arrangement) {
     const sliceIndex = getSliceIndexFromStepNum(firstLoadedFile, note.stepNumToPlay)
     if (sliceIndex === null) continue
@@ -43,8 +44,10 @@ export const getArrangementLayerSamples = (p: {
     const newRight = wavRight.getSamples()
 
     for (let i = 0; i < newLeft.length; i++) {
-      currentLayer[0][i + Math.round(stepSize * note.startStep)] = newLeft[i] * p.layer.volume
-      currentLayer[1][i + Math.round(stepSize * note.startStep)] = newRight[i] * p.layer.volume
+      currentLayer[0][i + Math.round(stepSize * note.startStep)] =
+        newLeft[i] * (p.layer.volume / 100)
+      currentLayer[1][i + Math.round(stepSize * note.startStep)] =
+        newRight[i] * (p.layer.volume / 100)
     }
   }
 
