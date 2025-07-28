@@ -17,6 +17,7 @@ import { DownloadFileModal } from '../../../modals/DownloadFileModal'
 import { addSlice } from '../../../actions/addSlice'
 import { CollapsableRow } from '../../../components/CollapsableRow'
 import { addToArrangement } from '../../../actions/addToArrangement'
+import { largeTextHeight } from '../../../lib/consts'
 
 export const SliceEditor = () => {
   const selectedFileIndex = SelectedFileIndex.useState()
@@ -54,11 +55,11 @@ export const SliceEditor = () => {
           left={
             <>
               {alreadyAdded ? (
-                <Text style={{ height: '35px' }} disabled>
+                <Text style={{ height: largeTextHeight }} disabled>
                   Already added
                 </Text>
               ) : (
-                <Text style={{ height: '35px' }} onClick={addToArrangement}>
+                <Text style={{ height: largeTextHeight }} onClick={addToArrangement}>
                   Add to arrangement +
                 </Text>
               )}
@@ -92,7 +93,9 @@ export const SliceEditor = () => {
       {editSliceMode && (
         <>
           <HDivider />
-          <Text onClick={addSlice}>Add Slice +</Text>
+          <Text onClick={addSlice} style={{ minHeight: largeTextHeight }}>
+            Add Slice +
+          </Text>
         </>
       )}
     </>

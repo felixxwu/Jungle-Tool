@@ -4,7 +4,7 @@ import { Sidebar } from './Sidebar'
 import { Main } from './Main'
 import { ArrangementSidebarOpen, WindowSize } from '../../lib/store'
 import { Text } from '../../components/Text'
-import { appWidth, arrangementSidebarWidth } from '../../lib/consts'
+import { appWidth, arrangementSidebarWidth, largeTextHeight } from '../../lib/consts'
 
 export const Arrangement = () => {
   const windowSize = WindowSize.useState()
@@ -14,7 +14,7 @@ export const Arrangement = () => {
     return (
       <ArrangementMobileStyle>
         <Text
-          style={{ height: '35px' }}
+          style={{ height: largeTextHeight }}
           onClick={() => ArrangementSidebarOpen.set(!arrangementSidebarOpen)}
         >
           {arrangementSidebarOpen ? '‹ Back' : 'Edit layers / BPM ›'}

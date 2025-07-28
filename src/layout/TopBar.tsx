@@ -3,6 +3,7 @@ import { VDivider } from '../components/Dividers'
 import { LibraryLoading, Tab } from '../lib/store'
 import styled from 'styled-components'
 import { colors } from '../lib/colors'
+import { largeTextHeight } from '../lib/consts'
 
 export const TopBar = () => {
   const tab = Tab.useState()
@@ -13,7 +14,7 @@ export const TopBar = () => {
       <Text
         onClick={() => Tab.set('arrangement')}
         selected={tab === 'arrangement'}
-        style={{ height: '35px' }}
+        style={{ height: largeTextHeight }}
       >
         Arrangement
       </Text>
@@ -38,7 +39,7 @@ const Logo = styled('div')`
   display: flex;
   align-items: center;
   justify-content: center;
-  width: 35px;
-  height: 35px;
+  width: ${largeTextHeight};
+  height: ${largeTextHeight};
   background-color: ${colors.black};
 `

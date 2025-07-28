@@ -5,6 +5,7 @@ import { Arrangement, LibraryLoading, Player, Playing } from '../../../../lib/st
 import { playArrangement } from '../../../../actions/playArrangement'
 import { randomiseArrangement } from '../../../../actions/randomiseArrangement'
 import { useEffect, useState } from 'react'
+import { largeTextHeight } from '../../../../lib/consts'
 
 export const BottomBar = () => {
   const playing = Playing.useState()
@@ -37,7 +38,7 @@ export const BottomBar = () => {
         <Text
           onClick={handlePlayPause}
           selected={playing}
-          style={{ height: '35px' }}
+          style={{ height: largeTextHeight }}
           disabled={libraryLoading}
         >
           {playing ? 'Pause' : 'Play'}

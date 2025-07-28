@@ -11,6 +11,7 @@ export const smallSliceAdjustment = 75
 export const largeSliceAdjustment = 1000
 export const zoomInFactor = 7
 export const waveformHeight = 200
+export const largeTextHeight = 35
 
 export const library = [
   'Amen Brother.json',

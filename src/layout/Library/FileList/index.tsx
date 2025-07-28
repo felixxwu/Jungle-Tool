@@ -11,7 +11,7 @@ import {
 import { Text } from '../../../components/Text'
 import { HDivider } from '../../../components/Dividers'
 import { colors } from '../../../lib/colors'
-import { appWidth, librarySidebarWidth } from '../../../lib/consts'
+import { appWidth, largeTextHeight, librarySidebarWidth } from '../../../lib/consts'
 import { playFile } from '../../../actions/playFile'
 import { importFile } from '../../../actions/importFile'
 import { Fragment } from 'react/jsx-runtime'
@@ -49,7 +49,9 @@ export const FileList = () => {
         ))}
       </Scrollable>
       <HDivider />
-      <Text onClick={importFile}>Import File +</Text>
+      <Text onClick={importFile} style={{ minHeight: largeTextHeight }}>
+        Import File +
+      </Text>
     </FileListStyle>
   )
 }
@@ -62,8 +64,10 @@ const FileListStyle = styled('div')`
 `
 
 const FileListItemStyle = styled('div')`
+  height: ${largeTextHeight}px;
   display: flex;
   flex-direction: column;
+  justify-content: center;
   gap: 5px;
 `
 

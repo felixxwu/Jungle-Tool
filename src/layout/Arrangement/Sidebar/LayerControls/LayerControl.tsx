@@ -4,7 +4,7 @@ import { Text } from '../../../../components/Text'
 import { Layers } from '../../../../lib/store'
 import { Slider } from '../../../../components/Slider'
 import type { Layer } from '../../../../lib/types'
-import { maxPitch, minPitch } from '../../../../lib/consts'
+import { largeTextHeight, maxPitch, minPitch } from '../../../../lib/consts'
 import { useDebouncedLocalState } from '../../../../hooks/useDebouncedLocalState'
 
 export const LayerControl = (p: { layer: Layer }) => {
@@ -41,7 +41,7 @@ export const LayerControl = (p: { layer: Layer }) => {
     <>
       <HDivider />
       <Row>
-        <Text key={p.layer.filename} $fullWidth>
+        <Text key={p.layer.filename} $fullWidth style={{ height: largeTextHeight }}>
           {p.layer.filename}
         </Text>
         <VDivider />
@@ -69,5 +69,4 @@ export const LayerControl = (p: { layer: Layer }) => {
 
 const Row = styled('div')`
   display: flex;
-  height: 35px;
 `
