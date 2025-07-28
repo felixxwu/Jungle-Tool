@@ -1,5 +1,4 @@
 import { useState } from 'react'
-import { restartPlayback } from '../../../../actions/restartPlayback'
 import { HDivider } from '../../../../components/Dividers'
 import { Text } from '../../../../components/Text'
 import { Layers, LoadedFiles, Tab } from '../../../../lib/store'
@@ -19,8 +18,6 @@ export const LayerControls = () => {
       layers[i].filename = randomFile.name
     }
     Layers.set([...layers])
-
-    restartPlayback()
   }
 
   return (

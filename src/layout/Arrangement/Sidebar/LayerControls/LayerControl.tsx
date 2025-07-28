@@ -6,7 +6,6 @@ import { Slider } from '../../../../components/Slider'
 import type { Layer } from '../../../../lib/types'
 import { useState } from 'react'
 import { maxPitch, minPitch } from '../../../../lib/consts'
-import { restartPlayback } from '../../../../actions/restartPlayback'
 import { useDebouncedLocalState } from '../../../../hooks/useDebouncedLocalState'
 
 export const LayerControl = (p: { layer: Layer }) => {
@@ -19,8 +18,6 @@ export const LayerControl = (p: { layer: Layer }) => {
 
     layer.volume = value
     Layers.set([...layers])
-
-    restartPlayback()
   })
 
   const [localPitch, setLocalPitch] = useDebouncedLocalState(
@@ -32,8 +29,6 @@ export const LayerControl = (p: { layer: Layer }) => {
 
       layer.pitch = value
       Layers.set([...layers])
-
-      restartPlayback()
     },
     300
   )
@@ -41,7 +36,6 @@ export const LayerControl = (p: { layer: Layer }) => {
   const handleDelete = () => {
     const layers = Layers.ref()
     Layers.set(layers.filter(l => l.filename !== p.layer.filename))
-    restartPlayback()
   }
 
   const pitch = localPitch

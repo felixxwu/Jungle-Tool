@@ -4,7 +4,6 @@ import { BPM } from '../../../lib/store'
 import { HDivider } from '../../../components/Dividers'
 import { Text } from '../../../components/Text'
 import { maxBPM, minBPM } from '../../../lib/consts'
-import { restartPlayback } from '../../../actions/restartPlayback'
 import { useDebouncedLocalState } from '../../../hooks/useDebouncedLocalState'
 
 export const BPMSlider = () => {
@@ -12,7 +11,6 @@ export const BPMSlider = () => {
 
   const [localBPM, setLocalBPM] = useDebouncedLocalState(bpm, value => {
     BPM.set(value)
-    restartPlayback()
   })
 
   return (

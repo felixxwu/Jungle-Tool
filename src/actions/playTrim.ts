@@ -6,7 +6,6 @@ export const playTrim = async (fileIndex: number) => {
   const loadedFiles = LoadedFiles.ref()
 
   await Tone.start()
-  Player.ref()?.dispose()
   const startSlice = loadedFiles[fileIndex].slices.find(slice => slice.type === 'Start')
   const endSlice = loadedFiles[fileIndex].slices.find(slice => slice.type === 'End')
   const samples = stereoSlice(
@@ -16,6 +15,9 @@ export const playTrim = async (fileIndex: number) => {
   )
   const player = await createPlayer(samples)
   player.loop = true
+
+  Player.ref()?.stop()
+  Player.ref()?.dispose()
   Player.set(player)
   player.start()
 }

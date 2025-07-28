@@ -4,7 +4,6 @@ import { colors } from '../../../../lib/colors'
 import { Fragment } from 'react/jsx-runtime'
 import { Arrangement } from '../../../../lib/store'
 import type { Note as NoteStyle } from '../../../../lib/types'
-import { restartPlayback } from '../../../../actions/restartPlayback'
 import { useDebouncedLocalState } from '../../../../hooks/useDebouncedLocalState'
 
 const gridWidth = appWidth - arrangementSidebarWidth - 1
@@ -17,7 +16,6 @@ export const Grid = () => {
 
   const [localArrangement, setLocalArrangement] = useDebouncedLocalState(arrangement, value => {
     Arrangement.set(value)
-    restartPlayback()
   })
 
   const handleAddNote = (note: NoteStyle) => {

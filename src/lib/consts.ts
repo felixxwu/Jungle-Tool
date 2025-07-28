@@ -12,4 +12,16 @@ export const largeSliceAdjustment = 1000
 export const zoomInFactor = 7
 export const waveformHeight = 200
 
-export const library = ['Think (About It).json', 'Sesame Street.json', 'Funky Drummer.json']
+export const library = [
+  'Amen Brother.json',
+  'Soul Pride.json',
+  'Think (About It).json',
+  'Apache.json',
+  'Sesame Street.json',
+  'Assembly Line.json',
+  'Funky Drummer.json',
+  'Versatile Extension.json',
+  'Mr Sandman.json',
+  'Hot Pants.json',
+  'PH Break.json',
+]
