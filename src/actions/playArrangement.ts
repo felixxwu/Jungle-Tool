@@ -4,6 +4,8 @@ import { Arrangement, BPM, Layers, LoadedFiles, Player, Playing, Swing } from '.
 import { Tone } from '../lib/tone'
 
 export const playArrangement = async () => {
+  Playing.set(true)
+  await new Promise(r => setTimeout(r))
   await Tone.start()
 
   const samples = getArrangementSamples({
@@ -21,6 +23,4 @@ export const playArrangement = async () => {
   Player.ref()?.dispose()
   Player.set(player)
   player.start()
-
-  Playing.set(true)
 }

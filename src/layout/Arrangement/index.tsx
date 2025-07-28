@@ -20,7 +20,12 @@ export const Arrangement = () => {
           {arrangementSidebarOpen ? '‹ Back' : 'Edit layers / BPM ›'}
         </Text>
         <HDivider />
-        {arrangementSidebarOpen ? <Sidebar /> : <Main />}
+        <ArrangementMobileStyle style={{ display: arrangementSidebarOpen ? 'flex' : 'none' }}>
+          <Sidebar />
+        </ArrangementMobileStyle>
+        <ArrangementMobileStyle style={{ display: arrangementSidebarOpen ? 'none' : 'flex' }}>
+          <Main />
+        </ArrangementMobileStyle>
       </ArrangementMobileStyle>
     )
   }
