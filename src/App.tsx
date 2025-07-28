@@ -6,7 +6,7 @@ import { TopBar } from './layout/TopBar'
 import { Arrangement } from './layout/Arrangement'
 import { LoadedFiles, Modal, Tab, WindowSize } from './lib/store'
 import { Library } from './layout/Library'
-import { useEffect } from 'react'
+import { useEffect, useRef } from 'react'
 import { loadJson } from './actions/loadJson'
 import { useWindowListeners } from './hooks/useWindowListeners'
 
@@ -14,6 +14,7 @@ export default function App() {
   const tab = Tab.useState()
   const modal = Modal.useState()
   const windowSize = WindowSize.useState()
+  const audio = useRef<HTMLAudioElement>(null)
 
   useWindowListeners()
 
@@ -25,6 +26,11 @@ export default function App() {
         const json = await response.text()
         loadJson(json)
       }
+
+      window.addEventListener('click', () => {
+        audio.current?.play()
+        audio.current?.remove()
+      })
     })()
   }, [])
 
@@ -42,6 +48,10 @@ export default function App() {
         {tab === 'arrangement' && <Arrangement />}
         {tab === 'library' && <Library />}
       </AppStyle>
+
+      <audio ref={audio}>
+        <source src='/silence.mp3' type='audio/mp3'></source>
+      </audio>
     </>
   )
 }
