@@ -1,11 +1,12 @@
 import { Text } from '../components/Text'
 import { VDivider } from '../components/Dividers'
-import { Tab } from '../lib/store'
+import { LibraryLoading, Tab } from '../lib/store'
 import styled from 'styled-components'
 import { colors } from '../lib/colors'
 
 export const TopBar = () => {
   const tab = Tab.useState()
+  const libraryLoading = LibraryLoading.useState()
 
   return (
     <Row>
@@ -18,7 +19,7 @@ export const TopBar = () => {
       </Text>
       <VDivider />
       <Text onClick={() => Tab.set('library')} selected={tab === 'library'}>
-        Library
+        {libraryLoading ? ' Loading...' : 'Library'}
       </Text>
       <VDivider />
       <VDivider style={{ marginLeft: 'auto' }} />

@@ -4,7 +4,7 @@ import { appHeight, appWidth, library, lineThickness } from './lib/consts'
 import { HDivider } from './components/Dividers'
 import { TopBar } from './layout/TopBar'
 import { Arrangement } from './layout/Arrangement'
-import { LoadedFiles, Modal, Tab, WindowSize } from './lib/store'
+import { LibraryLoading, LoadedFiles, Modal, Tab, WindowSize } from './lib/store'
 import { Library } from './layout/Library'
 import { useEffect, useRef } from 'react'
 import { loadJson } from './actions/loadJson'
@@ -26,6 +26,7 @@ export default function App() {
         const json = await response.text()
         loadJson(json)
       }
+      LibraryLoading.set(false)
 
       window.addEventListener('click', () => {
         audio.current?.play()

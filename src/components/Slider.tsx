@@ -48,6 +48,7 @@ const SliderStyle = styled('div')`
 const Label = styled('div')`
   position: absolute;
   margin-top: 1px;
+  pointer-events: none;
 `
 
 const SliderInput = styled('input')`

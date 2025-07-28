@@ -1,5 +1,5 @@
 import { normalize, stereoSlice } from '../lib/audio'
-import { Arrangement, BPM, Layers, LoadedFiles } from '../lib/store'
+import { Arrangement, BPM, Layers, LoadedFiles, type Swing } from '../lib/store'
 import { getArrangementLayerSamples } from './getArrangementLayerSamples'
 import { max } from './max'
 
@@ -7,6 +7,7 @@ export const getArrangementSamples = (p: {
   arrangement: ReturnType<typeof Arrangement.ref>
   loadedFiles: ReturnType<typeof LoadedFiles.ref>
   bpm: ReturnType<typeof BPM.ref>
+  swing: ReturnType<typeof Swing.ref>
   layers: ReturnType<typeof Layers.ref>
 }) => {
   const stepSize = (60 / p.bpm / 4) * 44100
@@ -22,6 +23,7 @@ export const getArrangementSamples = (p: {
       arrangement: p.arrangement,
       loadedFiles: p.loadedFiles,
       bpm: p.bpm,
+      swing: p.swing,
       layer,
     })
 

@@ -2,7 +2,7 @@ import styled from 'styled-components'
 import { appWidth, arrangementSidebarWidth } from '../../../../lib/consts'
 import { colors } from '../../../../lib/colors'
 import { Fragment } from 'react/jsx-runtime'
-import { Arrangement } from '../../../../lib/store'
+import { Arrangement, Swing } from '../../../../lib/store'
 import type { Note as NoteStyle } from '../../../../lib/types'
 import { useDebouncedLocalState } from '../../../../hooks/useDebouncedLocalState'
 
@@ -13,6 +13,7 @@ const cellHeight = gridHeight / 16
 
 export const Grid = () => {
   const arrangement = Arrangement.useState()
+  const swing = Swing.useState()
 
   const [localArrangement, setLocalArrangement] = useDebouncedLocalState(arrangement, value => {
     Arrangement.set(value)
@@ -30,13 +31,22 @@ export const Grid = () => {
     ])
   }
 
+  const getSwingOffset = (index: number) => {
+    if (index % 2 === 1) return 0
+    return (swing / 100) * cellWidth
+  }
+
   return (
     <GridStyle>
       {Array.from({ length: 16 }).map((_, i) =>
         Array.from({ length: 16 }).map((_, j) => (
           <Clickable
             key={j}
-            style={{ bottom: i * cellHeight - 0.5, left: j * cellWidth + 0.5 }}
+            style={{
+              bottom: i * cellHeight - 0.5,
+              left: j * cellWidth + 0.5 + getSwingOffset(j + 1),
+              width: cellWidth + getSwingOffset(j) - getSwingOffset(j + 1),
+            }}
             onClick={() => handleAddNote({ stepNumToPlay: i, startStep: j })}
           />
         ))
@@ -44,14 +54,18 @@ export const Grid = () => {
       {Array.from({ length: 15 }).map((_, index) => (
         <Fragment key={index + 'lines'}>
           <HLine style={{ top: (index + 1) * cellHeight }} />
-          <VLine style={{ left: (index + 1) * cellWidth }} />
+          <VLine style={{ left: (index + 1) * cellWidth + getSwingOffset(index) }} />
         </Fragment>
       ))}
       {localArrangement.map(({ stepNumToPlay, startStep }) => (
         <NoteStyle
           key={stepNumToPlay + '-' + startStep + 'note'}
           onClick={() => handleRemoveNote({ stepNumToPlay, startStep })}
-          style={{ bottom: stepNumToPlay * cellHeight - 0.5, left: startStep * cellWidth + 0.5 }}
+          style={{
+            bottom: stepNumToPlay * cellHeight - 0.5,
+            left: startStep * cellWidth + 0.5 + getSwingOffset(startStep + 1),
+            width: cellWidth + getSwingOffset(startStep) - getSwingOffset(startStep + 1),
+          }}
         ></NoteStyle>
       ))}
     </GridStyle>
@@ -77,7 +91,6 @@ const NoteStyle = styled('div')`
 
 const Clickable = styled('div')`
   position: absolute;
-  width: ${cellWidth}px;
   height: ${cellHeight}px;
 `
 

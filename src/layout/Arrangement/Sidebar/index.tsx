@@ -3,6 +3,7 @@ import { BPMSlider } from './BPMSlider'
 import { LayerControls } from './LayerControls'
 import { appWidth, arrangementSidebarWidth } from '../../../lib/consts'
 import { WindowSize } from '../../../lib/store'
+import { SwingSlider } from './SwingSlider'
 
 export const Sidebar = () => {
   const windowSize = WindowSize.useState()
@@ -13,6 +14,7 @@ export const Sidebar = () => {
     >
       <LayerControls />
       <BPMSlider />
+      <SwingSlider />
     </SidebarStyle>
   )
 }

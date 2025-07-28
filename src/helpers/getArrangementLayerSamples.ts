@@ -1,6 +1,6 @@
 import { WaveFile } from 'wavefile'
 import { stereoSlice } from '../lib/audio'
-import type { Arrangement, BPM, LoadedFiles } from '../lib/store'
+import { Swing, type Arrangement, type BPM, type LoadedFiles } from '../lib/store'
 import type { Layer } from '../lib/types'
 import { getSliceIndexFromStepNum } from './getSliceIndexFromStepNum'
 import { getSliceSamples } from './getSliceSamples'
@@ -9,9 +9,15 @@ export const getArrangementLayerSamples = (p: {
   arrangement: ReturnType<typeof Arrangement.ref>
   loadedFiles: ReturnType<typeof LoadedFiles.ref>
   bpm: ReturnType<typeof BPM.ref>
+  swing: ReturnType<typeof Swing.ref>
   layer: Layer
 }) => {
   const stepSize = (60 / p.bpm / 4) * 44100
+
+  const getSwingOffset = (index: number) => {
+    if (index % 2 === 0) return 0
+    return (p.swing / 100) * stepSize
+  }
 
   const firstLoadedFile = p.loadedFiles.find(file => file.name === p.layer.filename)
   if (!firstLoadedFile) return null
@@ -44,10 +50,9 @@ export const getArrangementLayerSamples = (p: {
     const newRight = wavRight.getSamples()
 
     for (let i = 0; i < newLeft.length; i++) {
-      currentLayer[0][i + Math.round(stepSize * note.startStep)] =
-        newLeft[i] * (p.layer.volume / 100)
-      currentLayer[1][i + Math.round(stepSize * note.startStep)] =
-        newRight[i] * (p.layer.volume / 100)
+      const offset = Math.round(stepSize * note.startStep + getSwingOffset(note.stepNumToPlay))
+      currentLayer[0][i + offset] = newLeft[i] * (p.layer.volume / 100)
+      currentLayer[1][i + offset] = newRight[i] * (p.layer.volume / 100)
     }
   }
 

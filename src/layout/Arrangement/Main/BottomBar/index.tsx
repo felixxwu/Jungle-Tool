@@ -1,7 +1,7 @@
 import styled from 'styled-components'
 import { HDivider, VDivider } from '../../../../components/Dividers'
 import { Text } from '../../../../components/Text'
-import { Arrangement, Player, Playing } from '../../../../lib/store'
+import { Arrangement, LibraryLoading, Player, Playing } from '../../../../lib/store'
 import { playArrangement } from '../../../../actions/playArrangement'
 import { randomiseArrangement } from '../../../../actions/randomiseArrangement'
 import { useEffect, useState } from 'react'
@@ -9,6 +9,7 @@ import { useEffect, useState } from 'react'
 export const BottomBar = () => {
   const playing = Playing.useState()
   const arrangement = Arrangement.useState()
+  const libraryLoading = LibraryLoading.useState()
 
   const [loading, setLoading] = useState(false)
 
@@ -33,7 +34,12 @@ export const BottomBar = () => {
     <>
       <HDivider style={{ marginTop: 'auto' }} />
       <Row>
-        <Text onClick={handlePlayPause} selected={playing} style={{ height: '35px' }}>
+        <Text
+          onClick={handlePlayPause}
+          selected={playing}
+          style={{ height: '35px' }}
+          disabled={libraryLoading}
+        >
           {playing ? 'Pause' : 'Play'}
         </Text>
         <VDivider />

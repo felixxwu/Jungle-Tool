@@ -1,4 +1,4 @@
-import { Arrangement, BPM, Layers, LoadedFiles } from '../lib/store'
+import { Arrangement, BPM, Layers, LoadedFiles, Swing } from '../lib/store'
 import { getArrangementSamples } from '../helpers/getArrangementSamples'
 
 export const useArrangementSamples = () => {
@@ -6,6 +6,7 @@ export const useArrangementSamples = () => {
   const loadedFiles = LoadedFiles.useState()
   const bpm = BPM.useState()
   const layers = Layers.useState()
+  const swing = Swing.useState()
 
-  return getArrangementSamples({ arrangement, loadedFiles, bpm, layers })
+  return getArrangementSamples({ arrangement, loadedFiles, bpm, swing, layers })
 }
