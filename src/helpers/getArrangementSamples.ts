@@ -1,31 +1,24 @@
 import { normalize, stereoSlice } from '../lib/audio'
-import { Arrangement, BPM, Layers, LoadedFiles, type Swing } from '../lib/store'
+import { BPM, Layers, NumBars } from '../lib/store'
 import { getArrangementLayerSamples } from './getArrangementLayerSamples'
 import { max } from './max'
 
-export const getArrangementSamples = (p: {
-  arrangement: ReturnType<typeof Arrangement.ref>
-  loadedFiles: ReturnType<typeof LoadedFiles.ref>
-  bpm: ReturnType<typeof BPM.ref>
-  swing: ReturnType<typeof Swing.ref>
-  layers: ReturnType<typeof Layers.ref>
-}) => {
-  const stepSize = (60 / p.bpm / 4) * 44100
-  const waveformLengthInSamples = Math.round(stepSize * 16)
+export const getArrangementSamples = (p: { bar?: number }) => {
+  const bpm = BPM.ref()
+  const layers = Layers.ref()
+  const numBars = NumBars.ref()
+  const numberOfBarsToPlay = p.bar === undefined ? numBars : 1
+
+  const stepSize = (60 / bpm / 4) * 44100
+  const waveformLengthInSamples = Math.round(stepSize * 16 * numberOfBarsToPlay)
   const arrangementSamples = stereoSlice(
     [new Float64Array(0), new Float64Array(0)],
     0,
     waveformLengthInSamples
   )
 
-  for (const layer of p.layers) {
-    const layerSamples = getArrangementLayerSamples({
-      arrangement: p.arrangement,
-      loadedFiles: p.loadedFiles,
-      bpm: p.bpm,
-      swing: p.swing,
-      layer,
-    })
+  for (const layer of layers) {
+    const layerSamples = getArrangementLayerSamples({ layer, bar: p.bar })
 
     if (!layerSamples) continue
 

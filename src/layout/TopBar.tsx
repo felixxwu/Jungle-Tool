@@ -39,7 +39,7 @@ const Logo = styled('div')`
   display: flex;
   align-items: center;
   justify-content: center;
-  width: ${largeTextHeight};
-  height: ${largeTextHeight};
+  width: ${largeTextHeight}px;
+  height: ${largeTextHeight}px;
   background-color: ${colors.black};
 `

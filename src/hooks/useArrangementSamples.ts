@@ -1,12 +1,13 @@
-import { Arrangement, BPM, Layers, LoadedFiles, Swing } from '../lib/store'
+import { Arrangement, BPM, Layers, LoadedFiles, NumBars, Swing } from '../lib/store'
 import { getArrangementSamples } from '../helpers/getArrangementSamples'
 
-export const useArrangementSamples = () => {
-  const arrangement = Arrangement.useState()
-  const loadedFiles = LoadedFiles.useState()
-  const bpm = BPM.useState()
-  const layers = Layers.useState()
-  const swing = Swing.useState()
+export const useArrangementSamples = (p: { bar?: number }) => {
+  Arrangement.useState()
+  LoadedFiles.useState()
+  BPM.useState()
+  Layers.useState()
+  Swing.useState()
+  NumBars.useState()
 
-  return getArrangementSamples({ arrangement, loadedFiles, bpm, swing, layers })
+  return getArrangementSamples({ bar: p.bar })
 }

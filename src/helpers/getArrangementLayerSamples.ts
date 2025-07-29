@@ -1,37 +1,43 @@
 import { WaveFile } from 'wavefile'
 import { stereoSlice } from '../lib/audio'
-import { Swing, type Arrangement, type BPM, type LoadedFiles } from '../lib/store'
+import { Swing, Arrangement, BPM, LoadedFiles, NumBars } from '../lib/store'
 import type { Layer } from '../lib/types'
 import { getSliceIndexFromStepNum } from './getSliceIndexFromStepNum'
 import { getSliceSamples } from './getSliceSamples'
 
-export const getArrangementLayerSamples = (p: {
-  arrangement: ReturnType<typeof Arrangement.ref>
-  loadedFiles: ReturnType<typeof LoadedFiles.ref>
-  bpm: ReturnType<typeof BPM.ref>
-  swing: ReturnType<typeof Swing.ref>
-  layer: Layer
-}) => {
-  const stepSize = (60 / p.bpm / 4) * 44100
+export const getArrangementLayerSamples = (p: { layer: Layer; bar?: number }) => {
+  const arrangement = Arrangement.ref()
+  const loadedFiles = LoadedFiles.ref()
+  const bpm = BPM.ref()
+  const swing = Swing.ref()
+  const numBars = NumBars.ref()
+  const numberOfBarsToPlay = p.bar === undefined ? numBars : 1
+
+  const stepSize = (60 / bpm / 4) * 44100
 
   const getSwingOffset = (index: number) => {
     if (index % 2 === 0) return 0
-    return (p.swing / 100) * stepSize
+    return (swing / 100) * stepSize
   }
 
-  const firstLoadedFile = p.loadedFiles.find(file => file.name === p.layer.filename)
+  const firstLoadedFile = loadedFiles.find(file => file.name === p.layer.filename)
   if (!firstLoadedFile) return null
 
-  const waveformLengthInSamples = Math.round(stepSize * 16)
+  const waveformLengthInSamples = Math.round(stepSize * 16 * numberOfBarsToPlay)
   const currentLayer = stereoSlice(
     [new Float64Array(0), new Float64Array(0)],
     0,
     waveformLengthInSamples
   )
 
-  p.arrangement.sort((a, b) => a.startStep - b.startStep)
+  arrangement.sort((a, b) => a.startStep - b.startStep)
 
-  for (const note of p.arrangement) {
+  for (const note of arrangement) {
+    if (p.bar !== undefined && note.startStep < p.bar * 16) continue
+    if (p.bar !== undefined && note.startStep > (p.bar + 1) * 16) continue
+
+    const relativeStartStep = note.startStep - (p.bar ?? 0) * 16
+
     const sliceIndex = getSliceIndexFromStepNum(firstLoadedFile, note.stepNumToPlay)
     if (sliceIndex === null) continue
 
@@ -50,7 +56,7 @@ export const getArrangementLayerSamples = (p: {
     const newRight = wavRight.getSamples()
 
     for (let i = 0; i < newLeft.length; i++) {
-      const offset = Math.round(stepSize * note.startStep + getSwingOffset(note.stepNumToPlay))
+      const offset = Math.round(stepSize * relativeStartStep + getSwingOffset(note.stepNumToPlay))
       currentLayer[0][i + offset] = newLeft[i] * (p.layer.volume / 100)
       currentLayer[1][i + offset] = newRight[i] * (p.layer.volume / 100)
     }

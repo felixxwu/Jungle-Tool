@@ -4,17 +4,25 @@ import { LayerControls } from './LayerControls'
 import { appWidth, arrangementSidebarWidth } from '../../../lib/consts'
 import { WindowSize } from '../../../lib/store'
 import { SwingSlider } from './SwingSlider'
+import { BottomBar } from '../Main/BottomBar'
+import { HDivider } from '../../../components/Dividers'
 
 export const Sidebar = () => {
   const windowSize = WindowSize.useState()
+  const collapsed = windowSize.width < appWidth - arrangementSidebarWidth
 
   return (
-    <SidebarStyle
-      style={windowSize.width < appWidth - arrangementSidebarWidth ? { width: '100%' } : {}}
-    >
+    <SidebarStyle style={collapsed ? { width: '100vw' } : {}}>
       <LayerControls />
       <BPMSlider />
       <SwingSlider />
+
+      {collapsed && (
+        <>
+          <HDivider />
+          <BottomBar />
+        </>
+      )}
     </SidebarStyle>
   )
 }

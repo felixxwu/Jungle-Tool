@@ -1,5 +1,5 @@
 import { probabilities } from '../lib/probabilities'
-import { Arrangement } from '../lib/store'
+import { Arrangement, SelectedBar } from '../lib/store'
 
 // expected loop structure: k... s... ..k. s...
 const closestKick = [0, 0, 0, 0, 0, 0, 0, 0, 10, 11, 10, 10, 10, 10, 10, 10]
@@ -31,10 +31,15 @@ export const randomiseArrangement = () => {
       newArrangement.push(closestHat[i])
     }
   }
-  Arrangement.set(
-    newArrangement.map((step, i) => ({
-      startStep: i,
-      stepNumToPlay: step,
-    }))
+  const arrangement = [...Arrangement.ref()].filter(
+    n => n.startStep < SelectedBar.ref() * 16 || n.startStep >= (SelectedBar.ref() + 1) * 16
   )
+
+  Arrangement.set([
+    ...arrangement,
+    ...newArrangement.map((step, i) => ({
+      startStep: i + SelectedBar.ref() * 16,
+      stepNumToPlay: step,
+    })),
+  ])
 }

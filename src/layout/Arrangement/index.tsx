@@ -13,19 +13,19 @@ export const Arrangement = () => {
   if (windowSize.width < appWidth - arrangementSidebarWidth) {
     return (
       <ArrangementMobileStyle>
-        <Text
-          style={{ height: largeTextHeight }}
-          onClick={() => ArrangementSidebarOpen.set(!arrangementSidebarOpen)}
-        >
-          {arrangementSidebarOpen ? '‹ Back' : 'Edit layers / BPM ›'}
-        </Text>
-        <HDivider />
         <ArrangementMobileStyle style={{ display: arrangementSidebarOpen ? 'flex' : 'none' }}>
           <Sidebar />
         </ArrangementMobileStyle>
         <ArrangementMobileStyle style={{ display: arrangementSidebarOpen ? 'none' : 'flex' }}>
           <Main />
         </ArrangementMobileStyle>
+        <HDivider />
+        <Text
+          style={{ height: largeTextHeight }}
+          onClick={() => ArrangementSidebarOpen.set(!arrangementSidebarOpen)}
+        >
+          {arrangementSidebarOpen ? '‹ Back' : 'Edit layers / BPM ›'}
+        </Text>
       </ArrangementMobileStyle>
     )
   }

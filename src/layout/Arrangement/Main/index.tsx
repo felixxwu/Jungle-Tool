@@ -4,18 +4,22 @@ import { HDivider } from '../../../components/Dividers'
 import { ArragementWaveform } from './ArragementWaveform'
 import { BottomBar } from './BottomBar'
 import { appWidth, arrangementSidebarWidth } from '../../../lib/consts'
+import { BarSelection } from './BarSelection'
 
 const gridWidth = appWidth - arrangementSidebarWidth - 1
 
 export const Main = () => {
   return (
     <MainStyle>
+      <BarSelection />
+      <HDivider />
       <Scrollable>
         <Grid />
         <HDivider style={{ width: `${gridWidth}px` }} />
         <ArragementWaveform />
       </Scrollable>
       <HDivider />
+      <HDivider style={{ marginTop: 'auto' }} />
       <BottomBar />
     </MainStyle>
   )

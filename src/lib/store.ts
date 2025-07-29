@@ -21,22 +21,12 @@ export const Layers = singletonState<Layer[]>([
   { filename: 'Think (About It)', volume: 70, pitch: 5 },
   { filename: 'Mr. Sandman', volume: 100, pitch: 7 },
 ])
-export const Arrangement = singletonState<Note[]>([
-  { stepNumToPlay: 0, startStep: 0 },
-  { stepNumToPlay: 1, startStep: 1 },
-  { stepNumToPlay: 2, startStep: 2 },
-  { stepNumToPlay: 3, startStep: 3 },
-  { stepNumToPlay: 4, startStep: 4 },
-  { stepNumToPlay: 5, startStep: 5 },
-  { stepNumToPlay: 6, startStep: 6 },
-  { stepNumToPlay: 7, startStep: 7 },
-  { stepNumToPlay: 8, startStep: 8 },
-  { stepNumToPlay: 9, startStep: 9 },
-  { stepNumToPlay: 10, startStep: 10 },
-  { stepNumToPlay: 11, startStep: 11 },
-  { stepNumToPlay: 12, startStep: 12 },
-  { stepNumToPlay: 13, startStep: 13 },
-  { stepNumToPlay: 14, startStep: 14 },
-  { stepNumToPlay: 15, startStep: 15 },
-])
+export const SelectedBar = singletonState(0)
+export const NumBars = singletonState(1)
+export const Arrangement = singletonState<Note[]>(
+  Array.from({ length: 16 }, (_, i) => ({
+    stepNumToPlay: i,
+    startStep: i,
+  }))
+)
 export const Playing = singletonState(false)

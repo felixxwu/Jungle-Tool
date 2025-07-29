@@ -1,5 +1,5 @@
 import styled from 'styled-components'
-import { HDivider, VDivider } from '../../../../components/Dividers'
+import { VDivider } from '../../../../components/Dividers'
 import { Text } from '../../../../components/Text'
 import { Arrangement, LibraryLoading, Modal, Player, Playing } from '../../../../lib/store'
 import { playArrangement } from '../../../../actions/playArrangement'
@@ -34,7 +34,6 @@ export const BottomBar = () => {
 
   return (
     <>
-      <HDivider style={{ marginTop: 'auto' }} />
       <Row>
         <Text
           onClick={handlePlayPause}

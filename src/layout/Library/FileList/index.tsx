@@ -69,6 +69,7 @@ const FileListItemStyle = styled('div')`
   flex-direction: column;
   justify-content: center;
   gap: 5px;
+  width: 100%;
 `
 
 const ArtistAndYear = styled('div')`
