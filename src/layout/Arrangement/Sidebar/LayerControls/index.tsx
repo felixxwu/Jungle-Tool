@@ -10,15 +10,18 @@ export const LayerControls = () => {
 
   const [loading, setLoading] = useState(false)
 
-  const randomiseLayers = () => {
+  const randomiseLayers = async () => {
+    const savedLayers = [...layers]
+    Layers.set([])
+    await new Promise(r => setTimeout(r, 300))
     const loadedFiles = LoadedFiles.ref()
-    for (let i = 0; i < layers.length; i++) {
-      const takenLayers = layers.slice(0, i).map(l => l.filename)
+    for (let i = 0; i < savedLayers.length; i++) {
+      const takenLayers = savedLayers.slice(0, i).map(l => l.filename)
       const remainingFiles = loadedFiles.filter(f => !takenLayers.includes(f.name))
       const randomFile = remainingFiles[Math.floor(Math.random() * remainingFiles.length)]
-      layers[i].filename = randomFile.name
+      savedLayers[i].filename = randomFile.name
     }
-    Layers.set([...layers])
+    Layers.set([...savedLayers])
   }
 
   return (
@@ -37,8 +40,8 @@ export const LayerControls = () => {
       <Text
         onClick={async () => {
           setLoading(true)
-          await new Promise(r => setTimeout(r, 300))
           randomiseLayers()
+          await new Promise(r => setTimeout(r, 300))
           setLoading(false)
         }}
         style={{ height: largeTextHeight }}

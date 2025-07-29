@@ -10,10 +10,12 @@ import { useDebouncedLocalState } from '../../../../hooks/useDebouncedLocalState
 export const LayerControl = (p: { layer: Layer }) => {
   const [localVolume, setLocalVolume] = useDebouncedLocalState(p.layer.volume, value => {
     const layers = Layers.ref()
-    const layer = layers.find(l => l.filename === p.layer.filename)
-    if (!layer) return
+    const layerIndex = layers.findIndex(l => l.filename === p.layer.filename)
+    if (layerIndex === -1) return
 
-    layer.volume = value
+    p.layer.volume = value
+    layers[layerIndex] = p.layer
+
     Layers.set([...layers])
   })
 
@@ -21,10 +23,11 @@ export const LayerControl = (p: { layer: Layer }) => {
     p.layer.pitch,
     value => {
       const layers = Layers.ref()
-      const layer = layers.find(l => l.filename === p.layer.filename)
-      if (!layer) return
+      const layerIndex = layers.findIndex(l => l.filename === p.layer.filename)
+      if (layerIndex === -1) return
 
-      layer.pitch = value
+      p.layer.pitch = value
+      layers[layerIndex] = p.layer
       Layers.set([...layers])
     },
     300
