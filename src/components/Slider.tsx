@@ -49,6 +49,7 @@ const Label = styled('div')`
   position: absolute;
   margin-top: 1px;
   pointer-events: none;
+  color: ${colors.black};
 `
 
 const SliderInput = styled('input')`
@@ -69,8 +70,8 @@ const SliderInput = styled('input')`
       to right,
       ${colors.darkGrey} 0%,
       ${colors.darkGrey} var(--slider-fill),
-      white var(--slider-fill),
-      white 100%
+      ${colors.white} var(--slider-fill),
+      ${colors.white} 100%
     );
     border-radius: 0;
   }

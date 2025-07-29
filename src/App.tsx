@@ -85,6 +85,7 @@ const ModalStyle = styled('div')`
   border: 1px solid ${colors.black};
   box-shadow: 10px 10px 0 0 ${colors.black};
   line-height: 1.2;
+  color: ${colors.black};
 `
 
 const ModalBackground = styled('div')`

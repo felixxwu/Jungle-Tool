@@ -32,7 +32,7 @@ export const Waveform = (p: {
   return (
     <WaveformStyle style={{ width: p.width, height: p.height }} onClick={p.onClick}>
       <svg width={p.width} height={p.height}>
-        <path d={path} stroke='black' fill='none' strokeWidth={1} />
+        <path d={path} stroke={colors.black} fill='none' strokeWidth={1} />
         {p.slices.map(({ slice, color }, index) => (
           <Fragment key={slice.start + '-' + slice.type + '-' + index}>
             <marker

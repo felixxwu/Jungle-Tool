@@ -25,7 +25,7 @@ export const TopBar = () => {
       <VDivider />
       <VDivider style={{ marginLeft: 'auto' }} />
       <Logo>
-        <img src='/jungletool.svg' alt='logo' width={30} height={30} />
+        <img src='/jungletool-white.svg' alt='logo' width={30} height={30} />
       </Logo>
     </Row>
   )
