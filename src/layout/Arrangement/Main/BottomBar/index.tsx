@@ -51,7 +51,7 @@ export const BottomBar = () => {
             randomiseArrangement()
           }}
         >
-          {loading ? '...' : 'Randomise'}
+          {loading ? '...' : 'Randomise notes'}
         </Text>
         <VDivider />
         <VDivider style={{ marginLeft: 'auto' }} />

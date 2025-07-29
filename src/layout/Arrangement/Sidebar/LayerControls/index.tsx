@@ -4,6 +4,7 @@ import { Text } from '../../../../components/Text'
 import { Layers, LoadedFiles, Tab } from '../../../../lib/store'
 import { LayerControl } from './LayerControl'
 import { largeTextHeight } from '../../../../lib/consts'
+import { colors } from '../../../../lib/colors'
 
 export const LayerControls = () => {
   const layers = Layers.useState()
@@ -26,16 +27,11 @@ export const LayerControls = () => {
 
   return (
     <>
-      <Text>Layers:</Text>
+      <Text style={{ width: 'fit-content', outline: `1px solid ${colors.black}` }}>Layers:</Text>
       {layers.map(layer => (
         <LayerControl key={layer.filename} layer={layer} />
       ))}
 
-      <HDivider style={{ marginBottom: 'auto' }} />
-      <HDivider />
-      <Text onClick={() => Tab.set('library')} style={{ height: largeTextHeight }}>
-        Add Layer +
-      </Text>
       <HDivider />
       <Text
         onClick={async () => {
@@ -44,9 +40,25 @@ export const LayerControls = () => {
           await new Promise(r => setTimeout(r, 300))
           setLoading(false)
         }}
-        style={{ height: largeTextHeight }}
+        style={{
+          height: largeTextHeight,
+          width: 'fit-content',
+          outline: `1px solid ${colors.black}`,
+        }}
       >
         {loading ? '...' : 'Randomise Layers ›'}
+      </Text>
+      <Text
+        onClick={() => Tab.set('library')}
+        style={{
+          height: largeTextHeight,
+          outline: `1px solid ${colors.black}`,
+          width: 'fit-content',
+          marginBottom: 'auto',
+          marginTop: '1px',
+        }}
+      >
+        Add Layer +
       </Text>
     </>
   )
