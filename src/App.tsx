@@ -22,9 +22,10 @@ export default function App() {
     ;(async () => {
       LoadedFiles.set([])
       for (const path of library) {
-        const response = await fetch(path)
-        const json = await response.text()
-        loadJson(json)
+        fetch(path).then(async response => {
+          const json = await response.text()
+          loadJson(json)
+        })
       }
       LibraryLoading.set(false)
 

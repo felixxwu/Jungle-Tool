@@ -1,11 +1,12 @@
 import styled from 'styled-components'
 import { HDivider, VDivider } from '../../../../components/Dividers'
 import { Text } from '../../../../components/Text'
-import { Arrangement, LibraryLoading, Player, Playing } from '../../../../lib/store'
+import { Arrangement, LibraryLoading, Modal, Player, Playing } from '../../../../lib/store'
 import { playArrangement } from '../../../../actions/playArrangement'
 import { randomiseArrangement } from '../../../../actions/randomiseArrangement'
 import { useEffect, useState } from 'react'
 import { largeTextHeight } from '../../../../lib/consts'
+import { ExportModal } from '../../../../modals/ExportModal'
 
 export const BottomBar = () => {
   const playing = Playing.useState()
@@ -44,7 +45,6 @@ export const BottomBar = () => {
           {playing ? 'Pause' : 'Play'}
         </Text>
         <VDivider />
-        <VDivider style={{ marginLeft: 'auto' }} />
         <Text
           onClick={async () => {
             setLoading(true)
@@ -54,6 +54,9 @@ export const BottomBar = () => {
         >
           {loading ? '...' : 'Randomise'}
         </Text>
+        <VDivider />
+        <VDivider style={{ marginLeft: 'auto' }} />
+        <Text onClick={() => Modal.set(<ExportModal />)}>Export</Text>
       </Row>
     </>
   )
