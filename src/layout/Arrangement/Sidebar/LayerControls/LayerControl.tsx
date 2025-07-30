@@ -1,5 +1,5 @@
 import styled from 'styled-components'
-import { HDivider, VDivider } from '../../../../components/Dividers'
+import { HDivider } from '../../../../components/Dividers'
 import { Text } from '../../../../components/Text'
 import { Layers } from '../../../../lib/store'
 import { Slider } from '../../../../components/Slider'
@@ -48,11 +48,12 @@ export const LayerControl = (p: { layer: Layer }) => {
     <>
       <HDivider />
       <Row>
-        <Text key={p.layer.filename} $fullWidth style={{ height: largeTextHeight }}>
+        <Text selected key={p.layer.filename} $fullWidth style={{ height: largeTextHeight }}>
           {p.layer.filename}
         </Text>
-        <VDivider />
-        <Text onClick={handleDelete}>x</Text>
+        <Text selected onClick={handleDelete}>
+          x
+        </Text>
       </Row>
       <HDivider />
       <Slider

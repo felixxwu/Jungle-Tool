@@ -79,5 +79,4 @@ const LayerControlsStyle = styled('div')`
 const Row = styled('div')`
   display: flex;
   flex-direction: column;
-  margin-bottom: 25px;
 `
