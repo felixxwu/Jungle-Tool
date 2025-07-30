@@ -51,7 +51,7 @@ export const getArrangementLayerSamples = (p: { layer: Layer; bar?: number }) =>
     const [left, right] = samples
 
     for (let i = 0; i < left.length; i++) {
-      const offset = Math.round(stepSize * relativeStartStep + getSwingOffset(note.stepNumToPlay))
+      const offset = Math.round(stepSize * relativeStartStep + getSwingOffset(note.startStep))
       currentLayer[0][i + offset] = left[i] * (p.layer.volume / 100)
       currentLayer[1][i + offset] = right[i] * (p.layer.volume / 100)
     }
