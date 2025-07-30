@@ -12,7 +12,7 @@ export const getArrangementSamples = (p: { bar?: number }) => {
   const stepSize = (60 / bpm / 4) * 44100
   const waveformLengthInSamples = Math.round(stepSize * 16 * numberOfBarsToPlay)
   const arrangementSamples = stereoSlice(
-    [new Float64Array(0), new Float64Array(0)],
+    [new Float32Array(0), new Float32Array(0)],
     0,
     waveformLengthInSamples
   )

@@ -8,16 +8,20 @@ import { largeTextHeight, maxPitch, minPitch } from '../../../../lib/consts'
 import { useDebouncedLocalState } from '../../../../hooks/useDebouncedLocalState'
 
 export const LayerControl = (p: { layer: Layer }) => {
-  const [localVolume, setLocalVolume] = useDebouncedLocalState(p.layer.volume, value => {
-    const layers = Layers.ref()
-    const layerIndex = layers.findIndex(l => l.filename === p.layer.filename)
-    if (layerIndex === -1) return
+  const [localVolume, setLocalVolume] = useDebouncedLocalState(
+    p.layer.volume,
+    value => {
+      const layers = Layers.ref()
+      const layerIndex = layers.findIndex(l => l.filename === p.layer.filename)
+      if (layerIndex === -1) return
 
-    p.layer.volume = value
-    layers[layerIndex] = p.layer
+      p.layer.volume = value
+      layers[layerIndex] = p.layer
 
-    Layers.set([...layers])
-  })
+      Layers.set([...layers])
+    },
+    500
+  )
 
   const [localPitch, setLocalPitch] = useDebouncedLocalState(
     p.layer.pitch,
@@ -30,7 +34,7 @@ export const LayerControl = (p: { layer: Layer }) => {
       layers[layerIndex] = p.layer
       Layers.set([...layers])
     },
-    300
+    500
   )
 
   const handleDelete = () => {

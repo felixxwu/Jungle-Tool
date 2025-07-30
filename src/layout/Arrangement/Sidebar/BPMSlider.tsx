@@ -7,9 +7,7 @@ import { useDebouncedLocalState } from '../../../hooks/useDebouncedLocalState'
 export const BPMSlider = () => {
   const bpm = BPM.useState()
 
-  const [localBPM, setLocalBPM] = useDebouncedLocalState(bpm, value => {
-    BPM.set(value)
-  })
+  const [localBPM, setLocalBPM] = useDebouncedLocalState(bpm, BPM.set, 500)
 
   return (
     <>

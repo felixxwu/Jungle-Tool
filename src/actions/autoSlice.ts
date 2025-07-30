@@ -34,7 +34,7 @@ export const autoSlice = () => {
 
   const selectedFile = loadedFiles[selectedFileIndex]
   const monoSamples = mono(selectedFile.samples)
-  const transients = new Float64Array(monoSamples.length)
+  const transients = new Float32Array(monoSamples.length)
   let peakFollowerA = 0
   let peakFollowerB = 0
   const decay = 0.9995

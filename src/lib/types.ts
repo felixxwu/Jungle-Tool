@@ -7,6 +7,6 @@ export type LoadedFile = {
   name: string
   artist: string
   year: number
-  samples: [Float64Array, Float64Array]
+  samples: [Float32Array, Float32Array]
   slices: Slice[]
 }

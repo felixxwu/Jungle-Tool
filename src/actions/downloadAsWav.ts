@@ -1,6 +1,6 @@
 import { WaveFile } from 'wavefile'
 
-export const downloadAsWav = (samples: [Float64Array, Float64Array], filename: string) => {
+export const downloadAsWav = (samples: [Float32Array, Float32Array], filename: string) => {
   const wavefile = new WaveFile()
   wavefile.fromScratch(2, 44100, '16', samples)
 

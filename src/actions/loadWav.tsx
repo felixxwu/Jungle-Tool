@@ -8,8 +8,8 @@ export const loadWav = (arrayBuffer: ArrayBuffer, fileName: string) => {
   wavefile.fromBuffer(uint8Array)
   const samples = wavefile.getSamples()
   const isStereo = samples.length === 2
-  const left = isStereo ? (samples[0] as unknown as Float64Array) : samples
-  const right = isStereo ? (samples[1] as unknown as Float64Array) : samples
+  const left = (isStereo ? samples[0] : samples) as unknown as Float32Array
+  const right = (isStereo ? samples[1] : samples) as unknown as Float32Array
 
   LoadedFiles.ref().unshift({
     name: fileName,

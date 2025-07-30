@@ -8,8 +8,8 @@ export const loadJson = (jsonString: string) => {
   const wavefile = new WaveFile()
   wavefile.fromBase64(json.base64)
   const samples = wavefile.getSamples()
-  const left = samples[0] as unknown as Float64Array
-  const right = samples[1] as unknown as Float64Array
+  const left = samples[0] as unknown as Float32Array
+  const right = samples[1] as unknown as Float32Array
 
   LoadedFiles.ref().push({
     name: json.name,

@@ -16,9 +16,11 @@ export const Grid = () => {
   const swing = Swing.useState()
   const selectedBar = SelectedBar.useState()
 
-  const [localArrangement, setLocalArrangement] = useDebouncedLocalState(arrangement, value => {
-    Arrangement.set(value)
-  })
+  const [localArrangement, setLocalArrangement] = useDebouncedLocalState(
+    arrangement,
+    Arrangement.set,
+    10
+  )
   const arrangementForThisBar = localArrangement.filter(
     n => n.startStep < (selectedBar + 1) * 16 && n.startStep >= selectedBar * 16
   )

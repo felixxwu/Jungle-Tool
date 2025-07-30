@@ -15,13 +15,21 @@ import { appWidth, largeTextHeight, librarySidebarWidth } from '../../../lib/con
 import { playFile } from '../../../actions/playFile'
 import { importFile } from '../../../actions/importFile'
 import { Fragment } from 'react/jsx-runtime'
+import { useDebouncedLocalState } from '../../../hooks/useDebouncedLocalState'
 
 export const FileList = () => {
   const loadedFiles = LoadedFiles.useState()
   const selectedFile = SelectedFileIndex.useState()
+
+  const [localSelectedFile, setLocalSelectedFile] = useDebouncedLocalState(
+    selectedFile,
+    SelectedFileIndex.set,
+    10
+  )
+
   const windowSize = WindowSize.useState()
   const handleSelectFile = async (index: number) => {
-    SelectedFileIndex.set(index)
+    setLocalSelectedFile(index)
     SelectedSliceIndex.set(null)
     AutoSliceMode.set(false)
     EditSliceMode.set(false)
@@ -33,20 +41,22 @@ export const FileList = () => {
   return (
     <FileListStyle style={windowSize.width < appWidth ? { width: '100%' } : {}}>
       <Scrollable>
-        {loadedFiles.map((file, index) => (
-          <Fragment key={file.name}>
-            <Text onClick={() => handleSelectFile(index)} selected={selectedFile === index}>
-              <FileListItemStyle>
-                <div>{file.name}</div>
-                <ArtistAndYear>
-                  <div>{file.artist || '??'}</div>
-                  <div>{file.year || '??'}</div>
-                </ArtistAndYear>
-              </FileListItemStyle>
-            </Text>
-            <HDivider />
-          </Fragment>
-        ))}
+        {loadedFiles
+          .sort((a, b) => a.year - b.year)
+          .map((file, index) => (
+            <Fragment key={file.name}>
+              <Text onClick={() => handleSelectFile(index)} selected={localSelectedFile === index}>
+                <FileListItemStyle>
+                  <div>{file.name}</div>
+                  <ArtistAndYear>
+                    <div>{file.artist || '??'}</div>
+                    <div>{file.year || '??'}</div>
+                  </ArtistAndYear>
+                </FileListItemStyle>
+              </Text>
+              <HDivider />
+            </Fragment>
+          ))}
       </Scrollable>
       <HDivider />
       <Text onClick={importFile} style={{ minHeight: largeTextHeight }}>

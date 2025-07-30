@@ -1,9 +1,8 @@
-import { WaveFile } from 'wavefile'
 import { stereoSlice } from '../lib/audio'
 import { Swing, Arrangement, BPM, LoadedFiles, NumBars } from '../lib/store'
 import type { Layer } from '../lib/types'
 import { getSliceIndexFromStepNum } from './getSliceIndexFromStepNum'
-import { getSliceSamples } from './getSliceSamples'
+import { getPitchAdjustedSliceSamples } from './getPitchAdjustedSliceSamples'
 
 export const getArrangementLayerSamples = (p: { layer: Layer; bar?: number }) => {
   const arrangement = Arrangement.ref()
@@ -25,7 +24,7 @@ export const getArrangementLayerSamples = (p: { layer: Layer; bar?: number }) =>
 
   const waveformLengthInSamples = Math.round(stepSize * 16 * numberOfBarsToPlay)
   const currentLayer = stereoSlice(
-    [new Float64Array(0), new Float64Array(0)],
+    [new Float32Array(0), new Float32Array(0)],
     0,
     waveformLengthInSamples
   )
@@ -41,26 +40,21 @@ export const getArrangementLayerSamples = (p: { layer: Layer; bar?: number }) =>
     const sliceIndex = getSliceIndexFromStepNum(firstLoadedFile, note.stepNumToPlay)
     if (sliceIndex === null) continue
 
-    const sliceSamples = getSliceSamples(firstLoadedFile, sliceIndex)
+    const samples = getPitchAdjustedSliceSamples({
+      layerName: p.layer.filename,
+      sliceIndex,
+      layerPitch: p.layer.pitch,
+    })
 
-    const pitchMult = 1 / Math.pow(2, p.layer.pitch / 12)
+    if (!samples) continue
 
-    const wavLeft = new WaveFile()
-    wavLeft.fromScratch(1, 44100, '16', sliceSamples[0])
-    wavLeft.toSampleRate(44100 * pitchMult, { method: 'sinc' })
-    const newLeft = wavLeft.getSamples()
+    const [left, right] = samples
 
-    const wavRight = new WaveFile()
-    wavRight.fromScratch(1, 44100, '16', sliceSamples[1])
-    wavRight.toSampleRate(44100 * pitchMult, { method: 'sinc' })
-    const newRight = wavRight.getSamples()
-
-    for (let i = 0; i < newLeft.length; i++) {
+    for (let i = 0; i < left.length; i++) {
       const offset = Math.round(stepSize * relativeStartStep + getSwingOffset(note.stepNumToPlay))
-      currentLayer[0][i + offset] = newLeft[i] * (p.layer.volume / 100)
-      currentLayer[1][i + offset] = newRight[i] * (p.layer.volume / 100)
+      currentLayer[0][i + offset] = left[i] * (p.layer.volume / 100)
+      currentLayer[1][i + offset] = right[i] * (p.layer.volume / 100)
     }
   }
-
   return currentLayer
 }

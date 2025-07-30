@@ -9,31 +9,31 @@ export const fetchFile = async (path: string) => {
   const wavefile = new WaveFile()
   wavefile.fromBuffer(uint8Array)
   const samples = wavefile.getSamples()
-  const left = samples[0] as unknown as Float64Array
-  const right = samples[1] as unknown as Float64Array
-  return [left, right] as const satisfies [Float64Array, Float64Array]
+  const left = samples[0] as unknown as Float32Array
+  const right = samples[1] as unknown as Float32Array
+  return [left, right] as const satisfies [Float32Array, Float32Array]
 }
 
-export const createPlayer = async (samples: [Float64Array, Float64Array]) => {
+export const createPlayer = async (samples: [Float32Array, Float32Array]) => {
   const wavefile = new WaveFile()
   wavefile.fromScratch(2, 44100, '16', samples)
   const buffer = await new Tone.Player().context.decodeAudioData(wavefile.toBuffer().buffer)
   return new Tone.Player(buffer).toDestination()
 }
 
-export const mono = (samples?: [Float64Array, Float64Array]) => {
-  if (!samples) return new Float64Array(0)
+export const mono = (samples?: [Float32Array, Float32Array]) => {
+  if (!samples) return new Float32Array(0)
 
   const left = samples[0]
   const right = samples[1]
-  const mono = new Float64Array(left.length)
+  const mono = new Float32Array(left.length)
   for (let i = 0; i < left.length; i++) {
     mono[i] = (left[i] + right[i]) / 2
   }
   return mono
 }
 
-export const normalize = (samples: [Float64Array, Float64Array]) => {
+export const normalize = (samples: [Float32Array, Float32Array]) => {
   const left = samples[0]
   const right = samples[1]
   const maxLeft = max(left)
@@ -41,35 +41,35 @@ export const normalize = (samples: [Float64Array, Float64Array]) => {
   const maxNum = Math.max(maxLeft, maxRight)
   const gain = (Math.pow(2, 15) - 1) / maxNum
   return [left.map(sample => sample * gain), right.map(sample => sample * gain)] as [
-    Float64Array,
-    Float64Array
+    Float32Array,
+    Float32Array
   ]
 }
 
-export const normalizeMono = (samples: Float64Array) => {
+export const normalizeMono = (samples: Float32Array) => {
   const max = Math.max(...samples)
   return samples.map(sample => sample / max)
 }
 
-export const stereoSlice = (samples: [Float64Array, Float64Array], start: number, end: number) => {
+export const stereoSlice = (samples: [Float32Array, Float32Array], start: number, end: number) => {
   const left = samples[0].slice(start, end)
   const right = samples[1].slice(start, end)
 
   if (start < 0) {
-    const padding = new Float64Array(Math.abs(start))
+    const padding = new Float32Array(Math.abs(start))
     return [
-      new Float64Array([...padding, ...left]),
-      new Float64Array([...padding, ...right]),
-    ] as const satisfies [Float64Array, Float64Array]
+      new Float32Array([...padding, ...left]),
+      new Float32Array([...padding, ...right]),
+    ] as const satisfies [Float32Array, Float32Array]
   }
 
   if (end > samples[0].length) {
-    const padding = new Float64Array(end - samples[0].length)
+    const padding = new Float32Array(end - samples[0].length)
     return [
-      new Float64Array([...left, ...padding]),
-      new Float64Array([...right, ...padding]),
-    ] as const satisfies [Float64Array, Float64Array]
+      new Float32Array([...left, ...padding]),
+      new Float32Array([...right, ...padding]),
+    ] as const satisfies [Float32Array, Float32Array]
   }
 
-  return [left, right] as const satisfies [Float64Array, Float64Array]
+  return [left, right] as const satisfies [Float32Array, Float32Array]
 }
