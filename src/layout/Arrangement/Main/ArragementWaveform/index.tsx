@@ -4,7 +4,15 @@ import { useArrangementSamples } from '../../../../hooks/useArrangementSamples'
 import { mono } from '../../../../lib/audio'
 import { appWidth, arrangementSidebarWidth } from '../../../../lib/consts'
 import { restartPlayback } from '../../../../actions/restartPlayback'
-import { Arrangement, BPM, Layers, SelectedBar, Swing } from '../../../../lib/store'
+import {
+  Arrangement,
+  BPM,
+  Layers,
+  NoteFadeOut,
+  NoteLength,
+  SelectedBar,
+  Swing,
+} from '../../../../lib/store'
 
 const waveformWidth = appWidth - arrangementSidebarWidth - 1
 
@@ -14,11 +22,13 @@ export const ArragementWaveform = () => {
   const layers = Layers.useState()
   const bpm = BPM.useState()
   const swing = Swing.useState()
+  const noteLength = NoteLength.useState()
+  const noteFadeOut = NoteFadeOut.useState()
   const samples = useArrangementSamples({ bar: selectedBar })
 
   useEffect(() => {
     restartPlayback()
-  }, [arrangement, layers, bpm, swing])
+  }, [arrangement, layers, bpm, swing, noteLength, noteFadeOut])
 
   if (!samples) return null
 

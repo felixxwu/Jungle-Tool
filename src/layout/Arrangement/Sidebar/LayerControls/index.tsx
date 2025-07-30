@@ -5,6 +5,7 @@ import { Layers, LoadedFiles, Tab } from '../../../../lib/store'
 import { LayerControl } from './LayerControl'
 import { largeTextHeight } from '../../../../lib/consts'
 import { colors } from '../../../../lib/colors'
+import styled from 'styled-components'
 
 export const LayerControls = () => {
   const layers = Layers.useState()
@@ -28,13 +29,15 @@ export const LayerControls = () => {
   }
 
   return (
-    <>
+    <LayerControlsStyle>
       <Text style={{ width: 'fit-content', outline: `1px solid ${colors.black}` }}>Layers:</Text>
       {layers.map(layer => (
-        <LayerControl key={layer.filename} layer={layer} />
+        <Row>
+          <LayerControl key={layer.filename} layer={layer} />
+          <HDivider />
+        </Row>
       ))}
 
-      <HDivider />
       <Text
         onClick={async () => {
           setLoading(true)
@@ -62,6 +65,19 @@ export const LayerControls = () => {
       >
         Add Layer +
       </Text>
-    </>
+    </LayerControlsStyle>
   )
 }
+
+const LayerControlsStyle = styled('div')`
+  display: flex;
+  flex-direction: column;
+  overflow-y: auto;
+  height: 100%;
+`
+
+const Row = styled('div')`
+  display: flex;
+  flex-direction: column;
+  margin-bottom: 25px;
+`

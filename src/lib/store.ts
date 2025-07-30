@@ -1,12 +1,15 @@
 import { singletonState } from 'singleton-state-hook'
 import type { Tone } from './tone'
 import type { Layer, LoadedFile, Note } from './types'
+import { maxNoteLength, minNoteFadeOut } from './consts'
 
 export const WindowSize = singletonState({ width: window.innerWidth, height: window.innerHeight })
 export const Tab = singletonState<'arrangement' | 'library'>('arrangement')
 export const ArrangementSidebarOpen = singletonState(false)
 export const BPM = singletonState(160)
 export const Swing = singletonState(15)
+export const NoteLength = singletonState(maxNoteLength)
+export const NoteFadeOut = singletonState(minNoteFadeOut)
 export const Player = singletonState<Tone.Player | null>(null)
 export const LibraryLoading = singletonState(true)
 export const LoadedFiles = singletonState<LoadedFile[]>([])

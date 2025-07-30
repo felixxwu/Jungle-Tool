@@ -42,10 +42,12 @@ export const Arrangement = () => {
 const ArrangementStyle = styled('div')`
   display: flex;
   height: 100%;
+  overflow-y: auto;
 `
 
 const ArrangementMobileStyle = styled('div')`
   display: flex;
   flex-direction: column;
   height: 100%;
+  overflow-y: auto;
 `

@@ -6,6 +6,8 @@ import { WindowSize } from '../../../lib/store'
 import { SwingSlider } from './SwingSlider'
 import { BottomBar } from '../Main/BottomBar'
 import { HDivider } from '../../../components/Dividers'
+import { NoteLengthSlider } from './NoteLengthSlider'
+import { FadeOutSlider } from './FadeOutSlider'
 
 export const Sidebar = () => {
   const windowSize = WindowSize.useState()
@@ -16,6 +18,8 @@ export const Sidebar = () => {
       <LayerControls />
       <BPMSlider />
       <SwingSlider />
+      <NoteLengthSlider />
+      <FadeOutSlider />
 
       {collapsed && (
         <>
@@ -32,4 +36,5 @@ const SidebarStyle = styled('div')`
   flex-direction: column;
   width: ${arrangementSidebarWidth}px;
   height: 100%;
+  overflow-y: auto;
 `

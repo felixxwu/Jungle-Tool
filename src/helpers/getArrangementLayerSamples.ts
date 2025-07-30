@@ -1,5 +1,13 @@
 import { stereoSlice } from '../lib/audio'
-import { Swing, Arrangement, BPM, LoadedFiles, NumBars } from '../lib/store'
+import {
+  Swing,
+  Arrangement,
+  BPM,
+  LoadedFiles,
+  NumBars,
+  NoteLength,
+  NoteFadeOut,
+} from '../lib/store'
 import type { Layer } from '../lib/types'
 import { getSliceIndexFromStepNum } from './getSliceIndexFromStepNum'
 import { getPitchAdjustedSliceSamples } from './getPitchAdjustedSliceSamples'
@@ -11,7 +19,8 @@ export const getArrangementLayerSamples = (p: { layer: Layer; bar?: number }) =>
   const swing = Swing.ref()
   const numBars = NumBars.ref()
   const numberOfBarsToPlay = p.bar === undefined ? numBars : 1
-
+  const noteLength = NoteLength.ref()
+  const noteFadeOut = NoteFadeOut.ref()
   const stepSize = (60 / bpm / 4) * 44100
 
   const getSwingOffset = (index: number) => {
@@ -44,6 +53,8 @@ export const getArrangementLayerSamples = (p: { layer: Layer; bar?: number }) =>
       layerName: p.layer.filename,
       sliceIndex,
       layerPitch: p.layer.pitch,
+      noteLength,
+      noteFadeOut,
     })
 
     if (!samples) continue
