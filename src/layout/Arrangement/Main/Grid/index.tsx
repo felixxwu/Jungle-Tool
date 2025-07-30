@@ -55,7 +55,12 @@ export const Grid = () => {
               width: cellWidth + getSwingOffset(j) - getSwingOffset(j + 1),
             }}
             onClick={() => handleAddNote({ stepNumToPlay: i, startStep: j + selectedBar * 16 })}
-          />
+          >
+            {i === 0 && 'K'}
+            {i === 4 && 'S'}
+            {i === 10 && 'K'}
+            {i === 12 && 'S'}
+          </Clickable>
         ))
       )}
       {Array.from({ length: 15 }).map((_, index) => (
@@ -73,7 +78,12 @@ export const Grid = () => {
             left: startStep * cellWidth + 0.5 + getSwingOffset(startStep + 1) - barOffset,
             width: cellWidth + getSwingOffset(startStep) - getSwingOffset(startStep + 1),
           }}
-        ></NoteStyle>
+        >
+          {stepNumToPlay === 0 && 'K'}
+          {stepNumToPlay === 4 && 'S'}
+          {stepNumToPlay === 10 && 'K'}
+          {stepNumToPlay === 12 && 'S'}
+        </NoteStyle>
       ))}
     </GridStyle>
   )
@@ -94,11 +104,18 @@ const NoteStyle = styled('div')`
   border-radius: 3px;
   color: ${colors.white};
   cursor: pointer;
+  display: flex;
+  align-items: center;
+  justify-content: center;
 `
 
 const Clickable = styled('div')`
   position: absolute;
   height: ${cellHeight}px;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  color: ${colors.grey};
 `
 
 const HLine = styled('div')`
