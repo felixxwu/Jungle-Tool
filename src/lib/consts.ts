@@ -1,5 +1,5 @@
 export const lineThickness = 1
-export const minBPM = 70
+export const minBPM = 80
 export const maxBPM = 180
 export const minPitch = -12
 export const maxPitch = 12
@@ -13,9 +13,9 @@ export const zoomInFactor = 7
 export const waveformHeight = 200
 export const largeTextHeight = 35
 export const minNoteLength = 10
-export const maxNoteLength = 300
+export const maxNoteLength = 500
 export const minNoteFadeOut = 10
-export const maxNoteFadeOut = 300
+export const maxNoteFadeOut = 500
 
 export const library = [
   'Amen Brother.json',

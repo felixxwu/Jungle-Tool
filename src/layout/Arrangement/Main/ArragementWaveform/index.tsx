@@ -1,4 +1,4 @@
-import { useEffect } from 'react'
+import { useRef } from 'react'
 import { Waveform } from '../../../../components/Waveform'
 import { useArrangementSamples } from '../../../../hooks/useArrangementSamples'
 import { mono } from '../../../../lib/audio'
@@ -17,6 +17,8 @@ import {
 const waveformWidth = appWidth - arrangementSidebarWidth - 1
 
 export const ArragementWaveform = () => {
+  const playbackHash = useRef<string>('')
+
   const selectedBar = SelectedBar.useState()
   const arrangement = Arrangement.useState()
   const layers = Layers.useState()
@@ -26,9 +28,11 @@ export const ArragementWaveform = () => {
   const noteFadeOut = NoteFadeOut.useState()
   const samples = useArrangementSamples({ bar: selectedBar })
 
-  useEffect(() => {
+  const hash = JSON.stringify({ arrangement, layers, bpm, swing, noteLength, noteFadeOut })
+  if (hash !== playbackHash.current) {
+    playbackHash.current = hash
     restartPlayback()
-  }, [arrangement, layers, bpm, swing, noteLength, noteFadeOut])
+  }
 
   if (!samples) return null
 
