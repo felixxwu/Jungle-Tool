@@ -1,6 +1,7 @@
 import { appWidth, librarySidebarWidth, waveformHeight, zoomInFactor } from '../../../lib/consts'
 import { colors } from '../../../lib/colors'
 import {
+  EditSliceMode,
   HoveredSliceIndex,
   LoadedFiles,
   SelectedFileIndex,
@@ -18,6 +19,7 @@ export const LibraryWaveform = () => {
   const selectedSliceIndex = SelectedSliceIndex.useState()
   const windowSize = WindowSize.useState()
   const hoveredSliceIndex = HoveredSliceIndex.useState()
+  const editSliceMode = EditSliceMode.useState()
 
   if (selectedFileIndex === null) return null
 
@@ -34,7 +36,13 @@ export const LibraryWaveform = () => {
     return halfSamples / factor - selectedSlice.start
   })()
 
-  const handleClick = () => {
+  const handleClick = async (sampleIndex: number) => {
+    if (editSliceMode && selectedSliceIndex !== null) {
+      loadedFiles[selectedFileIndex].slices[selectedSliceIndex].start = sampleIndex
+      LoadedFiles.set([...loadedFiles])
+      await new Promise(r => setTimeout(r, 100))
+    }
+
     if (selectedSliceIndex === null) {
       playFile(selectedFileIndex)
     } else {
@@ -57,6 +65,7 @@ export const LibraryWaveform = () => {
             : colors.darkGrey,
       }))}
       onClick={handleClick}
+      showLineOnHover={editSliceMode && selectedSliceIndex !== null}
     />
   )
 }
