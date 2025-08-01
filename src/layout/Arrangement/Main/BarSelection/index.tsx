@@ -69,7 +69,10 @@ export const BarSelection = () => {
       ))}
       {numBars > 1 && (
         <>
-          <Text onClick={removeBars} style={{ height: largeTextHeight }}>
+          <Text
+            onClick={removeBars}
+            style={{ height: largeTextHeight, textTransform: 'lowercase', paddingTop: '4px' }}
+          >
             x
           </Text>
           <VDivider />

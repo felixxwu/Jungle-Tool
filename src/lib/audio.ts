@@ -73,3 +73,37 @@ export const stereoSlice = (samples: [Float32Array, Float32Array], start: number
 
   return [left, right] as const satisfies [Float32Array, Float32Array]
 }
+
+export const sineSaturation = (
+  samples: Float32Array,
+  mix: number, // %
+  preGain: number // db
+) => {
+  const result = new Float32Array(samples.length)
+
+  const linearGain = Math.pow(10, preGain / 20)
+  const maxValue = Math.pow(2, 15)
+
+  for (let i = 0; i < samples.length; i++) {
+    const sample = samples[i]
+    const clippedSample = Math.max(-maxValue, Math.min(maxValue, sample * linearGain))
+    const x = (clippedSample * Math.PI) / 2
+    const y = Math.sin(x / maxValue) * maxValue
+    result[i] = y * (mix / 100) + sample * (1 - mix / 100)
+  }
+
+  return result
+}
+
+export const sineSaturationStereo = (
+  samples: [Float32Array, Float32Array],
+  mix: number, // %
+  preGain: number // db
+) => {
+  const left = samples[0]
+  const right = samples[1]
+  return [sineSaturation(left, mix, preGain), sineSaturation(right, mix, preGain)] as [
+    Float32Array,
+    Float32Array
+  ]
+}

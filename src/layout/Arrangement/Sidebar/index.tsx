@@ -8,6 +8,7 @@ import { BottomBar } from '../Main/BottomBar'
 import { HDivider } from '../../../components/Dividers'
 import { NoteLengthSlider } from './NoteLengthSlider'
 import { FadeOutSlider } from './FadeOutSlider'
+import { SaturationSlider } from './SaturationSlider'
 
 export const Sidebar = () => {
   const windowSize = WindowSize.useState()
@@ -20,6 +21,7 @@ export const Sidebar = () => {
       <SwingSlider />
       <NoteLengthSlider />
       <FadeOutSlider />
+      <SaturationSlider />
 
       {collapsed && (
         <>

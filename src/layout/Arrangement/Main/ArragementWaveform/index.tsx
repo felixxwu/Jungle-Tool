@@ -10,6 +10,7 @@ import {
   Layers,
   NoteFadeOut,
   NoteLength,
+  Saturation,
   SelectedBar,
   Swing,
 } from '../../../../lib/store'
@@ -26,9 +27,18 @@ export const ArragementWaveform = () => {
   const swing = Swing.useState()
   const noteLength = NoteLength.useState()
   const noteFadeOut = NoteFadeOut.useState()
+  const saturation = Saturation.useState()
   const samples = useArrangementSamples({ bar: selectedBar })
 
-  const hash = JSON.stringify({ arrangement, layers, bpm, swing, noteLength, noteFadeOut })
+  const hash = JSON.stringify({
+    arrangement,
+    layers,
+    bpm,
+    swing,
+    noteLength,
+    noteFadeOut,
+    saturation,
+  })
   if (hash !== playbackHash.current) {
     playbackHash.current = hash
     restartPlayback()

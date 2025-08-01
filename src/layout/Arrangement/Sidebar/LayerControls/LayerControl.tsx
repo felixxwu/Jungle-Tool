@@ -51,7 +51,11 @@ export const LayerControl = (p: { layer: Layer }) => {
         <Text selected key={p.layer.filename} $fullWidth style={{ height: largeTextHeight }}>
           {p.layer.filename}
         </Text>
-        <Text selected onClick={handleDelete}>
+        <Text
+          selected
+          onClick={handleDelete}
+          style={{ textTransform: 'lowercase', paddingTop: '4px' }}
+        >
           x
         </Text>
       </Row>
