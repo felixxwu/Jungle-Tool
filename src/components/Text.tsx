@@ -4,7 +4,7 @@ import { largeTextHeight } from '../lib/consts'
 
 export const Text = (p: {
   children: React.ReactNode
-  onClick?: () => void
+  onClick?: (e: React.MouseEvent<HTMLDivElement>) => void
   selected?: boolean
   disabled?: boolean
   fullWidth?: boolean
@@ -31,7 +31,7 @@ export const Text = (p: {
 }
 
 const TextStyle = styled('div')<{
-  onClick?: () => void
+  onClick?: (e: React.MouseEvent<HTMLDivElement>) => void
   selected?: boolean
   disabled?: boolean
   $fullWidth?: boolean

@@ -39,7 +39,8 @@ export const LayerControl = (p: { layer: Layer }) => {
     500
   )
 
-  const handleDelete = () => {
+  const handleDelete = (e: React.MouseEvent<HTMLDivElement>) => {
+    e.stopPropagation()
     const layers = Layers.ref()
     Layers.set(layers.filter(l => l.filename !== p.layer.filename))
   }
@@ -58,7 +59,7 @@ export const LayerControl = (p: { layer: Layer }) => {
     <>
       <HDivider />
       <Row>
-        <TitleAndInfo>
+        <TitleAndInfo onClick={handleToggleSelectedLayer}>
           <Row>
             <Text onClick={handleToggleSelectedLayer} key={p.layer.filename} fullWidth big>
               {p.layer.filename}
