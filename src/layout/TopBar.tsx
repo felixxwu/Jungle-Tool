@@ -1,6 +1,6 @@
 import { Text } from '../components/Text'
 import { VDivider } from '../components/Dividers'
-import { LibraryLoading, Tab } from '../lib/store'
+import { ArrangementSidebarOpen, LibraryLoading, SelectedFileIndex, Tab } from '../lib/store'
 import styled from 'styled-components'
 import { colors } from '../lib/colors'
 import { largeTextHeight } from '../lib/consts'
@@ -15,14 +15,23 @@ export const TopBar = () => {
   return (
     <Row>
       <Text
-        onClick={() => setLocalTab('arrangement')}
+        onClick={() => {
+          ArrangementSidebarOpen.set(false)
+          setLocalTab('arrangement')
+        }}
         selected={localTab === 'arrangement'}
-        style={{ height: largeTextHeight }}
+        big
       >
         Arrangement
       </Text>
       <VDivider />
-      <Text onClick={() => setLocalTab('library')} selected={localTab === 'library'}>
+      <Text
+        onClick={() => {
+          SelectedFileIndex.set(null)
+          setLocalTab('library')
+        }}
+        selected={localTab === 'library'}
+      >
         {libraryLoading ? ' Loading...' : 'Library'}
       </Text>
       <VDivider />

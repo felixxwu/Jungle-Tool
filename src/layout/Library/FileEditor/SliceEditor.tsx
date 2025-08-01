@@ -55,11 +55,11 @@ export const SliceEditor = () => {
           left={
             <>
               {alreadyAdded ? (
-                <Text style={{ height: largeTextHeight }} disabled>
+                <Text big disabled>
                   Already added
                 </Text>
               ) : (
-                <Text style={{ height: largeTextHeight }} onClick={addToArrangement}>
+                <Text big onClick={addToArrangement}>
                   Add to arrangement +
                 </Text>
               )}

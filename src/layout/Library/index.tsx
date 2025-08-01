@@ -17,7 +17,9 @@ export const Library = () => {
           <FileList />
         ) : (
           <>
-            <Text onClick={() => SelectedFileIndex.set(null)}>‹ Back</Text>
+            <Text big onClick={() => SelectedFileIndex.set(null)}>
+              ‹ Back
+            </Text>
             <HDivider />
             <FileEditor />
           </>

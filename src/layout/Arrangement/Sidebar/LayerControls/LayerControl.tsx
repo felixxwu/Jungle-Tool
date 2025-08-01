@@ -1,13 +1,15 @@
 import styled from 'styled-components'
 import { HDivider } from '../../../../components/Dividers'
 import { Text } from '../../../../components/Text'
-import { Layers } from '../../../../lib/store'
+import { Layers, SelectedLayerName } from '../../../../lib/store'
 import { Slider } from '../../../../components/Slider'
 import type { Layer } from '../../../../lib/types'
-import { largeTextHeight, maxPitch, minPitch } from '../../../../lib/consts'
+import { maxPitch, minPitch } from '../../../../lib/consts'
 import { useDebouncedLocalState } from '../../../../hooks/useDebouncedLocalState'
+import { colors } from '../../../../lib/colors'
 
 export const LayerControl = (p: { layer: Layer }) => {
+  const selectedLayerName = SelectedLayerName.useState()
   const [localVolume, setLocalVolume] = useDebouncedLocalState(
     p.layer.volume,
     value => {
@@ -48,37 +50,65 @@ export const LayerControl = (p: { layer: Layer }) => {
     <>
       <HDivider />
       <Row>
-        <Text selected key={p.layer.filename} $fullWidth style={{ height: largeTextHeight }}>
-          {p.layer.filename}
-        </Text>
-        <Text
-          selected
-          onClick={handleDelete}
-          style={{ textTransform: 'lowercase', paddingTop: '4px' }}
-        >
-          x
-        </Text>
+        <TitleAndInfo>
+          <Row>
+            <Text key={p.layer.filename} fullWidth big>
+              {p.layer.filename}
+            </Text>
+            {selectedLayerName === p.layer.filename ? (
+              <Text onClick={() => SelectedLayerName.set(null)}>‹</Text>
+            ) : (
+              <Text
+                onClick={handleDelete}
+                style={{ textTransform: 'lowercase', paddingTop: '4px' }}
+              >
+                x
+              </Text>
+            )}
+          </Row>
+          {selectedLayerName !== p.layer.filename && (
+            <Row>
+              <Text big onClick={() => SelectedLayerName.set(p.layer.filename)}>
+                Vol: {p.layer.volume}
+              </Text>
+              <Text big onClick={() => SelectedLayerName.set(p.layer.filename)}>
+                Pitch: {pitch > 0 ? `+${pitch}` : pitch}
+              </Text>
+            </Row>
+          )}
+        </TitleAndInfo>
       </Row>
-      <HDivider />
-      <Slider
-        min={minPitch}
-        max={maxPitch}
-        value={pitch}
-        onInput={setLocalPitch}
-        label={`Pitch: ${pitch > 0 ? `+${pitch}` : pitch}`}
-      />
-      <HDivider />
-      <Slider
-        min={0}
-        max={100}
-        value={localVolume}
-        onInput={setLocalVolume}
-        label={`Vol: ${localVolume}`}
-      />
+      {selectedLayerName === p.layer.filename && (
+        <>
+          <HDivider />
+          <Slider
+            min={minPitch}
+            max={maxPitch}
+            value={pitch}
+            onInput={setLocalPitch}
+            label={`Pitch: ${pitch > 0 ? `+${pitch}` : pitch}`}
+          />
+          <HDivider />
+          <Slider
+            min={0}
+            max={100}
+            value={localVolume}
+            onInput={setLocalVolume}
+            label={`Vol: ${localVolume}`}
+          />
+        </>
+      )}
     </>
   )
 }
 
 const Row = styled('div')`
   display: flex;
+`
+
+const TitleAndInfo = styled('div')`
+  display: flex;
+  flex-direction: column;
+  width: 100%;
+  background-color: ${colors.white};
 `

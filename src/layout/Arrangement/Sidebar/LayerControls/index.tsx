@@ -3,7 +3,6 @@ import { HDivider } from '../../../../components/Dividers'
 import { Text } from '../../../../components/Text'
 import { Layers, Tab } from '../../../../lib/store'
 import { LayerControl } from './LayerControl'
-import { largeTextHeight } from '../../../../lib/consts'
 import { colors } from '../../../../lib/colors'
 import styled from 'styled-components'
 import { randomiseLayers } from '../../../../actions/randomiseLayers'
@@ -14,13 +13,13 @@ export const LayerControls = () => {
 
   return (
     <LayerControlsStyle>
-      <Text style={{ width: 'fit-content', outline: `1px solid ${colors.black}` }}>Layers:</Text>
+      <Text style={{ backgroundColor: 'transparent' }}>Layers:</Text>
       {layers.map(layer => (
         <Row key={layer.filename}>
           <LayerControl layer={layer} />
-          <HDivider />
         </Row>
       ))}
+      <HDivider />
 
       <Text
         onClick={async () => {
@@ -28,8 +27,8 @@ export const LayerControls = () => {
           await randomiseLayers()
           setLoading(false)
         }}
+        big
         style={{
-          height: largeTextHeight,
           width: 'fit-content',
           outline: `1px solid ${colors.black}`,
         }}
@@ -38,8 +37,8 @@ export const LayerControls = () => {
       </Text>
       <Text
         onClick={() => Tab.set('library')}
+        big
         style={{
-          height: largeTextHeight,
           outline: `1px solid ${colors.black}`,
           width: 'fit-content',
           marginBottom: 'auto',

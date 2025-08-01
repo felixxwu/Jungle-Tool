@@ -2,7 +2,6 @@ import styled from 'styled-components'
 import { Text } from '../../../../components/Text'
 import { Arrangement, NumBars, SelectedBar } from '../../../../lib/store'
 import { VDivider } from '../../../../components/Dividers'
-import { largeTextHeight } from '../../../../lib/consts'
 import { Fragment } from 'react/jsx-runtime'
 import { useDebouncedLocalState } from '../../../../hooks/useDebouncedLocalState'
 
@@ -58,7 +57,7 @@ export const BarSelection = () => {
         <Fragment key={i}>
           <Text
             key={i}
-            style={{ height: largeTextHeight }}
+            big
             selected={localSelectedBar === i}
             onClick={() => setLocalSelectedBar(i)}
           >
@@ -69,10 +68,7 @@ export const BarSelection = () => {
       ))}
       {numBars > 1 && (
         <>
-          <Text
-            onClick={removeBars}
-            style={{ height: largeTextHeight, textTransform: 'lowercase', paddingTop: '4px' }}
-          >
+          <Text onClick={removeBars} big style={{ textTransform: 'lowercase', paddingTop: '4px' }}>
             x
           </Text>
           <VDivider />
@@ -80,7 +76,7 @@ export const BarSelection = () => {
       )}
       {numBars < 4 && (
         <>
-          <Text onClick={addBars} style={{ height: largeTextHeight }}>
+          <Text onClick={addBars} big>
             +
           </Text>
           <VDivider />

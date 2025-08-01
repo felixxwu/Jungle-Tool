@@ -5,7 +5,6 @@ import { Arrangement, LibraryLoading, Modal, Player, Playing } from '../../../..
 import { playArrangement } from '../../../../actions/playArrangement'
 import { randomiseArrangement } from '../../../../actions/randomiseArrangement'
 import { useEffect, useState } from 'react'
-import { largeTextHeight } from '../../../../lib/consts'
 import { ExportModal } from '../../../../modals/ExportModal'
 
 export const BottomBar = () => {
@@ -35,12 +34,7 @@ export const BottomBar = () => {
   return (
     <>
       <Row>
-        <Text
-          onClick={handlePlayPause}
-          selected={playing}
-          style={{ height: largeTextHeight }}
-          disabled={libraryLoading}
-        >
+        <Text onClick={handlePlayPause} selected={playing} big disabled={libraryLoading}>
           {playing ? 'Pause' : 'Play'}
         </Text>
         <VDivider />

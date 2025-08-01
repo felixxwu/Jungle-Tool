@@ -150,7 +150,7 @@ export const Slice = (p: { sliceIndex: number; forceEditSliceMode?: boolean }) =
         )}
         <VDivider />
         <Text
-          $fullWidth
+          fullWidth
           selected={selectedSliceIndex === p.sliceIndex}
           onClick={handleSelectSlice}
           onPointerEnter={() => HoveredSliceIndex.set(p.sliceIndex)}

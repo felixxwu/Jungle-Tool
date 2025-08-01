@@ -1,26 +1,29 @@
 import styled from 'styled-components'
 import { colors } from '../lib/colors'
+import { largeTextHeight } from '../lib/consts'
 
 export const Text = (p: {
   children: React.ReactNode
   onClick?: () => void
   selected?: boolean
   disabled?: boolean
-  $fullWidth?: boolean
+  fullWidth?: boolean
   onPointerEnter?: () => void
   onPointerLeave?: () => void
   style?: React.CSSProperties
+  big?: boolean
 }) => {
   return (
     <TextStyle
       onClick={p.disabled ? undefined : p.onClick}
       selected={p.selected}
       disabled={p.disabled}
-      $fullWidth={p.$fullWidth}
+      $fullWidth={p.fullWidth}
       onPointerEnter={p.onPointerEnter}
       onPointerLeave={p.onPointerLeave}
       onPointerCancel={p.onPointerLeave}
       style={p.style}
+      $big={p.big}
     >
       {p.children}
     </TextStyle>
@@ -32,6 +35,7 @@ const TextStyle = styled('div')<{
   selected?: boolean
   disabled?: boolean
   $fullWidth?: boolean
+  $big?: boolean
 }>`
   width: ${p => (p.$fullWidth ? '100%' : 'auto')};
   padding: 6px 15px 5px 15px;
@@ -40,6 +44,7 @@ const TextStyle = styled('div')<{
   box-sizing: border-box;
   display: flex;
   align-items: center;
+  ${p => p.$big && `height: ${largeTextHeight}px;`}
 
   color: ${p => {
     if (p.disabled) return colors.darkGrey

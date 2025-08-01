@@ -19,9 +19,9 @@ export const Sidebar = () => {
       <LayerControls />
       <BPMSlider />
       <SwingSlider />
+      <SaturationSlider />
       <NoteLengthSlider />
       <FadeOutSlider />
-      <SaturationSlider />
 
       {collapsed && (
         <>
