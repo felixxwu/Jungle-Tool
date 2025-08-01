@@ -9,4 +9,6 @@ export type LoadedFile = {
   year: number
   samples: [Float32Array, Float32Array]
   slices: Slice[]
+  whosampledLink: string
+  whosampledCount: number
 }

@@ -2,6 +2,8 @@
   "name": "Sesame Street",
   "artist": "Blowfly",
   "year": 1974,
+  "whosampledLink": "https://www.whosampled.com/Blowfly/Sesame-Street/sampled/",
+  "whosampledCount": 403,
   "slices": [
     { "start": 61, "type": "Kick", "stepNum": 0 },
     { "start": 11217, "type": "Hat", "stepNum": 2 },

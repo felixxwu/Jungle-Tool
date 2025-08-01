@@ -2,6 +2,8 @@
   "name": "Soul Pride",
   "artist": "James Brown",
   "year": 1969,
+  "whosampledLink": "https://www.whosampled.com/James-Brown/Soul-Pride/sampled/",
+  "whosampledCount": 356,
   "slices": [
     { "start": 2, "type": "Kick", "stepNum": 0 },
     { "start": 11129, "type": "Hat", "stepNum": 2 },

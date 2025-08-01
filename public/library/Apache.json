@@ -2,6 +2,8 @@
   "name": "Apache",
   "artist": "Incredible Bongo Band",
   "year": 1973,
+  "whosampledLink": "https://www.whosampled.com/Incredible-Bongo-Band/Apache/sampled/",
+  "whosampledCount": 809,
   "slices": [
     { "start": 87, "type": "Kick", "stepNum": 0 },
     { "start": 12436, "type": "Hat", "stepNum": 2 },

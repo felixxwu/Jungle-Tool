@@ -45,6 +45,7 @@ const TextStyle = styled('div')<{
   display: flex;
   align-items: center;
   ${p => p.$big && `height: ${largeTextHeight}px;`}
+  ${p => p.$big && `min-height: ${largeTextHeight}px;`}
 
   color: ${p => {
     if (p.disabled) return colors.darkGrey

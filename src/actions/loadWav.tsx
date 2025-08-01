@@ -28,6 +28,8 @@ export const loadWav = (arrayBuffer: ArrayBuffer, fileName: string) => {
         stepNum: 0,
       },
     ],
+    whosampledLink: '',
+    whosampledCount: 0,
   })
   LoadedFiles.set([...LoadedFiles.ref()])
 

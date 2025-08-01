@@ -2,6 +2,8 @@
   "name": "Assembly Line",
   "artist": "Commodores",
   "year": 1974,
+  "whosampledLink": "https://www.whosampled.com/Commodores/The-Assembly-Line/sampled/",
+  "whosampledCount": 394,
   "slices": [
     { "start": 0, "type": "Kick", "stepNum": 0 },
     { "start": 6194, "type": "Hat", "stepNum": 1 },

@@ -42,7 +42,7 @@ export const FileList = () => {
     <FileListStyle style={windowSize.width < appWidth ? { width: '100%' } : {}}>
       <Scrollable>
         {loadedFiles
-          .sort((a, b) => a.year - b.year)
+          .sort((a, b) => b.whosampledCount - a.whosampledCount)
           .map((file, index) => (
             <Fragment key={file.name}>
               <Text onClick={() => handleSelectFile(index)} selected={localSelectedFile === index}>
@@ -59,7 +59,7 @@ export const FileList = () => {
           ))}
       </Scrollable>
       <HDivider />
-      <Text onClick={importFile} style={{ minHeight: largeTextHeight }}>
+      <Text onClick={importFile} big>
         Import File +
       </Text>
     </FileListStyle>

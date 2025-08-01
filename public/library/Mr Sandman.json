@@ -2,6 +2,8 @@
   "name": "Mr. Sandman",
   "artist": "Three Times Dope",
   "year": 1990,
+  "whosampledLink": "https://www.whosampled.com/Three-Times-Dope/Mr.-Sandman-(Extended-Club-Mix)/sampled/",
+  "whosampledCount": 4,
   "slices": [
     { "start": 0, "type": "Kick", "stepNum": 0 },
     { "start": 8766, "type": "Hat", "stepNum": 1 },

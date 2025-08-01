@@ -2,6 +2,8 @@
   "name": "Funky Drummer",
   "artist": "James Brown",
   "year": 1986,
+  "whosampledLink": "https://www.whosampled.com/James-Brown/Funky-Drummer/sampled/",
+  "whosampledCount": 1990,
   "slices": [
     { "start": 253, "type": "Kick", "stepNum": 0 },
     { "start": 7371, "type": "Hat", "stepNum": 1 },

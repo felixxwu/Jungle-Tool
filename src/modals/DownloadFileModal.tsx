@@ -35,6 +35,8 @@ export const DownloadFileModal = () => {
       artist: selectedFile.artist,
       year: selectedFile.year,
       slices: selectedFile.slices,
+      whosampledLink: selectedFile.whosampledLink,
+      whosampledCount: selectedFile.whosampledCount,
       base64,
     }
     const blob = new Blob([JSON.stringify(jsonToDownload)], { type: 'application/json' })

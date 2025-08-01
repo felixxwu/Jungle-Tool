@@ -17,6 +17,8 @@ export const loadJson = (jsonString: string) => {
     year: json.year,
     samples: normalize([left, right]),
     slices: json.slices,
+    whosampledLink: json.whosampledLink,
+    whosampledCount: json.whosampledCount,
   })
   LoadedFiles.set([...LoadedFiles.ref()])
 }

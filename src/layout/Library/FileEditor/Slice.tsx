@@ -138,7 +138,7 @@ export const Slice = (p: { sliceIndex: number; forceEditSliceMode?: boolean }) =
         <Text
           disabled={!editSliceMode}
           onClick={() => setStepEditMode(!stepEditMode)}
-          style={{ width: '45px', textAlign: 'center' }}
+          style={{ minWidth: '45px', maxWidth: '45px', textAlign: 'center' }}
         >
           {stemNum < 10 ? '0' : ''}
           {stemNum}

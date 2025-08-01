@@ -2,6 +2,8 @@
   "name": "Hot Pants",
   "artist": "Bobby Byrd",
   "year": 1990,
+  "whosampledLink": "https://www.whosampled.com/Bobby-Byrd/Hot-Pants-(Bonus-Beats)/sampled/",
+  "whosampledCount": 943,
   "slices": [
     { "start": 0, "type": "Kick", "stepNum": 0 },
     { "start": 12186, "type": "Hat", "stepNum": 2 },

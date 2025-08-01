@@ -17,7 +17,6 @@ import { DownloadFileModal } from '../../../modals/DownloadFileModal'
 import { addSlice } from '../../../actions/addSlice'
 import { CollapsableRow } from '../../../components/CollapsableRow'
 import { addToArrangement } from '../../../actions/addToArrangement'
-import { largeTextHeight } from '../../../lib/consts'
 
 export const SliceEditor = () => {
   const selectedFileIndex = SelectedFileIndex.useState()
@@ -39,6 +38,10 @@ export const SliceEditor = () => {
     } else {
       Modal.set(<AutoSliceModal />)
     }
+  }
+
+  const handleOpenWhosampledLink = () => {
+    window.open(selectedFile.whosampledLink, '_blank')
   }
 
   return (
@@ -89,11 +92,19 @@ export const SliceEditor = () => {
             forceEditSliceMode={false}
           />
         ))}
+        {selectedFile.whosampledLink && (
+          <>
+            <Text big onClick={handleOpenWhosampledLink}>
+              {selectedFile.name} on Whosampled.com ›
+            </Text>
+            <HDivider />
+          </>
+        )}
       </Slices>
       {editSliceMode && (
         <>
           <HDivider />
-          <Text onClick={addSlice} style={{ minHeight: largeTextHeight }}>
+          <Text onClick={addSlice} big>
             Add Slice +
           </Text>
         </>

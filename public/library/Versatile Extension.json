@@ -2,6 +2,8 @@
   "name": "Versatile Extension",
   "artist": "Supreme DJ NYborn",
   "year": 1988,
+  "whosampledLink": "https://www.whosampled.com/Supreme-NYborn/Versatile-Extension-(Versatility-Remix)/sampled/",
+  "whosampledCount": 86,
   "slices": [
     { "start": 157, "type": "Kick", "stepNum": 0 },
     { "start": 8504, "type": "Hat", "stepNum": 1 },
