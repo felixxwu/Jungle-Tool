@@ -59,10 +59,22 @@ const TextStyle = styled('div')<{
   }};
 
   &:hover {
-    background-color: ${p => {
-      if (p.selected) return colors.black
-      if (p.onClick) return colors.grey
-      return colors.white
-    }};
+    @media (hover: hover) {
+      background-color: ${p => {
+        if (p.selected) return colors.black
+        if (p.onClick) return colors.grey
+        return colors.white
+      }};
+    }
+  }
+
+  &:active {
+    @media (hover: none) {
+      background-color: ${p => {
+        if (p.selected) return colors.black
+        if (p.onClick) return colors.grey
+        return colors.white
+      }};
+    }
   }
 `
