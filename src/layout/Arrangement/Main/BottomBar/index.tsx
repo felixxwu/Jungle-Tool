@@ -1,7 +1,7 @@
 import styled from 'styled-components'
 import { VDivider } from '../../../../components/Dividers'
 import { Text } from '../../../../components/Text'
-import { Arrangement, LibraryLoading, Modal, Player, Playing } from '../../../../lib/store'
+import { Arrangement, LibraryLoading, Modal, Player, Playing, Tab } from '../../../../lib/store'
 import { playArrangement } from '../../../../actions/playArrangement'
 import { randomiseArrangement } from '../../../../actions/randomiseArrangement'
 import { useEffect, useState } from 'react'
@@ -11,6 +11,7 @@ export const BottomBar = () => {
   const playing = Playing.useState()
   const arrangement = Arrangement.useState()
   const libraryLoading = LibraryLoading.useState()
+  const tab = Tab.useState()
 
   const [loading, setLoading] = useState(false)
 
@@ -37,16 +38,20 @@ export const BottomBar = () => {
         <Text onClick={handlePlayPause} selected={playing} big disabled={libraryLoading}>
           {playing ? 'Pause' : 'Play'}
         </Text>
-        <VDivider />
-        <Text
-          onClick={async () => {
-            setLoading(true)
-            await new Promise(r => setTimeout(r))
-            randomiseArrangement()
-          }}
-        >
-          {loading ? '...' : 'Randomise notes'}
-        </Text>
+        {tab !== 'layers' && (
+          <>
+            <VDivider />
+            <Text
+              onClick={async () => {
+                setLoading(true)
+                await new Promise(r => setTimeout(r))
+                randomiseArrangement()
+              }}
+            >
+              {loading ? '...' : 'Randomise notes'}
+            </Text>
+          </>
+        )}
         <VDivider />
         <VDivider style={{ marginLeft: 'auto' }} />
         <Text onClick={() => Modal.set(<ExportModal />)}>Export</Text>

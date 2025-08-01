@@ -1,7 +1,7 @@
 import { useState } from 'react'
 import { HDivider } from '../../../../components/Dividers'
 import { Text } from '../../../../components/Text'
-import { Layers, Tab } from '../../../../lib/store'
+import { AddLayerMode, Layers, Tab } from '../../../../lib/store'
 import { LayerControl } from './LayerControl'
 import { colors } from '../../../../lib/colors'
 import styled from 'styled-components'
@@ -11,9 +11,14 @@ export const LayerControls = () => {
   const layers = Layers.useState()
   const [loading, setLoading] = useState(false)
 
+  const handleAddLayer = () => {
+    AddLayerMode.set(true)
+    Tab.set('library')
+  }
+
   return (
     <LayerControlsStyle>
-      <Text style={{ backgroundColor: 'transparent' }}>Layers:</Text>
+      <Text>Layers:</Text>
       {layers.map(layer => (
         <Row key={layer.filename}>
           <LayerControl layer={layer} />
@@ -29,18 +34,16 @@ export const LayerControls = () => {
         }}
         big
         style={{
-          width: 'fit-content',
           outline: `1px solid ${colors.black}`,
         }}
       >
         {loading ? '...' : 'Randomise Layers ›'}
       </Text>
       <Text
-        onClick={() => Tab.set('library')}
+        onClick={handleAddLayer}
         big
         style={{
           outline: `1px solid ${colors.black}`,
-          width: 'fit-content',
           marginBottom: 'auto',
           marginTop: '1px',
         }}

@@ -44,6 +44,14 @@ export const LayerControl = (p: { layer: Layer }) => {
     Layers.set(layers.filter(l => l.filename !== p.layer.filename))
   }
 
+  const handleToggleSelectedLayer = () => {
+    if (selectedLayerName === p.layer.filename) {
+      SelectedLayerName.set(null)
+    } else {
+      SelectedLayerName.set(p.layer.filename)
+    }
+  }
+
   const pitch = localPitch
 
   return (
@@ -52,11 +60,11 @@ export const LayerControl = (p: { layer: Layer }) => {
       <Row>
         <TitleAndInfo>
           <Row>
-            <Text key={p.layer.filename} fullWidth big>
+            <Text onClick={handleToggleSelectedLayer} key={p.layer.filename} fullWidth big>
               {p.layer.filename}
             </Text>
             {selectedLayerName === p.layer.filename ? (
-              <Text onClick={() => SelectedLayerName.set(null)}>‹</Text>
+              <Text onClick={handleToggleSelectedLayer}>‹</Text>
             ) : (
               <Text
                 onClick={handleDelete}
@@ -68,10 +76,10 @@ export const LayerControl = (p: { layer: Layer }) => {
           </Row>
           {selectedLayerName !== p.layer.filename && (
             <Row>
-              <Text big onClick={() => SelectedLayerName.set(p.layer.filename)}>
+              <Text big onClick={handleToggleSelectedLayer}>
                 Vol: {p.layer.volume}
               </Text>
-              <Text big onClick={() => SelectedLayerName.set(p.layer.filename)}>
+              <Text big onClick={handleToggleSelectedLayer}>
                 Pitch: {pitch > 0 ? `+${pitch}` : pitch}
               </Text>
             </Row>

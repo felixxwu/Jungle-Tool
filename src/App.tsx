@@ -9,6 +9,7 @@ import { Library } from './layout/Library'
 import { useEffect, useRef } from 'react'
 import { loadJson } from './actions/loadJson'
 import { useWindowListeners } from './hooks/useWindowListeners'
+import { Sidebar } from './layout/Arrangement/Sidebar'
 
 export default function App() {
   const tab = Tab.useState()
@@ -48,6 +49,7 @@ export default function App() {
         <TopBar />
         <HDivider />
         {tab === 'arrangement' && <Arrangement />}
+        {tab === 'layers' && <Sidebar />}
         {tab === 'library' && <Library />}
       </AppStyle>
 

@@ -1,10 +1,9 @@
 import styled from 'styled-components'
 import { FileList } from './FileList'
-import { HDivider, VDivider } from '../../components/Dividers'
+import { VDivider } from '../../components/Dividers'
 import { FileEditor } from './FileEditor'
 import { SelectedFileIndex, WindowSize } from '../../lib/store'
 import { appWidth } from '../../lib/consts'
-import { Text } from '../../components/Text'
 
 export const Library = () => {
   const windowSize = WindowSize.useState()
@@ -13,17 +12,7 @@ export const Library = () => {
   if (windowSize.width < appWidth) {
     return (
       <LibraryMobileStyle>
-        {selectedFileIndex === null ? (
-          <FileList />
-        ) : (
-          <>
-            <Text big onClick={() => SelectedFileIndex.set(null)}>
-              ‹ Back
-            </Text>
-            <HDivider />
-            <FileEditor />
-          </>
-        )}
+        {selectedFileIndex === null ? <FileList /> : <FileEditor />}
       </LibraryMobileStyle>
     )
   }

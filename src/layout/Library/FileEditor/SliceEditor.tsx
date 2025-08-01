@@ -62,7 +62,7 @@ export const SliceEditor = () => {
                   Already added
                 </Text>
               ) : (
-                <Text big onClick={addToArrangement}>
+                <Text big onClick={() => addToArrangement(selectedFileIndex)}>
                   Add to arrangement +
                 </Text>
               )}

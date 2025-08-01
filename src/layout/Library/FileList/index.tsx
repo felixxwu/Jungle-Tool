@@ -1,8 +1,10 @@
 import styled from 'styled-components'
 import {
+  AddLayerMode,
   AutoSliceMode,
   EditSliceMode,
   HoveredSliceIndex,
+  Layers,
   LoadedFiles,
   SelectedFileIndex,
   SelectedSliceIndex,
@@ -16,10 +18,13 @@ import { playFile } from '../../../actions/playFile'
 import { importFile } from '../../../actions/importFile'
 import { Fragment } from 'react/jsx-runtime'
 import { useDebouncedLocalState } from '../../../hooks/useDebouncedLocalState'
+import { addToArrangement } from '../../../actions/addToArrangement'
 
 export const FileList = () => {
   const loadedFiles = LoadedFiles.useState()
   const selectedFile = SelectedFileIndex.useState()
+  const addLayerMode = AddLayerMode.useState()
+  const layers = Layers.useState()
 
   const [localSelectedFile, setLocalSelectedFile] = useDebouncedLocalState(
     selectedFile,
@@ -38,14 +43,33 @@ export const FileList = () => {
     await playFile(index)
   }
 
+  const handleClick = (index: number) => {
+    if (addLayerMode) {
+      addToArrangement(index)
+      AddLayerMode.set(false)
+    } else {
+      handleSelectFile(index)
+    }
+  }
+
   return (
     <FileListStyle style={windowSize.width < appWidth ? { width: '100%' } : {}}>
       <Scrollable>
+        {addLayerMode && (
+          <>
+            <Text>Choose a break:</Text>
+            <HDivider />
+          </>
+        )}
         {loadedFiles
           .sort((a, b) => b.whosampledCount - a.whosampledCount)
           .map((file, index) => (
             <Fragment key={file.name}>
-              <Text onClick={() => handleSelectFile(index)} selected={localSelectedFile === index}>
+              <Text
+                onClick={() => handleClick(index)}
+                selected={localSelectedFile === index}
+                disabled={addLayerMode && layers.some(layer => layer.filename === file.name)}
+              >
                 <FileListItemStyle>
                   <div>{file.name}</div>
                   <ArtistAndYear>

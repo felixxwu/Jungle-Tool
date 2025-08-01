@@ -1,11 +1,10 @@
 import { singletonState } from 'singleton-state-hook'
 import type { Tone } from './tone'
-import type { Layer, LoadedFile, Note } from './types'
+import type { ITab, Layer, LoadedFile, Note } from './types'
 import { maxNoteLength, minNoteFadeOut } from './consts'
 
 export const WindowSize = singletonState({ width: window.innerWidth, height: window.innerHeight })
-export const Tab = singletonState<'arrangement' | 'library'>('arrangement')
-export const ArrangementSidebarOpen = singletonState(false)
+export const Tab = singletonState<ITab>('arrangement')
 export const BPM = singletonState(160)
 export const Swing = singletonState(15)
 export const NoteLength = singletonState(maxNoteLength)
@@ -21,6 +20,7 @@ export const EditSliceMode = singletonState(false)
 export const AutoSliceMode = singletonState(false)
 export const AutoSliceSensitivity = singletonState(2000)
 export const Modal = singletonState<React.ReactNode | null>(null)
+export const AddLayerMode = singletonState(false)
 export const Layers = singletonState<Layer[]>([
   { filename: 'Think (About It)', volume: 70, pitch: 5 },
   { filename: 'Mr. Sandman', volume: 100, pitch: 7 },
