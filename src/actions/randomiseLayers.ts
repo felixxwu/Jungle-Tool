@@ -7,9 +7,9 @@ export const randomiseLayers = async () => {
 
   const loadedFiles = LoadedFiles.ref()
   for (let i = 0; i < savedLayers.length; i++) {
-    const takenLayers = savedLayers.slice(0, i).map(l => l.filename)
+    const takenLayers = savedLayers.slice(0, i).map(l => l.filename.split('(')[0])
     const remainingFiles = loadedFiles.filter(
-      f => !takenLayers.includes(f.name) && f.name !== 'PH Break'
+      f => !takenLayers.includes(f.name.split('(')[0]) && f.name !== 'PH Break'
     )
     const randomFile = remainingFiles[Math.floor(Math.random() * remainingFiles.length)]
     savedLayers[i].filename = randomFile.name

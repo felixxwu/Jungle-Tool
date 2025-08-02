@@ -1,5 +1,5 @@
 import { WaveFile } from 'wavefile'
-import { LoadedFiles } from '../lib/store'
+import { LoadedFiles, SelectedFileIndex } from '../lib/store'
 import { normalize } from '../lib/audio'
 
 export const loadJson = (jsonString: string) => {
@@ -28,4 +28,5 @@ export const loadJson = (jsonString: string) => {
     whosampledCount: json.whosampledCount,
   })
   LoadedFiles.set([...LoadedFiles.ref()])
+  SelectedFileIndex.set(LoadedFiles.ref().length - 1)
 }

@@ -34,6 +34,6 @@ export const loadWav = (arrayBuffer: ArrayBuffer, fileName: string) => {
   })
   LoadedFiles.set([...LoadedFiles.ref()])
 
-  SelectedFileIndex.set(0)
+  SelectedFileIndex.set(LoadedFiles.ref().length - 1)
   Modal.set(<TrimWarningModal />)
 }

@@ -18,9 +18,14 @@ export const minNoteFadeOut = 10
 export const maxNoteFadeOut = 500
 
 export const library = [
-  'Amen Brother',
+  'Amen Brother (1)',
+  'Amen Brother (2)',
   'Soul Pride',
-  'Think (About It)',
+  'Think (1)',
+  'Think (2)',
+  'Think (3)',
+  'Think (4)',
+  'Think (Clean)',
   'Apache',
   'Sesame Street',
   'Assembly Line',

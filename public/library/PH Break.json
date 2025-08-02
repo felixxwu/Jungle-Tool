@@ -3,7 +3,7 @@
   "artist": "MindGeek",
   "year": 2007,
   "whosampledLink": "",
-  "whosampledCount": 0,
+  "whosampledCount": 1,
   "slices": [
     { "start": 6, "type": "Kick", "stepNum": 0 },
     { "start": 14021, "type": "Hat", "stepNum": 3 },

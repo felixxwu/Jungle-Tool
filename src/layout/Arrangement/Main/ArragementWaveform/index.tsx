@@ -41,7 +41,7 @@ export const ArragementWaveform = () => {
   })
   if (hash !== playbackHash.current) {
     playbackHash.current = hash
-    restartPlayback()
+    if (layers.length) restartPlayback()
   }
 
   if (!samples) return null

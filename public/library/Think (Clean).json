@@ -1,9 +1,9 @@
 {
-  "name": "Think (About It)",
+  "name": "Think (Clean)",
   "artist": "Lyn Collins",
   "year": 1972,
   "whosampledLink": "https://www.whosampled.com/Lyn-Collins/Think-(About-It)/sampled/",
-  "whosampledCount": 3951,
+  "whosampledCount": 3955,
   "slices": [
     { "start": 8, "type": "Kick", "stepNum": 0 },
     { "start": 11695, "type": "Hat", "stepNum": 2 },
