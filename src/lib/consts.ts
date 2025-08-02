@@ -36,4 +36,12 @@ export const library = [
   'PH Break',
   'Shaft In Africa',
   'Express Yourself',
+  'Jabo',
+  'Bernards Back Beat',
+  'Tighten Up',
+  'The Worm',
+  'Chief Inspector',
+  'Looking Out My Window',
+  'Life Could',
+  'Keep On Dancing',
 ]

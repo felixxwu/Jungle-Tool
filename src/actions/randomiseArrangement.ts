@@ -4,7 +4,7 @@ import { Arrangement, SelectedBar } from '../lib/store'
 // expected loop structure: k... s... ..k. s...
 const closestKick = [0, 0, 0, 0, 0, 0, 0, 0, 10, 11, 10, 10, 10, 10, 10, 10]
 const closestSnare = [4, 4, 4, 4, 4, 4, 4, 4, 12, 12, 12, 12, 12, 12, 12, 12]
-const closestHat = [2, 1, 2, 3, 6, 7, 6, 7, 8, 9, 8, 9, 14, 15, 14, 15]
+const closestHat = [2, 1, 2, 3, 6, 5, 6, 7, 8, 9, 8, 11, 14, 13, 14, 15]
 
 const chooseHit = (kickProb: number, snareProb: number): 'kick' | 'snare' | 'hat' => {
   const random = Math.random()
