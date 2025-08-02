@@ -1,3 +1,5 @@
+import { getBestLayerPitch } from '../helpers/getBestLayerPitch'
+import { getBestLayerVolume } from '../helpers/getBestLayerVolume'
 import { Layers, LoadedFiles, Tab } from '../lib/store'
 
 export const addToArrangement = (index: number) => {
@@ -5,10 +7,11 @@ export const addToArrangement = (index: number) => {
 
   Tab.set('arrangement')
   const layers = Layers.ref()
+  const layerName = loadedFiles[index].name
   layers.push({
-    filename: loadedFiles[index].name,
-    volume: 100,
-    pitch: 0,
+    filename: layerName,
+    volume: getBestLayerVolume(layerName),
+    pitch: getBestLayerPitch(layerName),
   })
   Layers.set([...layers])
 }

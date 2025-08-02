@@ -4,14 +4,14 @@ import { appHeight, appWidth, library, lineThickness } from './lib/consts'
 import { HDivider } from './components/Dividers'
 import { TopBar } from './layout/TopBar'
 import { Arrangement } from './layout/Arrangement'
-import { LibraryLoading, LoadedFiles, Modal, Tab, WindowSize } from './lib/store'
+import { LibraryLoading, LoadedFiles, LowestRMS, Modal, Tab, WindowSize } from './lib/store'
 import { Library } from './layout/Library'
 import { useEffect, useRef } from 'react'
 import { loadJson } from './actions/loadJson'
 import { useWindowListeners } from './hooks/useWindowListeners'
 import { Sidebar } from './layout/Arrangement/Sidebar'
 import { getRMS } from './helpers/getRMS'
-import { gain, mono } from './lib/audio'
+import { mono } from './lib/audio'
 
 export default function App() {
   const tab = Tab.useState()
@@ -38,13 +38,7 @@ export default function App() {
       const lowestRMS = LoadedFiles.ref().reduce((lowest, file) => {
         return Math.min(lowest, getRMS(mono(file.samples)))
       }, Infinity)
-
-      LoadedFiles.ref().forEach(file => {
-        const rms = getRMS(mono(file.samples))
-        const multiplier = lowestRMS / rms
-        file.samples = [gain(file.samples[0], multiplier), gain(file.samples[1], multiplier)]
-      })
-      LoadedFiles.set([...LoadedFiles.ref()])
+      LowestRMS.set(lowestRMS)
 
       window.addEventListener('click', () => {
         audio.current?.play()
