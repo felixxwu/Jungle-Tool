@@ -66,7 +66,7 @@ export const LibraryWaveform = () => {
             : colors.darkGrey,
       }))}
       onClick={handleClick}
-      showLineOnHover={editSliceMode && selectedSliceIndex !== null}
+      showLineOnHover={(editSliceMode || trimMode) && selectedSliceIndex !== null}
     />
   )
 }
