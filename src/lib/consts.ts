@@ -49,4 +49,8 @@ export const library = [
   'Sweet Pea',
   'Scorpio',
   'Funky Mule',
+  'Cold Sweat',
+  'Kool Is Back',
+  'Ode To Billie Joe',
+  'Wicked Beat',
 ]
