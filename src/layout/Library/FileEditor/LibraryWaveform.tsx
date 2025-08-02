@@ -12,6 +12,7 @@ import { mono } from '../../../lib/audio'
 import { Waveform } from '../../../components/Waveform'
 import { playFile } from '../../../actions/playFile'
 import { playSlice } from '../../../actions/playSlice'
+import { updateSliceStart } from '../../../actions/updateSliceStart'
 
 export const LibraryWaveform = () => {
   const selectedFileIndex = SelectedFileIndex.useState()
@@ -35,12 +36,12 @@ export const LibraryWaveform = () => {
     const halfSamples = monoSamples.length / 2
     return halfSamples / factor - selectedSlice.start
   })()
+  const trimMode = selectedFile.slices.find(slice => slice.type === 'Start' || slice.type === 'End')
 
   const handleClick = async (sampleIndex: number) => {
-    if (editSliceMode && selectedSliceIndex !== null) {
-      loadedFiles[selectedFileIndex].slices[selectedSliceIndex].start = sampleIndex
-      LoadedFiles.set([...loadedFiles])
-      await new Promise(r => setTimeout(r, 100))
+    if ((editSliceMode || trimMode) && selectedSliceIndex !== null) {
+      updateSliceStart(sampleIndex, selectedSliceIndex)
+      return
     }
 
     if (selectedSliceIndex === null) {

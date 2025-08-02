@@ -18,15 +18,17 @@ export const minNoteFadeOut = 10
 export const maxNoteFadeOut = 500
 
 export const library = [
-  'Amen Brother.json',
-  'Soul Pride.json',
-  'Think (About It).json',
-  'Apache.json',
-  'Sesame Street.json',
-  'Assembly Line.json',
-  'Funky Drummer.json',
-  'Versatile Extension.json',
-  'Mr Sandman.json',
-  'Hot Pants.json',
-  'PH Break.json',
+  'Amen Brother',
+  'Soul Pride',
+  'Think (About It)',
+  'Apache',
+  'Sesame Street',
+  'Assembly Line',
+  'Funky Drummer',
+  'Versatile Extension',
+  'Mr Sandman',
+  'Hot Pants',
+  'PH Break',
+  'Shaft In Africa',
+  'Express Yourself',
 ]

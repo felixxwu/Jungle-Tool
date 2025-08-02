@@ -23,7 +23,7 @@ export default function App() {
     ;(async () => {
       LoadedFiles.set([])
       for (const path of library) {
-        fetch('/library/' + path).then(async response => {
+        fetch('/library/' + path + '.json').then(async response => {
           const json = await response.text()
           loadJson(json)
         })

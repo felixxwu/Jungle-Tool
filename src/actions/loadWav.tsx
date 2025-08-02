@@ -1,6 +1,7 @@
 import { WaveFile } from 'wavefile'
 import { LoadedFiles, Modal, SelectedFileIndex } from '../lib/store'
 import { TrimWarningModal } from '../modals/TrimWarningModal'
+import { normalize } from '../lib/audio'
 
 export const loadWav = (arrayBuffer: ArrayBuffer, fileName: string) => {
   const uint8Array = new Uint8Array(arrayBuffer)
@@ -15,7 +16,7 @@ export const loadWav = (arrayBuffer: ArrayBuffer, fileName: string) => {
     name: fileName,
     artist: '',
     year: 0,
-    samples: [left, right],
+    samples: normalize([left, right]),
     slices: [
       {
         start: 0,

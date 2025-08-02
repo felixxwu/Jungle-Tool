@@ -14,6 +14,7 @@ import {
 import { largeSliceAdjustment, smallSliceAdjustment } from '../../../lib/consts'
 import { playSlice } from '../../../actions/playSlice'
 import { playTrim } from '../../../actions/playTrim'
+import { updateSliceStart } from '../../../actions/updateSliceStart'
 
 export const Slice = (p: { sliceIndex: number; forceEditSliceMode?: boolean }) => {
   const selectedFileIndex = SelectedFileIndex.useState()
@@ -53,17 +54,8 @@ export const Slice = (p: { sliceIndex: number; forceEditSliceMode?: boolean }) =
   }
 
   const handleUpdateSliceStart = async (start: number) => {
-    const newLoadedFiles = [...loadedFiles]
-    newLoadedFiles[selectedFileIndex].slices[p.sliceIndex].start += start
-    newLoadedFiles[selectedFileIndex].slices.sort((a, b) => a.start - b.start)
-    LoadedFiles.set(newLoadedFiles)
+    updateSliceStart(slice.start + start, p.sliceIndex)
     setEditMode(false)
-
-    if (isTrimmer) {
-      await playTrim(selectedFileIndex)
-    } else {
-      await playSlice(selectedFileIndex, p.sliceIndex)
-    }
   }
 
   const handleDeleteSlice = () => {
