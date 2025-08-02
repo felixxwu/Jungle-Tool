@@ -6,7 +6,7 @@ import { maxNoteLength, minNoteFadeOut } from './consts'
 export const WindowSize = singletonState({ width: window.innerWidth, height: window.innerHeight })
 export const Tab = singletonState<ITab>('arrangement')
 export const BPM = singletonState(160)
-export const Swing = singletonState(15)
+export const Swing = singletonState(17)
 export const NoteLength = singletonState(maxNoteLength)
 export const NoteFadeOut = singletonState(minNoteFadeOut)
 export const Saturation = singletonState(50)
@@ -23,8 +23,8 @@ export const AutoSliceSensitivity = singletonState(2000)
 export const Modal = singletonState<React.ReactNode | null>(null)
 export const AddLayerMode = singletonState(false)
 export const Layers = singletonState<Layer[]>([
-  { filename: 'Think (1)', volume: 50, pitch: 0 },
-  { filename: 'Mr. Sandman', volume: 100, pitch: 5 },
+  { filename: 'Think (1)', volume: 50, pitch: 3 },
+  { filename: 'Mr. Sandman', volume: 100, pitch: 7 },
 ])
 export const SelectedLayerName = singletonState<string | null>(null)
 export const SelectedBar = singletonState(0)

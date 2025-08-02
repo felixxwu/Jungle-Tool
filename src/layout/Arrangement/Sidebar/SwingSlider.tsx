@@ -15,7 +15,7 @@ export const SwingSlider = () => {
       <HDivider />
       <Slider
         min={0}
-        max={50}
+        max={33}
         value={localSwing}
         onInput={setLocalSwing}
         label={`Swing: ${localSwing}%`}
