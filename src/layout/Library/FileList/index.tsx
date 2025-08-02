@@ -65,6 +65,7 @@ export const FileList = () => {
           .sort((a, b) => b.whosampledCount - a.whosampledCount)
           .map((file, index) => (
             <Fragment key={file.name}>
+              {index !== 0 && <HDivider />}
               <Text
                 onClick={() => handleClick(index)}
                 selected={localSelectedFile === index}
@@ -78,7 +79,6 @@ export const FileList = () => {
                   </ArtistAndYear>
                 </FileListItemStyle>
               </Text>
-              <HDivider />
             </Fragment>
           ))}
       </Scrollable>
