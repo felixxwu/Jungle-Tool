@@ -54,7 +54,7 @@ export const Slice = (p: { sliceIndex: number; forceEditSliceMode?: boolean }) =
   }
 
   const handleUpdateSliceStart = async (start: number) => {
-    updateSliceStart(slice.start + start, p.sliceIndex)
+    updateSliceStart(slice.start + start, p.sliceIndex, start < 0 ? 'backward' : 'forward')
     setEditMode(false)
   }
 

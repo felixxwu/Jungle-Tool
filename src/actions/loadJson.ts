@@ -11,11 +11,18 @@ export const loadJson = (jsonString: string) => {
   const left = samples[0] as unknown as Float32Array
   const right = samples[1] as unknown as Float32Array
 
+  const normalisedSamples = normalize([left, right])
+
+  // const slices = json.slices.map((slice: Slice) => ({
+  //   ...slice,
+  //   start: findClosestZeroCrossing(mono(normalisedSamples), slice.start),
+  // }))
+
   LoadedFiles.ref().push({
     name: json.name,
     artist: json.artist,
     year: json.year,
-    samples: normalize([left, right]),
+    samples: normalisedSamples,
     slices: json.slices,
     whosampledLink: json.whosampledLink,
     whosampledCount: json.whosampledCount,

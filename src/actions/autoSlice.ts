@@ -1,3 +1,4 @@
+import { findClosestZeroCrossing } from '../helpers/findClosestZeroCrossing'
 import { mono } from '../lib/audio'
 import {
   AutoSliceSensitivity,
@@ -58,7 +59,7 @@ export const autoSlice = () => {
       const fractionalPosition = i / transients.length
       const estimatedStepNum = Math.round(fractionalPosition * 16)
       selectedFile.slices.push({
-        start: i,
+        start: findClosestZeroCrossing(monoSamples, i, 'backward'),
         type: expectedSlices[estimatedStepNum],
         stepNum: estimatedStepNum,
       })
