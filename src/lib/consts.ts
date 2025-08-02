@@ -44,4 +44,9 @@ export const library = [
   'Looking Out My Window',
   'Life Could',
   'Keep On Dancing',
+  'NT',
+  'Open Field Attack (1)',
+  'Open Field Attack (2)',
+  'Sweet Pea',
+  'Scorpio',
 ]
