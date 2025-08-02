@@ -45,10 +45,13 @@ export const normalize = (samples: [Float32Array, Float32Array]) => {
     Float32Array
   ]
 }
+export const gain = (samples: Float32Array, gain: number) => {
+  return samples.map(sample => sample * gain)
+}
 
 export const normalizeMono = (samples: Float32Array) => {
   const max = Math.max(...samples)
-  return samples.map(sample => sample / max)
+  return gain(samples, 1 / max)
 }
 
 export const stereoSlice = (samples: [Float32Array, Float32Array], start: number, end: number) => {

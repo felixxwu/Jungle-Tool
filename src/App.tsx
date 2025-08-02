@@ -10,6 +10,8 @@ import { useEffect, useRef } from 'react'
 import { loadJson } from './actions/loadJson'
 import { useWindowListeners } from './hooks/useWindowListeners'
 import { Sidebar } from './layout/Arrangement/Sidebar'
+import { getRMS } from './helpers/getRMS'
+import { gain, mono } from './lib/audio'
 
 export default function App() {
   const tab = Tab.useState()
@@ -22,13 +24,27 @@ export default function App() {
   useEffect(() => {
     ;(async () => {
       LoadedFiles.set([])
-      for (const path of library) {
+
+      const fetchPromises = library.map(path =>
         fetch('/library/' + path + '.json').then(async response => {
           const json = await response.text()
           loadJson(json)
         })
-      }
+      )
+
+      await Promise.all(fetchPromises)
       LibraryLoading.set(false)
+
+      const lowestRMS = LoadedFiles.ref().reduce((lowest, file) => {
+        return Math.min(lowest, getRMS(mono(file.samples)))
+      }, Infinity)
+
+      LoadedFiles.ref().forEach(file => {
+        const rms = getRMS(mono(file.samples))
+        const multiplier = lowestRMS / rms
+        file.samples = [gain(file.samples[0], multiplier), gain(file.samples[1], multiplier)]
+      })
+      LoadedFiles.set([...LoadedFiles.ref()])
 
       window.addEventListener('click', () => {
         audio.current?.play()
