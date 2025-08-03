@@ -1,6 +1,6 @@
 import { getArrangementSamples } from '../helpers/getArrangementSamples'
 import { createPlayer } from '../lib/audio'
-import { Player, Playing } from '../lib/store'
+import { Player, Playing, PlayStartTimestamp } from '../lib/store'
 import { Tone } from '../lib/tone'
 
 export const playArrangement = async () => {
@@ -17,4 +17,6 @@ export const playArrangement = async () => {
   Player.ref()?.dispose()
   Player.set(player)
   player.start()
+
+  PlayStartTimestamp.set(Date.now())
 }

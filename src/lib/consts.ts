@@ -16,6 +16,7 @@ export const minNoteLength = 10
 export const maxNoteLength = 500
 export const minNoteFadeOut = 10
 export const maxNoteFadeOut = 500
+export const arrangementPlayHead = 'arrangement-play-head'
 
 export const library = [
   'Amen Brother (1)',

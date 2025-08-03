@@ -1,7 +1,7 @@
 import { Waveform } from '../../../../components/Waveform'
 import { useArrangementSamples } from '../../../../hooks/useArrangementSamples'
 import { mono } from '../../../../lib/audio'
-import { appWidth, arrangementSidebarWidth } from '../../../../lib/consts'
+import { appWidth, arrangementPlayHead, arrangementSidebarWidth } from '../../../../lib/consts'
 import { SelectedBar } from '../../../../lib/store'
 
 const waveformWidth = appWidth - arrangementSidebarWidth - 1
@@ -16,6 +16,7 @@ export const ArragementWaveform = () => {
 
   return (
     <Waveform
+      playHeadId={arrangementPlayHead}
       samples={monoSamples}
       width={waveformWidth}
       height={125}

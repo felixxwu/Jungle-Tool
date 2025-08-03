@@ -3,7 +3,7 @@ import { colors } from './lib/colors'
 import { appHeight, appWidth, library, lineThickness } from './lib/consts'
 import { HDivider } from './components/Dividers'
 import { TopBar } from './layout/TopBar'
-import { Arrangement } from './layout/Arrangement'
+import { ArrangementView } from './layout/Arrangement'
 import { LibraryLoading, LoadedFiles, LowestRMS, Modal, Tab, WindowSize } from './lib/store'
 import { Library } from './layout/Library'
 import { useEffect, useRef } from 'react'
@@ -13,6 +13,7 @@ import { Sidebar } from './layout/Arrangement/Sidebar'
 import { getRMS } from './helpers/getRMS'
 import { mono } from './lib/audio'
 import { useRestartPlayback } from './hooks/useRestartPlayback'
+import { usePlayheadAnimation } from './hooks/usePlayheadAnimation'
 
 export default function App() {
   const tab = Tab.useState()
@@ -22,6 +23,7 @@ export default function App() {
 
   useWindowListeners()
   useRestartPlayback()
+  usePlayheadAnimation()
 
   useEffect(() => {
     ;(async () => {
@@ -60,7 +62,7 @@ export default function App() {
       <AppStyle style={windowSize.width < appWidth ? { boxShadow: 'none' } : {}}>
         <TopBar />
         <HDivider />
-        {tab === 'arrangement' && <Arrangement />}
+        {tab === 'arrangement' && <ArrangementView />}
         {tab === 'layers' && <Sidebar />}
         {tab === 'library' && <Library />}
       </AppStyle>

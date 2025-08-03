@@ -41,7 +41,7 @@ export const BarSelection = () => {
   const removeBars = () => {
     Arrangement.set(Arrangement.ref().slice(0, -16))
     NumBars.set(numBars - 1)
-    setLocalSelectedBar(localSelectedBar - 1)
+    setLocalSelectedBar(Math.max(localSelectedBar - 1, 0))
   }
 
   return (

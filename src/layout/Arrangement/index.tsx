@@ -5,7 +5,7 @@ import { Main } from './Main'
 import { WindowSize } from '../../lib/store'
 import { appWidth, arrangementSidebarWidth } from '../../lib/consts'
 
-export const Arrangement = () => {
+export const ArrangementView = () => {
   const windowSize = WindowSize.useState()
   const showSidebar = windowSize.width > appWidth - arrangementSidebarWidth
 

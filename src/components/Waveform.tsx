@@ -15,6 +15,7 @@ export const Waveform = (p: {
   slices: { slice: Slice; color: string }[]
   onClick?: (sampleIndex: number) => void
   showLineOnHover?: boolean
+  playHeadId?: string
 }) => {
   const [hoverSampleIndex, setHoverSampleIndex] = useState<number | null>(null)
 
@@ -89,6 +90,16 @@ export const Waveform = (p: {
               />
             </Fragment>
           ))}
+
+        <line
+          id={p.playHeadId}
+          x1={0}
+          y1={0}
+          x2={0}
+          y2={p.height}
+          stroke={colors.black}
+          strokeWidth={1}
+        />
       </svg>
     </WaveformStyle>
   )
