@@ -16,39 +16,32 @@ export const BarSelection = () => {
   )
 
   const addBars = () => {
+    NumBars.set(numBars + 1)
+    setLocalSelectedBar(numBars)
+    const firstBar = Arrangement.ref().filter(n => n.startStep < 16)
+    const secondBar = Arrangement.ref().filter(n => n.startStep >= 16 && n.startStep < 32)
+
     if (numBars === 1) {
-      NumBars.set(2)
-      setLocalSelectedBar(1)
-      const firstBar = [...Arrangement.ref()].filter(n => n.startStep < 16)
       Arrangement.set([...firstBar, ...firstBar.map(n => ({ ...n, startStep: n.startStep + 16 }))])
     }
     if (numBars === 2) {
-      NumBars.set(4)
-      setLocalSelectedBar(2)
-      const firstBar = [...Arrangement.ref()].filter(n => n.startStep < 16)
-      const secondBar = [...Arrangement.ref()].filter(n => n.startStep >= 16)
       Arrangement.set([
-        ...firstBar,
-        ...secondBar,
+        ...Arrangement.ref(),
         ...firstBar.map(n => ({ ...n, startStep: n.startStep + 32 })),
+      ])
+    }
+    if (numBars === 3) {
+      Arrangement.set([
+        ...Arrangement.ref(),
         ...secondBar.map(n => ({ ...n, startStep: n.startStep + 32 })),
       ])
     }
   }
 
   const removeBars = () => {
-    if (numBars === 2) {
-      NumBars.set(1)
-      setLocalSelectedBar(0)
-      Arrangement.set([...Arrangement.ref()].filter(n => n.startStep < 16))
-    }
-    if (numBars === 4) {
-      NumBars.set(2)
-      setLocalSelectedBar(0)
-      const firstBar = [...Arrangement.ref()].filter(n => n.startStep < 16)
-      const secondBar = [...Arrangement.ref()].filter(n => n.startStep >= 16)
-      Arrangement.set([...firstBar, ...secondBar])
-    }
+    Arrangement.set(Arrangement.ref().slice(0, -16))
+    NumBars.set(numBars - 1)
+    setLocalSelectedBar(localSelectedBar - 1)
   }
 
   return (
