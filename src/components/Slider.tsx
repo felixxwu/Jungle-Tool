@@ -1,5 +1,5 @@
 import styled from 'styled-components'
-import { useRef } from 'react'
+import { useRef, useMemo } from 'react'
 import { colors } from '../lib/colors'
 import { largeTextHeight } from '../lib/consts'
 
@@ -14,16 +14,21 @@ export const Slider = (p: {
   label: string
 }) => {
   const sliderRef = useRef<HTMLInputElement>(null)
+  const labelId = useMemo(() => `slider-${Math.random().toString(36).substr(2, 9)}`, [])
 
   const fillPercentage = ((p.value - p.min) / (p.max - p.min)) * 100
 
   return (
     <SliderStyle>
-      <Label style={fillPercentage >= 50 ? { left: sidePadding } : { right: sidePadding }}>
+      <Label
+        htmlFor={labelId}
+        style={fillPercentage >= 50 ? { left: sidePadding } : { right: sidePadding }}
+      >
         {p.label}
       </Label>
       <SliderInput
         ref={sliderRef}
+        id={labelId}
         type='range'
         min={p.min}
         max={p.max}
@@ -46,7 +51,7 @@ const SliderStyle = styled('div')`
   width: 100%;
 `
 
-const Label = styled('div')`
+const Label = styled('label')`
   position: absolute;
   margin-top: 1px;
   pointer-events: none;
