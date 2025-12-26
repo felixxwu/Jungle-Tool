@@ -18,7 +18,6 @@ export const Main = () => {
         <HDivider style={{ width: `${gridWidth}px` }} />
         <ArragementWaveform />
       </Scrollable>
-      <HDivider />
       <HDivider style={{ marginTop: 'auto' }} />
       <BottomBar />
     </MainStyle>
@@ -37,4 +36,6 @@ const Scrollable = styled('div')`
   flex-direction: column;
   overflow-x: auto;
   overflow-y: hidden;
+  flex: 1;
+  min-height: 0;
 `

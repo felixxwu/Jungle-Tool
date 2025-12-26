@@ -45,6 +45,34 @@ Object.defineProperty(window, 'matchMedia', {
 window.URL.createObjectURL = vi.fn(() => 'mocked-url')
 window.URL.revokeObjectURL = vi.fn()
 
+// Mock Element.animate for playhead animations
+if (!Element.prototype.animate) {
+  Element.prototype.animate = vi.fn(() => ({
+    cancel: vi.fn(),
+    finish: vi.fn(),
+    pause: vi.fn(),
+    play: vi.fn(),
+    reverse: vi.fn(),
+    updatePlaybackRate: vi.fn(),
+    currentTime: 0,
+    effect: null,
+    finished: Promise.resolve(),
+    id: '',
+    oncancel: null,
+    onfinish: null,
+    onremove: null,
+    pending: false,
+    playbackRate: 1,
+    playState: 'idle' as AnimationPlayState,
+    ready: Promise.resolve(),
+    replaceState: 'active' as AnimationReplaceState,
+    startTime: null,
+    timeline: null,
+    commitStyles: vi.fn(),
+    persist: vi.fn(),
+  })) as any
+}
+
 // Polyfill PointerEvent for jsdom (not available by default)
 if (typeof PointerEvent === 'undefined') {
   class PointerEventPolyfill extends MouseEvent {

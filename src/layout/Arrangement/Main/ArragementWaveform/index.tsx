@@ -27,7 +27,7 @@ export const ArragementWaveform = () => {
       playHeadId={arrangementPlayHead}
       samples={monoSamples}
       width={waveformWidth}
-      height={125}
+      height={166}
       offset={0}
       scaleX={1}
       slices={[]}

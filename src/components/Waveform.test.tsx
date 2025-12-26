@@ -287,6 +287,114 @@ describe('Waveform', () => {
     })
   })
 
+  describe('Bar-specific playhead (arrangement view)', () => {
+    it('hides playhead when selected bar does not match currently playing bar', () => {
+      const playStartTimestamp = Date.now()
+      const barDuration = 1000 // 1 second per bar
+      const totalBars = 4
+
+      render(
+        <Waveform
+          {...defaultProps}
+          playHeadId='test-playhead'
+          playStartTimestamp={playStartTimestamp}
+          isPlaying={true}
+          selectedBarIndex={0} // User selected bar 0
+          totalBars={totalBars}
+          barDuration={barDuration}
+        />
+      )
+
+      const playhead = document.getElementById('test-playhead')
+      expect(playhead).toBeInTheDocument()
+
+      // Advance time to bar 1 (1000ms = 1 bar duration)
+      vi.setSystemTime(playStartTimestamp + barDuration)
+      vi.advanceTimersByTime(16) // Trigger interval
+
+      act(() => {
+        vi.advanceTimersByTime(0)
+      })
+
+      // Playhead should be hidden because selected bar (0) != playing bar (1)
+      // The component checks: currentPlayingBar !== selectedBarIndex
+      // At 1000ms, currentPlayingBar = Math.floor(1000 / 1000) = 1
+      // selectedBarIndex = 0, so they don't match and playhead should be hidden
+      expect(playhead?.style.display).toBe('none')
+    })
+
+    it('allows playhead to show when selected bar matches currently playing bar', () => {
+      const playStartTimestamp = Date.now()
+      const barDuration = 1000 // 1 second per bar
+      const totalBars = 4
+
+      render(
+        <Waveform
+          {...defaultProps}
+          playHeadId='test-playhead'
+          playStartTimestamp={playStartTimestamp}
+          isPlaying={true}
+          selectedBarIndex={1} // User selected bar 1
+          totalBars={totalBars}
+          barDuration={barDuration}
+        />
+      )
+
+      const playhead = document.getElementById('test-playhead')
+      expect(playhead).toBeInTheDocument()
+
+      // Advance time to bar 1 (1000ms = 1 bar duration)
+      vi.setSystemTime(playStartTimestamp + barDuration)
+      vi.advanceTimersByTime(16) // Trigger interval
+
+      act(() => {
+        vi.advanceTimersByTime(0)
+      })
+
+      // Playhead should NOT be hidden because selected bar (1) == playing bar (1)
+      // At 1000ms, currentPlayingBar = Math.floor(1000 / 1000) = 1
+      // selectedBarIndex = 1, so they match and playhead should not be hidden
+      // (The display state depends on animation logic, but it shouldn't be explicitly hidden)
+      expect(playhead?.style.display).not.toBe('none')
+    })
+
+    it('handles bar cycling correctly - hides playhead for non-matching bars', () => {
+      const playStartTimestamp = Date.now()
+      const barDuration = 1000 // 1 second per bar
+      const totalBars = 4 // Bars 0, 1, 2, 3
+
+      render(
+        <Waveform
+          {...defaultProps}
+          playHeadId='test-playhead'
+          playStartTimestamp={playStartTimestamp}
+          isPlaying={true}
+          selectedBarIndex={2}
+          totalBars={totalBars}
+          barDuration={barDuration}
+        />
+      )
+
+      const playhead = document.getElementById('test-playhead')
+
+      // Test bar 0 - should hide (selected is 2, playing is 0)
+      vi.setSystemTime(playStartTimestamp + 0)
+      vi.advanceTimersByTime(16)
+      act(() => {
+        vi.advanceTimersByTime(0)
+      })
+      expect(playhead?.style.display).toBe('none')
+
+      // Test bar 3 - should hide (selected is 2, playing is 3)
+      vi.setSystemTime(playStartTimestamp + barDuration * 3)
+      vi.advanceTimersByTime(16)
+      act(() => {
+        vi.advanceTimersByTime(0)
+      })
+      expect(playhead?.style.display).toBe('none')
+    })
+  })
+
   describe('Edge cases', () => {
     it('handles empty samples array', () => {
       const { container } = render(<Waveform {...defaultProps} samples={new Float32Array(0)} />)
