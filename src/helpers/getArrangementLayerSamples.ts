@@ -11,6 +11,7 @@ import {
 import type { Layer } from '../lib/types'
 import { getSliceIndexFromStepNum } from './getSliceIndexFromStepNum'
 import { getPitchAdjustedSliceSamples } from './getPitchAdjustedSliceSamples'
+import { getStepSize } from './getStepSize'
 
 export const getArrangementLayerSamples = (p: { layer: Layer; bar?: number }) => {
   const arrangement = Arrangement.ref()
@@ -21,7 +22,7 @@ export const getArrangementLayerSamples = (p: { layer: Layer; bar?: number }) =>
   const numberOfBarsToPlay = p.bar === undefined ? numBars : 1
   const noteLength = NoteLength.ref()
   const noteFadeOut = NoteFadeOut.ref()
-  const stepSize = (60 / bpm / 4) * 44100
+  const stepSize = getStepSize(bpm)
 
   const getSwingOffset = (index: number) => {
     if (index % 2 === 0) return 0

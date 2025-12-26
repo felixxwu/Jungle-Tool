@@ -2,6 +2,7 @@ import { normalize, sineSaturationStereo, stereoSlice } from '../lib/audio'
 import { BPM, Layers, NumBars, Saturation } from '../lib/store'
 import { getArrangementLayerSamples } from './getArrangementLayerSamples'
 import { max } from './max'
+import { getStepSize } from './getStepSize'
 
 export const getArrangementSamples = (p: { bar?: number }) => {
   const bpm = BPM.ref()
@@ -10,7 +11,7 @@ export const getArrangementSamples = (p: { bar?: number }) => {
   const saturation = Saturation.ref()
   const numberOfBarsToPlay = p.bar === undefined ? numBars : 1
 
-  const stepSize = (60 / bpm / 4) * 44100
+  const stepSize = getStepSize(bpm)
   const waveformLengthInSamples = Math.round(stepSize * 16 * numberOfBarsToPlay)
   const arrangementSamples = stereoSlice(
     [new Float32Array(0), new Float32Array(0)],
@@ -29,7 +30,7 @@ export const getArrangementSamples = (p: { bar?: number }) => {
     }
   }
 
-  let normalisedSamples = arrangementSamples
+  let normalisedSamples: [Float32Array, Float32Array] = arrangementSamples
 
   const peakLeft = max(arrangementSamples[0])
   const peakRight = max(arrangementSamples[1])

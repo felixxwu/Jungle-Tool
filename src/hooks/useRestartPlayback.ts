@@ -1,6 +1,16 @@
 import { useRef } from 'react'
-import { Arrangement, BPM, Layers, NoteFadeOut, NoteLength, Saturation, Swing } from '../lib/store'
+import {
+  Arrangement,
+  BPM,
+  Layers,
+  NoteFadeOut,
+  NoteLength,
+  Saturation,
+  Swing,
+  Player,
+} from '../lib/store'
 import { restartPlayback } from '../actions/restartPlayback'
+import { stopPlayback } from '../lib/playback'
 
 export const useRestartPlayback = () => {
   const playbackHash = useRef<string>('')
@@ -24,6 +34,14 @@ export const useRestartPlayback = () => {
   })
   if (hash !== playbackHash.current) {
     playbackHash.current = hash
-    if (layers.length) restartPlayback()
+    if (layers.length) {
+      restartPlayback()
+    } else {
+      // Stop playback if no layers remain and audio is playing
+      const player = Player.ref()
+      if (player?.state === 'started') {
+        stopPlayback()
+      }
+    }
   }
 }

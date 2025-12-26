@@ -1,6 +1,7 @@
 import { WaveFile } from 'wavefile'
 import { LoadedFiles } from '../lib/store'
 import { getSliceSamples } from './getSliceSamples'
+import { SAMPLE_RATE } from '../lib/consts'
 
 const cache: { [key: string]: [Float32Array, Float32Array] } = {}
 
@@ -31,12 +32,12 @@ export const getPitchAdjustedSliceSamples = (p: {
   const pitchMult = 1 / Math.pow(2, p.layerPitch / 12)
 
   const wav = new WaveFile()
-  wav.fromScratch(2, 44100, '16', sliceSamples)
-  wav.toSampleRate(44100 * pitchMult, { method: 'sinc' })
+  wav.fromScratch(2, SAMPLE_RATE, '16', sliceSamples)
+  wav.toSampleRate(SAMPLE_RATE * pitchMult, { method: 'sinc' })
   const [left, right] = wav.getSamples() as unknown as [Float32Array, Float32Array]
 
-  const noteLengthInSamples = Math.round((p.noteLength / 1000) * 44100)
-  const fadeOutLengthInSamples = Math.round((p.noteFadeOut / 1000) * 44100)
+  const noteLengthInSamples = Math.round((p.noteLength / 1000) * SAMPLE_RATE)
+  const fadeOutLengthInSamples = Math.round((p.noteFadeOut / 1000) * SAMPLE_RATE)
   for (let i = 0; i < left.length; i++) {
     if (i > noteLengthInSamples) {
       const fadeOutProgress = (i - noteLengthInSamples) / fadeOutLengthInSamples

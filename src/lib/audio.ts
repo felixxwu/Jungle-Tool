@@ -1,6 +1,7 @@
 import { WaveFile } from 'wavefile'
 import { Tone } from './tone'
 import { max } from '../helpers/max'
+import { SAMPLE_RATE } from './consts'
 
 export const fetchFile = async (path: string) => {
   const response = await fetch(path)
@@ -16,8 +17,10 @@ export const fetchFile = async (path: string) => {
 
 export const createPlayer = async (samples: [Float32Array, Float32Array]) => {
   const wavefile = new WaveFile()
-  wavefile.fromScratch(2, 44100, '16', samples)
-  const buffer = await new Tone.Player().context.decodeAudioData(wavefile.toBuffer().buffer)
+  wavefile.fromScratch(2, SAMPLE_RATE, '16', samples)
+  const buffer = await new Tone.Player().context.decodeAudioData(
+    wavefile.toBuffer().buffer as ArrayBuffer
+  )
   return new Tone.Player(buffer).toDestination()
 }
 

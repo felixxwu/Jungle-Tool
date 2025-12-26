@@ -2,6 +2,7 @@ import styled from 'styled-components'
 import { Text } from '../components/Text'
 import { LoadedFiles, Modal, SelectedFileIndex } from '../lib/store'
 import { WaveFile } from 'wavefile'
+import { SAMPLE_RATE } from '../lib/consts'
 
 export const DownloadFileModal = () => {
   const loadedFiles = LoadedFiles.useState()
@@ -13,9 +14,9 @@ export const DownloadFileModal = () => {
 
   const handleDownloadWavFile = () => {
     const wavefile = new WaveFile()
-    wavefile.fromScratch(2, 44100, '16', selectedFile.samples)
+    wavefile.fromScratch(2, SAMPLE_RATE, '16', selectedFile.samples)
     const buffer = wavefile.toBuffer()
-    const blob = new Blob([buffer], { type: 'audio/wav' })
+    const blob = new Blob([buffer as BlobPart], { type: 'audio/wav' })
     const url = URL.createObjectURL(blob)
     const a = document.createElement('a')
     a.href = url
@@ -28,7 +29,7 @@ export const DownloadFileModal = () => {
 
   const handleDownloadCustomFile = () => {
     const wavefile = new WaveFile()
-    wavefile.fromScratch(2, 44100, '16', selectedFile.samples)
+    wavefile.fromScratch(2, SAMPLE_RATE, '16', selectedFile.samples)
     const base64 = wavefile.toBase64()
     const jsonToDownload = {
       name: selectedFile.name,

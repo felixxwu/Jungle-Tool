@@ -1,11 +1,17 @@
 import { createPlayer, stereoSlice } from '../lib/audio'
-import { LoadedFiles, Player } from '../lib/store'
-import { Tone } from '../lib/tone'
+import { LoadedFiles, Player, Playing } from '../lib/store'
+import {
+  setupPlayback,
+  stopPlayback,
+  setupPlayerStopHandler,
+  startPlayback,
+  calculateDuration,
+} from '../lib/playback'
 
 export const playTrim = async (fileIndex: number) => {
+  Playing.set(false)
   const loadedFiles = LoadedFiles.ref()
 
-  await Tone.start()
   const startSlice = loadedFiles[fileIndex].slices.find(slice => slice.type === 'Start')
   const endSlice = loadedFiles[fileIndex].slices.find(slice => slice.type === 'End')
   const samples = stereoSlice(
@@ -13,11 +19,15 @@ export const playTrim = async (fileIndex: number) => {
     startSlice?.start ?? 0,
     endSlice?.start ?? loadedFiles[fileIndex].samples[0].length
   )
+
+  stopPlayback() // Stop and clear state before starting new playback
+  await setupPlayback()
+
   const player = await createPlayer(samples)
   player.loop = true
-
-  Player.ref()?.stop()
-  Player.ref()?.dispose()
   Player.set(player)
-  player.start()
+
+  setupPlayerStopHandler(player)
+  const durationInSeconds = calculateDuration(samples[0].length)
+  startPlayback(player, durationInSeconds)
 }

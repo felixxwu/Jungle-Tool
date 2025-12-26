@@ -1,8 +1,9 @@
 import { BPM, LoadedFiles, Swing } from '../lib/store'
+import { getStepSize } from './getStepSize'
 
 const getSwungStepSize = (index: number) => {
   const bpm = BPM.ref()
-  const stepSizeInSamples = ((60 / bpm) * 44100) / 4
+  const stepSizeInSamples = getStepSize(bpm)
   if (index % 2 === 1) {
     return stepSizeInSamples - (Swing.ref() / 100) * stepSizeInSamples
   } else {

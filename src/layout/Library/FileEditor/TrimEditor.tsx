@@ -1,16 +1,11 @@
 import styled from 'styled-components'
-import {
-  AutoSliceMode,
-  EditSliceMode,
-  LoadedFiles,
-  Player,
-  SelectedFileIndex,
-} from '../../../lib/store'
+import { AutoSliceMode, EditSliceMode, LoadedFiles, SelectedFileIndex } from '../../../lib/store'
 import { Slice } from './Slice'
 import { Text } from '../../../components/Text'
 import { HDivider } from '../../../components/Dividers'
 import { stereoSlice } from '../../../lib/audio'
 import { autoSlice } from '../../../actions/autoSlice'
+import { stopPlayback } from '../../../lib/playback'
 
 export const TrimEditor = () => {
   const selectedFileIndex = SelectedFileIndex.useState()
@@ -29,7 +24,7 @@ export const TrimEditor = () => {
     selectedFile.samples = trimmedFile
     selectedFile.slices = []
     LoadedFiles.set([...loadedFiles])
-    Player.ref()?.stop()
+    stopPlayback() // Stop playback and clear state after trimming file
     EditSliceMode.set(true)
     AutoSliceMode.set(true)
     autoSlice()

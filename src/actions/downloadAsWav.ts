@@ -1,11 +1,12 @@
 import { WaveFile } from 'wavefile'
+import { SAMPLE_RATE } from '../lib/consts'
 
 export const downloadAsWav = (samples: [Float32Array, Float32Array], filename: string) => {
   const wavefile = new WaveFile()
-  wavefile.fromScratch(2, 44100, '16', samples)
+  wavefile.fromScratch(2, SAMPLE_RATE, '16', samples)
 
   const wavBuffer = wavefile.toBuffer()
-  const blob = new Blob([wavBuffer], { type: 'audio/wav' })
+  const blob = new Blob([wavBuffer as BlobPart], { type: 'audio/wav' })
 
   const url = URL.createObjectURL(blob)
   const a = document.createElement('a')

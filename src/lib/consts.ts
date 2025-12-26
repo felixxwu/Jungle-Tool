@@ -3,6 +3,7 @@ export const minBPM = 80
 export const maxBPM = 180
 export const minPitch = -12
 export const maxPitch = 12
+export const SAMPLE_RATE = 44100
 export const appWidth = 1000
 export const appHeight = 650
 export const librarySidebarWidth = 300

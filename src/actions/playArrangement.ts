@@ -1,12 +1,12 @@
 import { getArrangementSamples } from '../helpers/getArrangementSamples'
 import { createPlayer } from '../lib/audio'
-import { Player, Playing, PlayStartTimestamp, PlayDuration } from '../lib/store'
-import { Tone } from '../lib/tone'
+import { Player, Playing } from '../lib/store'
+import { setupPlayback, setupPlayerStopHandler, startPlayback } from '../lib/playback'
 
 export const playArrangement = async () => {
   Playing.set(true)
   await new Promise(r => setTimeout(r))
-  await Tone.start()
+  await setupPlayback()
 
   const samples = getArrangementSamples({})
   if (!samples) return
@@ -14,17 +14,7 @@ export const playArrangement = async () => {
   const player = await createPlayer(samples)
   player.loop = true
 
-  Player.ref()?.dispose()
   Player.set(player)
-
-  // Clear states when playback stops
-  player.onstop = () => {
-    PlayStartTimestamp.set(null)
-    PlayDuration.set(null)
-    Playing.set(false)
-  }
-
-  player.start()
-  PlayStartTimestamp.set(Date.now())
-  PlayDuration.set(null) // Arrangement calculates duration dynamically from BPM
+  setupPlayerStopHandler(player, { clearPlaying: true })
+  startPlayback(player, null) // Arrangement calculates duration dynamically from BPM
 }

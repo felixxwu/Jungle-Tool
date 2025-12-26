@@ -1,6 +1,7 @@
 import { useEffect } from 'react'
-import { Player, Playing, WindowSize, PlayStartTimestamp, PlayDuration } from '../lib/store'
+import { Playing, WindowSize } from '../lib/store'
 import { playArrangement } from '../actions/playArrangement'
+import { stopPlayback } from '../lib/playback'
 
 export const useWindowListeners = () => {
   useEffect(() => {
@@ -11,11 +12,7 @@ export const useWindowListeners = () => {
     window.addEventListener('keydown', e => {
       if (e.key === ' ') {
         if (Playing.ref()) {
-          Playing.set(false)
-          Player.ref()?.stop()
-          // Clear play states when manually stopping
-          PlayStartTimestamp.set(null)
-          PlayDuration.set(null)
+          stopPlayback()
         } else {
           Playing.set(true)
           playArrangement()
