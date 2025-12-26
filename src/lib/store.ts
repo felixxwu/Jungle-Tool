@@ -23,7 +23,7 @@ export const AutoSliceSensitivity = singletonState(2000)
 export const Modal = singletonState<React.ReactNode | null>(null)
 export const AddLayerMode = singletonState(false)
 export const Layers = singletonState<Layer[]>([
-  { filename: 'Think (1)', volume: 50, pitch: 3 },
+  { filename: 'Think (About It) (1)', volume: 50, pitch: 3 },
   { filename: 'Mr. Sandman', volume: 100, pitch: 7 },
 ])
 export const SelectedLayerName = singletonState<string | null>(null)
