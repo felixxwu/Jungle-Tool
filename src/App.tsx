@@ -13,7 +13,6 @@ import { Sidebar } from './layout/Arrangement/Sidebar'
 import { getRMS } from './helpers/getRMS'
 import { mono } from './lib/audio'
 import { useRestartPlayback } from './hooks/useRestartPlayback'
-import { usePlayheadAnimation } from './hooks/usePlayheadAnimation'
 
 export default function App() {
   const tab = Tab.useState()
@@ -23,7 +22,6 @@ export default function App() {
 
   useWindowListeners()
   useRestartPlayback()
-  usePlayheadAnimation()
 
   useEffect(() => {
     ;(async () => {

@@ -1,4 +1,10 @@
-import { appWidth, librarySidebarWidth, waveformHeight, zoomInFactor } from '../../../lib/consts'
+import {
+  appWidth,
+  librarySidebarWidth,
+  waveformHeight,
+  zoomInFactor,
+  libraryPlayHead,
+} from '../../../lib/consts'
 import { colors } from '../../../lib/colors'
 import {
   EditSliceMode,
@@ -7,6 +13,9 @@ import {
   SelectedFileIndex,
   SelectedSliceIndex,
   WindowSize,
+  PlayStartTimestamp,
+  PlayDuration,
+  Player,
 } from '../../../lib/store'
 import { mono } from '../../../lib/audio'
 import { Waveform } from '../../../components/Waveform'
@@ -21,6 +30,9 @@ export const LibraryWaveform = () => {
   const windowSize = WindowSize.useState()
   const hoveredSliceIndex = HoveredSliceIndex.useState()
   const editSliceMode = EditSliceMode.useState()
+  const playStartTimestamp = PlayStartTimestamp.useState()
+  const playDuration = PlayDuration.useState()
+  const player = Player.useState()
 
   if (selectedFileIndex === null) return null
 
@@ -53,6 +65,7 @@ export const LibraryWaveform = () => {
 
   return (
     <Waveform
+      playHeadId={libraryPlayHead}
       samples={monoSamples}
       width={width}
       height={waveformHeight}
@@ -67,6 +80,10 @@ export const LibraryWaveform = () => {
       }))}
       onClick={handleClick}
       showLineOnHover={(editSliceMode || trimMode) && selectedSliceIndex !== null}
+      playStartTimestamp={playStartTimestamp}
+      playDuration={playDuration ? playDuration * 1000 : undefined} // Convert to milliseconds
+      isPlaying={!!playStartTimestamp && player?.state !== 'stopped'}
+      resetTrigger={[selectedFileIndex, selectedSliceIndex]}
     />
   )
 }

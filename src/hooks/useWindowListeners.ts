@@ -1,5 +1,5 @@
 import { useEffect } from 'react'
-import { Player, Playing, WindowSize } from '../lib/store'
+import { Player, Playing, WindowSize, PlayStartTimestamp, PlayDuration } from '../lib/store'
 import { playArrangement } from '../actions/playArrangement'
 
 export const useWindowListeners = () => {
@@ -13,6 +13,9 @@ export const useWindowListeners = () => {
         if (Playing.ref()) {
           Playing.set(false)
           Player.ref()?.stop()
+          // Clear play states when manually stopping
+          PlayStartTimestamp.set(null)
+          PlayDuration.set(null)
         } else {
           Playing.set(true)
           playArrangement()
