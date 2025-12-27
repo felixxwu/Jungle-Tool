@@ -44,11 +44,12 @@ export const Grid = () => {
   }
 
   return (
-    <GridStyle>
+    <GridStyle data-testid='grid'>
       {Array.from({ length: 16 }).map((_, i) =>
         Array.from({ length: 16 }).map((_, j) => (
           <Clickable
             key={j}
+            data-testid={`grid-cell-${i}-${j}`}
             style={{
               bottom: i * cellHeight - 0.5,
               left: j * cellWidth + 0.5 + getSwingOffset(j + 1),
@@ -72,6 +73,7 @@ export const Grid = () => {
       {arrangementForThisBar.map(({ stepNumToPlay, startStep }, i) => (
         <NoteStyle
           key={stepNumToPlay + '-' + startStep + '-' + i}
+          data-testid={`grid-note-${stepNumToPlay}-${startStep}`}
           onClick={() => handleRemoveNote({ stepNumToPlay, startStep })}
           style={{
             bottom: stepNumToPlay * cellHeight - 0.5,

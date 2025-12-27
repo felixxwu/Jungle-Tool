@@ -48,7 +48,12 @@ export const Slice = (p: { sliceIndex: number; forceEditSliceMode?: boolean }) =
 
   const handleSetSliceType = (type: SliceType) => {
     const newLoadedFiles = [...loadedFiles]
-    newLoadedFiles[selectedFileIndex].slices[p.sliceIndex].type = type
+    const newSlices = [...newLoadedFiles[selectedFileIndex].slices]
+    newSlices[p.sliceIndex] = { ...newSlices[p.sliceIndex], type }
+    newLoadedFiles[selectedFileIndex] = {
+      ...newLoadedFiles[selectedFileIndex],
+      slices: newSlices,
+    }
     LoadedFiles.set(newLoadedFiles)
     setEditMode(false)
   }
@@ -69,8 +74,14 @@ export const Slice = (p: { sliceIndex: number; forceEditSliceMode?: boolean }) =
   const handleUpdateSliceStepNum = (stepNum: number) => {
     if (stepNum < 0) return
     if (stepNum > 15) return
-    loadedFiles[selectedFileIndex].slices[p.sliceIndex].stepNum = stepNum
-    LoadedFiles.set([...loadedFiles])
+    const newLoadedFiles = [...loadedFiles]
+    const newSlices = [...newLoadedFiles[selectedFileIndex].slices]
+    newSlices[p.sliceIndex] = { ...newSlices[p.sliceIndex], stepNum }
+    newLoadedFiles[selectedFileIndex] = {
+      ...newLoadedFiles[selectedFileIndex],
+      slices: newSlices,
+    }
+    LoadedFiles.set(newLoadedFiles)
   }
 
   const Selection = () => {

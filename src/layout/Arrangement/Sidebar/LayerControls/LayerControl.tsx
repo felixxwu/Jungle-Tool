@@ -17,10 +17,10 @@ export const LayerControl = (p: { layer: Layer }) => {
       const layerIndex = layers.findIndex(l => l.filename === p.layer.filename)
       if (layerIndex === -1) return
 
-      p.layer.volume = value
-      layers[layerIndex] = p.layer
+      const newLayers = [...layers]
+      newLayers[layerIndex] = { ...newLayers[layerIndex], volume: value }
 
-      Layers.set([...layers])
+      Layers.set(newLayers)
     },
     500
   )
@@ -32,9 +32,10 @@ export const LayerControl = (p: { layer: Layer }) => {
       const layerIndex = layers.findIndex(l => l.filename === p.layer.filename)
       if (layerIndex === -1) return
 
-      p.layer.pitch = value
-      layers[layerIndex] = p.layer
-      Layers.set([...layers])
+      const newLayers = [...layers]
+      newLayers[layerIndex] = { ...newLayers[layerIndex], pitch: value }
+
+      Layers.set(newLayers)
     },
     500
   )

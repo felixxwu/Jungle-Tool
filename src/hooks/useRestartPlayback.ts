@@ -11,9 +11,21 @@ import {
 } from '../lib/store'
 import { restartPlayback } from '../actions/restartPlayback'
 import { stopPlayback } from '../lib/playback'
+import { isDeepEqual } from '../helpers/deepEqual'
+import type { Note, Layer } from '../lib/types'
+
+type PlaybackConfig = {
+  arrangement: Note[]
+  layers: Layer[]
+  bpm: number
+  swing: number
+  noteLength: number
+  noteFadeOut: number
+  saturation: number
+}
 
 export const useRestartPlayback = () => {
-  const playbackHash = useRef<string>('')
+  const lastConfig = useRef<PlaybackConfig | null>(null)
 
   const arrangement = Arrangement.useState()
   const layers = Layers.useState()
@@ -23,7 +35,7 @@ export const useRestartPlayback = () => {
   const noteFadeOut = NoteFadeOut.useState()
   const saturation = Saturation.useState()
 
-  const hash = JSON.stringify({
+  const currentConfig: PlaybackConfig = {
     arrangement,
     layers,
     bpm,
@@ -31,9 +43,10 @@ export const useRestartPlayback = () => {
     noteLength,
     noteFadeOut,
     saturation,
-  })
-  if (hash !== playbackHash.current) {
-    playbackHash.current = hash
+  }
+
+  if (!isDeepEqual(currentConfig, lastConfig.current)) {
+    lastConfig.current = currentConfig
     if (layers.length) {
       restartPlayback()
     } else {

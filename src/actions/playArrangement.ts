@@ -5,7 +5,6 @@ import { setupPlayback, setupPlayerStopHandler, startPlayback } from '../lib/pla
 
 export const playArrangement = async () => {
   Playing.set(true)
-  await new Promise(r => setTimeout(r))
   await setupPlayback()
 
   const samples = getArrangementSamples({})

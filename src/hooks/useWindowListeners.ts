@@ -5,11 +5,11 @@ import { stopPlayback } from '../lib/playback'
 
 export const useWindowListeners = () => {
   useEffect(() => {
-    window.addEventListener('resize', () => {
+    const handleResize = () => {
       WindowSize.set({ width: window.innerWidth, height: window.innerHeight })
-    })
+    }
 
-    window.addEventListener('keydown', e => {
+    const handleKeydown = (e: KeyboardEvent) => {
       if (e.key === ' ') {
         if (Playing.ref()) {
           stopPlayback()
@@ -18,6 +18,14 @@ export const useWindowListeners = () => {
           playArrangement()
         }
       }
-    })
+    }
+
+    window.addEventListener('resize', handleResize)
+    window.addEventListener('keydown', handleKeydown)
+
+    return () => {
+      window.removeEventListener('resize', handleResize)
+      window.removeEventListener('keydown', handleKeydown)
+    }
   }, [])
 }

@@ -41,7 +41,6 @@ describe('LayerControls', () => {
     render(<LayerControls />)
 
     const randomiseButton = screen.getByText('Randomise Layers ›')
-    expect(randomiseButton).toBeInTheDocument()
 
     // Click the randomise button
     await act(async () => {
@@ -79,7 +78,6 @@ describe('LayerControls', () => {
     render(<LayerControls />)
 
     const randomiseButton = screen.getByText('Randomise Layers ›')
-    expect(randomiseButton).toBeInTheDocument()
 
     // Click the randomise button
     await act(async () => {
@@ -91,8 +89,10 @@ describe('LayerControls', () => {
       expect(randomiseLayers).toHaveBeenCalledTimes(1)
     })
 
-    // Wait a bit to ensure playArrangement is not called
-    await new Promise(r => setTimeout(r, 300))
+    // Wait a bit to ensure playArrangement is not called (wrapped in act)
+    await act(async () => {
+      await new Promise(r => setTimeout(r, 300))
+    })
 
     // playArrangement should NOT be called when not playing
     expect(playArrangement).not.toHaveBeenCalled()
@@ -121,8 +121,10 @@ describe('LayerControls', () => {
       expect(randomiseLayers).toHaveBeenCalledTimes(1)
     })
 
-    // Wait a bit
-    await new Promise(r => setTimeout(r, 300))
+    // Wait a bit (wrapped in act)
+    await act(async () => {
+      await new Promise(r => setTimeout(r, 300))
+    })
 
     // playArrangement should NOT be called when player is not started
     expect(playArrangement).not.toHaveBeenCalled()

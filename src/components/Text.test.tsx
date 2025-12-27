@@ -9,8 +9,13 @@ describe('Text', () => {
   })
 
   it('applies big prop correctly', () => {
-    render(<Text big>Big Text</Text>)
-    expect(screen.getByText('Big Text')).toBeInTheDocument()
+    const { container } = render(<Text big>Big Text</Text>)
+    const textElement = screen.getByText('Big Text')
+    expect(textElement).toBeInTheDocument()
+
+    // Verify the big prop actually applies styling (height)
+    const styledElement = container.querySelector('div')
+    expect(styledElement).toHaveStyle({ height: '35px', minHeight: '35px' })
   })
 
   it('handles onClick events', () => {
@@ -34,7 +39,15 @@ describe('Text', () => {
   })
 
   it('renders with selected state', () => {
-    render(<Text selected>Selected Text</Text>)
-    expect(screen.getByText('Selected Text')).toBeInTheDocument()
+    const { container } = render(<Text selected>Selected Text</Text>)
+    const textElement = screen.getByText('Selected Text')
+    expect(textElement).toBeInTheDocument()
+
+    // Verify the selected prop actually applies styling (background and text color)
+    const styledElement = container.querySelector('div')
+    expect(styledElement).toHaveStyle({
+      backgroundColor: '#333', // colors.black
+      color: '#f7f7f7', // colors.white
+    })
   })
 })

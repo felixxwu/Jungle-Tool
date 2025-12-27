@@ -1,5 +1,5 @@
 import { describe, it, expect, beforeEach, vi } from 'vitest'
-import { renderHook } from '@testing-library/react'
+import { renderHook, act } from '@testing-library/react'
 import { useRestartPlayback } from './useRestartPlayback'
 import { Layers, Player, Playing, PlayStartTimestamp, PlayDuration } from '../lib/store'
 
@@ -40,11 +40,11 @@ describe('useRestartPlayback', () => {
     expect(Layers.ref().length).toBe(2)
     expect(Playing.ref()).toBe(true)
 
-    // Remove all layers
-    Layers.set([])
-
-    // Rerender to trigger hook effect
-    rerender()
+    // Remove all layers and rerender (wrapped in act to avoid warnings)
+    act(() => {
+      Layers.set([])
+      rerender()
+    })
 
     // Verify player was stopped
     expect(mockStop).toHaveBeenCalledTimes(1)
@@ -68,9 +68,11 @@ describe('useRestartPlayback', () => {
 
     const { rerender } = renderHook(() => useRestartPlayback())
 
-    // Remove all layers
-    Layers.set([])
-    rerender()
+    // Remove all layers (wrapped in act to avoid warnings)
+    act(() => {
+      Layers.set([])
+      rerender()
+    })
 
     // stopPlayback checks player.state === 'started', so it won't call stopPlayback if state is 'stopped'
     // The hook only calls stopPlayback() if player.state === 'started'
@@ -92,9 +94,11 @@ describe('useRestartPlayback', () => {
 
     const { rerender } = renderHook(() => useRestartPlayback())
 
-    // Modify layers but keep at least one
-    Layers.set([{ filename: 'test-file-1', volume: 50, pitch: 0 }])
-    rerender()
+    // Modify layers but keep at least one (wrapped in act to avoid warnings)
+    act(() => {
+      Layers.set([{ filename: 'test-file-1', volume: 50, pitch: 0 }])
+      rerender()
+    })
 
     // stopPlayback should NOT be called when layers still exist
     expect(mockStop).not.toHaveBeenCalled()
@@ -115,16 +119,20 @@ describe('useRestartPlayback', () => {
 
     const { rerender } = renderHook(() => useRestartPlayback())
 
-    // Remove one layer (still has layers)
-    Layers.set([{ filename: 'test-file-1', volume: 50, pitch: 0 }])
-    rerender()
+    // Remove one layer (still has layers) (wrapped in act to avoid warnings)
+    act(() => {
+      Layers.set([{ filename: 'test-file-1', volume: 50, pitch: 0 }])
+      rerender()
+    })
 
     expect(mockStop).not.toHaveBeenCalled()
     expect(Playing.ref()).toBe(true)
 
-    // Remove all layers
-    Layers.set([])
-    rerender()
+    // Remove all layers (wrapped in act to avoid warnings)
+    act(() => {
+      Layers.set([])
+      rerender()
+    })
 
     // Now stopPlayback should be called
     expect(mockStop).toHaveBeenCalledTimes(1)

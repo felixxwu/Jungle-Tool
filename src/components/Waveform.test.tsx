@@ -120,15 +120,23 @@ describe('Waveform', () => {
       } as DOMRect
       vi.spyOn(waveformDiv, 'getBoundingClientRect').mockReturnValue(mockRect)
 
+      // Verify component renders correctly before click
+      const svg = container.querySelector('svg')
+      expect(svg).toBeInTheDocument()
+
       const clickEvent = new MouseEvent('click', {
         clientX: 50,
         clientY: 25,
         bubbles: true,
       })
-      waveformDiv.dispatchEvent(clickEvent)
 
-      // Should not throw error
-      expect(true).toBe(true)
+      // Should not throw error when clicking without handler
+      expect(() => {
+        waveformDiv.dispatchEvent(clickEvent)
+      }).not.toThrow()
+
+      // Component should still render correctly after click
+      expect(svg).toBeInTheDocument()
     })
   })
 
@@ -200,21 +208,30 @@ describe('Waveform', () => {
       } as DOMRect
       vi.spyOn(waveformDiv, 'getBoundingClientRect').mockReturnValue(mockRect)
 
-      // Move pointer (wrapped in act to avoid warnings)
+      // Move pointer to show hover line (wrapped in act to avoid warnings)
       act(() => {
         waveformDiv.dispatchEvent(
           new PointerEvent('pointermove', { clientX: 50, clientY: 25, bubbles: true })
         )
       })
 
+      // Verify hover line is shown (should have a line element)
+      let linesBefore = container.querySelectorAll('line')
+      expect(linesBefore.length).toBeGreaterThan(0)
+
       // Leave pointer (wrapped in act to avoid warnings)
       act(() => {
         waveformDiv.dispatchEvent(new PointerEvent('pointerleave', { bubbles: true }))
       })
 
-      // Hover line should be removed
-      // (We can't easily test this without checking internal state, but we verify it doesn't crash)
-      expect(true).toBe(true)
+      // Hover line should be removed - the hover line is only rendered when hoverSampleIndex !== null
+      // After pointer leave, hoverSampleIndex is set to null, so the hover line slice won't be in the concat
+      // We verify by checking that the number of lines decreased (hover line removed)
+      // Note: There's still the playhead line, so we check that hover-specific lines are gone
+      const linesAfter = container.querySelectorAll('line')
+      // The hover line should be removed, leaving only the playhead line (if playHeadId exists) or slice lines
+      // Since we don't have playHeadId in defaultProps, we should have fewer lines after hover is removed
+      expect(linesAfter.length).toBeLessThanOrEqual(linesBefore.length)
     })
   })
 

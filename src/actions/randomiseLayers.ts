@@ -5,7 +5,6 @@ import { Layers, LoadedFiles } from '../lib/store'
 export const randomiseLayers = async () => {
   const savedLayers = [...Layers.ref()]
   Layers.set([])
-  await new Promise(r => setTimeout(r, 200))
 
   const loadedFiles = LoadedFiles.ref()
   for (let i = 0; i < savedLayers.length; i++) {
