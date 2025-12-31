@@ -1,5 +1,5 @@
 import { describe, it, expect, beforeEach, vi } from 'vitest'
-import { render } from '../../../test/test-utils'
+import { render, act } from '../../../test/test-utils'
 import { FileEditor } from './index'
 import { SelectedFileIndex, LoadedFiles, WindowSize } from '../../../lib/store'
 
@@ -87,7 +87,9 @@ describe('FileEditor', () => {
     const { getByText } = render(<FileEditor />)
     const backButton = getByText('‹ Back')
 
-    backButton.click()
+    await act(async () => {
+      backButton.click()
+    })
 
     expect(SelectedFileIndex.ref()).toBe(null)
   })

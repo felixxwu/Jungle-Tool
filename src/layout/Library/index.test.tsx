@@ -1,5 +1,5 @@
 import { describe, it, expect, beforeEach, vi } from 'vitest'
-import { render } from '../../test/test-utils'
+import { render, act } from '../../test/test-utils'
 import { Library } from './index'
 import { SelectedFileIndex, WindowSize } from '../../lib/store'
 import { appWidth } from '../../lib/consts'
@@ -52,7 +52,9 @@ describe('Library', () => {
     expect(queryByTestId('file-editor')).not.toBeInTheDocument()
 
     // Select a file
-    SelectedFileIndex.set(0)
+    act(() => {
+      SelectedFileIndex.set(0)
+    })
     rerender(<Library />)
 
     // Now shows FileEditor

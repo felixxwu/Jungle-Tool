@@ -90,7 +90,9 @@ describe('SwingSlider', () => {
     const { rerender } = render(<SwingSlider />)
     expect(screen.getByText('Swing: 15%')).toBeInTheDocument()
 
-    Swing.set(22)
+    act(() => {
+      Swing.set(22)
+    })
     rerender(<SwingSlider />)
     expect(screen.getByText('Swing: 22%')).toBeInTheDocument()
   })

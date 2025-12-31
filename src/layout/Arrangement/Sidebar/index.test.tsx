@@ -1,5 +1,5 @@
 import { describe, it, expect, beforeEach, vi } from 'vitest'
-import { render } from '../../../test/test-utils'
+import { render, act } from '../../../test/test-utils'
 import { Sidebar } from './index'
 import { Tab, WindowSize } from '../../../lib/store'
 import { appWidth, arrangementSidebarWidth } from '../../../lib/consts'
@@ -93,7 +93,9 @@ describe('Sidebar', () => {
     expect((container1.firstChild as HTMLElement).style.width).toBe('100vw')
 
     // Just above threshold - should not be collapsed
-    WindowSize.set({ width: threshold + 1, height: 800 })
+    act(() => {
+      WindowSize.set({ width: threshold + 1, height: 800 })
+    })
     const { container: container2 } = render(<Sidebar />)
     expect((container2.firstChild as HTMLElement).style.width).toBe('')
   })

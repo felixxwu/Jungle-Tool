@@ -1,5 +1,5 @@
 import { describe, it, expect, beforeEach, vi } from 'vitest'
-import { render } from '../test/test-utils'
+import { render, act } from '../test/test-utils'
 import { useArrangementSamples } from './useArrangementSamples'
 import {
   Arrangement,
@@ -55,10 +55,11 @@ describe('useArrangementSamples', () => {
       useArrangementSamples({})
       return null
     }
-    const { rerender } = render(<TestComponent />)
+    render(<TestComponent />)
 
-    Arrangement.set([{ startStep: 0, stepNumToPlay: 0 }])
-    rerender(<TestComponent />)
+    act(() => {
+      Arrangement.set([{ startStep: 0, stepNumToPlay: 0 }])
+    })
 
     expect(getArrangementSamples).toHaveBeenCalledTimes(2)
   })
@@ -68,10 +69,11 @@ describe('useArrangementSamples', () => {
       useArrangementSamples({})
       return null
     }
-    const { rerender } = render(<TestComponent />)
+    render(<TestComponent />)
 
-    BPM.set(160)
-    rerender(<TestComponent />)
+    act(() => {
+      BPM.set(160)
+    })
 
     expect(getArrangementSamples).toHaveBeenCalledTimes(2)
   })
@@ -81,10 +83,11 @@ describe('useArrangementSamples', () => {
       useArrangementSamples({})
       return null
     }
-    const { rerender } = render(<TestComponent />)
+    render(<TestComponent />)
 
-    Layers.set([{ filename: 'test', volume: 50, pitch: 0 }])
-    rerender(<TestComponent />)
+    act(() => {
+      Layers.set([{ filename: 'test', volume: 50, pitch: 0 }])
+    })
 
     expect(getArrangementSamples).toHaveBeenCalledTimes(2)
   })
@@ -94,20 +97,21 @@ describe('useArrangementSamples', () => {
       useArrangementSamples({})
       return null
     }
-    const { rerender } = render(<TestComponent />)
+    render(<TestComponent />)
 
-    LoadedFiles.set([
-      {
-        name: 'test',
-        samples: [new Float32Array(100), new Float32Array(100)],
-        slices: [],
-        artist: '',
-        year: 0,
-        whosampledLink: '',
-        whosampledCount: 0,
-      },
-    ])
-    rerender(<TestComponent />)
+    act(() => {
+      LoadedFiles.set([
+        {
+          name: 'test',
+          samples: [new Float32Array(100), new Float32Array(100)],
+          slices: [],
+          artist: '',
+          year: 0,
+          whosampledLink: '',
+          whosampledCount: 0,
+        },
+      ])
+    })
 
     expect(getArrangementSamples).toHaveBeenCalledTimes(2)
   })
@@ -117,10 +121,11 @@ describe('useArrangementSamples', () => {
       useArrangementSamples({})
       return null
     }
-    const { rerender } = render(<TestComponent />)
+    render(<TestComponent />)
 
-    NumBars.set(2)
-    rerender(<TestComponent />)
+    act(() => {
+      NumBars.set(2)
+    })
 
     expect(getArrangementSamples).toHaveBeenCalledTimes(2)
   })
@@ -130,10 +135,11 @@ describe('useArrangementSamples', () => {
       useArrangementSamples({})
       return null
     }
-    const { rerender } = render(<TestComponent />)
+    render(<TestComponent />)
 
-    Swing.set(25)
-    rerender(<TestComponent />)
+    act(() => {
+      Swing.set(25)
+    })
 
     expect(getArrangementSamples).toHaveBeenCalledTimes(2)
   })

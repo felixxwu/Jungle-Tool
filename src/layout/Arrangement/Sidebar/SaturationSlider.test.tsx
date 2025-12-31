@@ -72,7 +72,9 @@ describe('SaturationSlider', () => {
     const { rerender } = render(<SaturationSlider />)
     expect(screen.getByText('Sat: 60%')).toBeInTheDocument()
 
-    Saturation.set(80)
+    act(() => {
+      Saturation.set(80)
+    })
     rerender(<SaturationSlider />)
     expect(screen.getByText('Sat: +7db')).toBeInTheDocument()
   })

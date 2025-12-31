@@ -88,7 +88,9 @@ describe('NoteLengthSlider', () => {
     const { rerender } = render(<NoteLengthSlider />)
     expect(screen.getByText('Note Len: 150ms')).toBeInTheDocument()
 
-    NoteLength.set(250)
+    act(() => {
+      NoteLength.set(250)
+    })
     rerender(<NoteLengthSlider />)
     expect(screen.getByText('Note Len: 250ms')).toBeInTheDocument()
   })

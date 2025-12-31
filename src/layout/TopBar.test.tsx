@@ -151,7 +151,9 @@ describe('TopBar', () => {
     const arrangementTab = screen.getByText('Arrangement')
     expect(arrangementTab).toBeInTheDocument()
 
-    Tab.set('library')
+    act(() => {
+      Tab.set('library')
+    })
     rerender(<TopBar />)
     const libraryTab = screen.getByText('Library')
     // Library tab should now be visible and component should re-render

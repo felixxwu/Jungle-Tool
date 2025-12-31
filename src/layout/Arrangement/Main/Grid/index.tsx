@@ -4,7 +4,6 @@ import { colors } from '../../../../lib/colors'
 import { Fragment } from 'react/jsx-runtime'
 import { Arrangement, SelectedBar, Swing } from '../../../../lib/store'
 import type { Note as NoteStyle } from '../../../../lib/types'
-import { useDebouncedLocalState } from '../../../../hooks/useDebouncedLocalState'
 
 const gridWidth = appWidth - arrangementSidebarWidth - 2
 const gridHeight = 375
@@ -16,23 +15,19 @@ export const Grid = () => {
   const swing = Swing.useState()
   const selectedBar = SelectedBar.useState()
 
-  const [localArrangement, setLocalArrangement] = useDebouncedLocalState(
-    arrangement,
-    Arrangement.set,
-    10
-  )
-  const arrangementForThisBar = localArrangement.filter(
+  const arrangementForThisBar = arrangement.filter(
     n => n.startStep < (selectedBar + 1) * 16 && n.startStep >= selectedBar * 16
   )
+
   const barOffset = selectedBar * gridWidth
 
   const handleAddNote = (note: NoteStyle) => {
-    setLocalArrangement([...localArrangement.filter(n => n.startStep !== note.startStep), note])
+    Arrangement.set([...Arrangement.ref().filter(n => n.startStep !== note.startStep), note])
   }
 
   const handleRemoveNote = (note: NoteStyle) => {
-    setLocalArrangement([
-      ...localArrangement.filter(
+    Arrangement.set([
+      ...Arrangement.ref().filter(
         n => !(n.stepNumToPlay === note.stepNumToPlay && n.startStep === note.startStep)
       ),
     ])
@@ -109,6 +104,10 @@ const NoteStyle = styled('div')`
   display: flex;
   align-items: center;
   justify-content: center;
+
+  &:hover {
+    background-color: #555;
+  }
 `
 
 const Clickable = styled('div')`
@@ -118,6 +117,11 @@ const Clickable = styled('div')`
   align-items: center;
   justify-content: center;
   color: ${colors.grey};
+  cursor: pointer;
+
+  &:hover {
+    background-color: ${colors.grey};
+  }
 `
 
 const HLine = styled('div')`

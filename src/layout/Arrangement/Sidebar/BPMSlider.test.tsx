@@ -88,7 +88,9 @@ describe('BPMSlider', () => {
     const { rerender } = render(<BPMSlider />)
     expect(screen.getByText('BPM: 120')).toBeInTheDocument()
 
-    BPM.set(150)
+    act(() => {
+      BPM.set(150)
+    })
     rerender(<BPMSlider />)
     expect(screen.getByText('BPM: 150')).toBeInTheDocument()
   })

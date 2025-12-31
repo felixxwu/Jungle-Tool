@@ -1,5 +1,5 @@
 import { describe, it, expect, beforeEach } from 'vitest'
-import { render } from '../test/test-utils'
+import { render, act } from '../test/test-utils'
 import { CollapsableRow } from './CollapsableRow'
 import { WindowSize } from '../lib/store'
 
@@ -54,7 +54,9 @@ describe('CollapsableRow', () => {
     expect(container1.querySelector('[data-testid="left1"]')).toBeInTheDocument()
     expect(container1.querySelector('[data-testid="right1"]')).toBeInTheDocument()
 
-    WindowSize.set({ width: 501, height: 800 })
+    act(() => {
+      WindowSize.set({ width: 501, height: 800 })
+    })
     const { container: container2 } = render(
       <CollapsableRow
         collapse={500}

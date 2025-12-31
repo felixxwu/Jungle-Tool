@@ -222,7 +222,9 @@ describe('Grid', () => {
     Swing.set(0)
     const { container: container1 } = render(<Grid />)
 
-    Swing.set(33) // Max swing
+    act(() => {
+      Swing.set(33) // Max swing
+    })
     const { container: container2 } = render(<Grid />)
 
     // The swing should affect the layout differently

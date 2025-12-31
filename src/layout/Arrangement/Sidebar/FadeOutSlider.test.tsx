@@ -88,7 +88,9 @@ describe('FadeOutSlider', () => {
     const { rerender } = render(<FadeOutSlider />)
     expect(screen.getByText('Fade Out: 50ms')).toBeInTheDocument()
 
-    NoteFadeOut.set(200)
+    act(() => {
+      NoteFadeOut.set(200)
+    })
     rerender(<FadeOutSlider />)
     expect(screen.getByText('Fade Out: 200ms')).toBeInTheDocument()
   })
