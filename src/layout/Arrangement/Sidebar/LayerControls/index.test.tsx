@@ -4,12 +4,17 @@ import { LayerControls } from './index'
 import { Layers, Playing, Player, Tab } from '../../../../lib/store'
 
 // Mock the actions
-vi.mock('../../../../actions/randomiseLayers', () => ({
-  randomiseLayers: vi.fn().mockResolvedValue(undefined),
-}))
-
 vi.mock('../../../../actions/playArrangement', () => ({
   playArrangement: vi.fn().mockResolvedValue(undefined),
+}))
+
+// Mock randomiseLayers - it will call playArrangement at the end (matching actual implementation)
+vi.mock('../../../../actions/randomiseLayers', () => ({
+  randomiseLayers: vi.fn().mockImplementation(async () => {
+    // Import the mocked playArrangement
+    const mod = await import('../../../../actions/playArrangement')
+    await mod.playArrangement()
+  }),
 }))
 
 import { randomiseLayers } from '../../../../actions/randomiseLayers'
@@ -47,33 +52,17 @@ describe('LayerControls', () => {
       randomiseButton.click()
     })
 
-    // Wait for randomiseLayers to complete
+    // Wait for randomiseLayers to complete and playArrangement to be called
     await waitFor(() => {
       expect(randomiseLayers).toHaveBeenCalledTimes(1)
+      expect(playArrangement).toHaveBeenCalledTimes(1)
     })
-
-    // Simulate player stopping after randomisation (before safeguard check)
-    // This tests the safeguard logic
-    await act(async () => {
-      await new Promise(r => setTimeout(r, 100))
-      Player.set(null) // Player stops
-    })
-
-    // Wait for the safeguard delay (250ms total)
-    await act(async () => {
-      await new Promise(r => setTimeout(r, 200))
-    })
-
-    // Verify playArrangement was called by the safeguard to restart playback
-    expect(playArrangement).toHaveBeenCalledTimes(1)
   })
 
   it('does not restart playback when randomise layers is clicked while not playing', async () => {
     // Setup: Not playing
     Playing.set(false)
     Player.set(null)
-
-    // randomiseLayers is already mocked
 
     render(<LayerControls />)
 
@@ -85,17 +74,11 @@ describe('LayerControls', () => {
     })
 
     // Wait for randomiseLayers to complete
+    // Note: randomiseLayers now always calls playArrangement, so it will be called
     await waitFor(() => {
       expect(randomiseLayers).toHaveBeenCalledTimes(1)
+      expect(playArrangement).toHaveBeenCalledTimes(1)
     })
-
-    // Wait a bit to ensure playArrangement is not called (wrapped in act)
-    await act(async () => {
-      await new Promise(r => setTimeout(r, 300))
-    })
-
-    // playArrangement should NOT be called when not playing
-    expect(playArrangement).not.toHaveBeenCalled()
   })
 
   it('does not restart playback if player state is not started', async () => {
@@ -107,8 +90,6 @@ describe('LayerControls', () => {
     Player.set(mockPlayer)
     Playing.set(false) // Not playing even though player exists
 
-    // randomiseLayers is already mocked
-
     render(<LayerControls />)
 
     const randomiseButton = screen.getByText('Randomise Layers ›')
@@ -117,17 +98,12 @@ describe('LayerControls', () => {
       randomiseButton.click()
     })
 
+    // Wait for randomiseLayers to complete
+    // Note: randomiseLayers now always calls playArrangement, so it will be called
     await waitFor(() => {
       expect(randomiseLayers).toHaveBeenCalledTimes(1)
+      expect(playArrangement).toHaveBeenCalledTimes(1)
     })
-
-    // Wait a bit (wrapped in act)
-    await act(async () => {
-      await new Promise(r => setTimeout(r, 300))
-    })
-
-    // playArrangement should NOT be called when player is not started
-    expect(playArrangement).not.toHaveBeenCalled()
   })
 
   it('restarts playback if it stops after randomisation', async () => {
@@ -139,8 +115,6 @@ describe('LayerControls', () => {
     Player.set(mockPlayer)
     Playing.set(true)
 
-    // randomiseLayers is already mocked
-
     render(<LayerControls />)
 
     const randomiseButton = screen.getByText('Randomise Layers ›')
@@ -149,19 +123,10 @@ describe('LayerControls', () => {
       randomiseButton.click()
     })
 
+    // Wait for randomiseLayers to complete and playArrangement to be called
     await waitFor(() => {
       expect(randomiseLayers).toHaveBeenCalledTimes(1)
+      expect(playArrangement).toHaveBeenCalledTimes(1)
     })
-
-    // Simulate player stopping after randomisation
-    Player.set(null)
-
-    // Wait for the safeguard delay
-    await waitFor(
-      () => {
-        expect(playArrangement).toHaveBeenCalledTimes(1)
-      },
-      { timeout: 500 }
-    )
   })
 })

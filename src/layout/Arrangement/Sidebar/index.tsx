@@ -2,18 +2,21 @@ import styled from 'styled-components'
 import { BPMSlider } from './BPMSlider'
 import { LayerControls } from './LayerControls'
 import { appWidth, arrangementSidebarWidth } from '../../../lib/consts'
-import { Tab, WindowSize } from '../../../lib/store'
+import { ShortenNotes, Tab, WindowSize } from '../../../lib/store'
 import { SwingSlider } from './SwingSlider'
 import { BottomBar } from '../Main/BottomBar'
 import { HDivider } from '../../../components/Dividers'
 import { NoteLengthSlider } from './NoteLengthSlider'
 import { FadeOutSlider } from './FadeOutSlider'
 import { SaturationSlider } from './SaturationSlider'
+import { FillGapsToggle } from './FillGapsToggle'
+import { ShortenNotesToggle } from './ShortenNotesToggle'
 
 export const Sidebar = () => {
   const windowSize = WindowSize.useState()
   const collapsed = windowSize.width < appWidth - arrangementSidebarWidth
   const tab = Tab.useState()
+  const shortenNotes = ShortenNotes.useState()
 
   if (!collapsed && tab === 'layers') {
     Tab.set('arrangement')
@@ -25,8 +28,14 @@ export const Sidebar = () => {
       <BPMSlider />
       <SwingSlider />
       <SaturationSlider />
-      <NoteLengthSlider />
-      <FadeOutSlider />
+      <ShortenNotesToggle />
+      {shortenNotes && (
+        <>
+          <NoteLengthSlider />
+          <FadeOutSlider />
+        </>
+      )}
+      <FillGapsToggle />
 
       {collapsed && (
         <>

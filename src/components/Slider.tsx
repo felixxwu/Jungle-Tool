@@ -1,9 +1,8 @@
 import styled from 'styled-components'
 import { useRef, useMemo } from 'react'
 import { colors } from '../lib/colors'
-import { largeTextHeight } from '../lib/consts'
 
-const sliderHeight = largeTextHeight
+const sliderHeight = 25
 const sidePadding = 15
 
 export const Slider = (p: {

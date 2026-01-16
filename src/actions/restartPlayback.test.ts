@@ -1,6 +1,6 @@
 import { describe, it, expect, beforeEach, vi, afterEach } from 'vitest'
 import { restartPlayback } from './restartPlayback'
-import { Player } from '../lib/store'
+import { Player, Playing } from '../lib/store'
 import { playArrangement } from './playArrangement'
 
 // Mock playArrangement
@@ -20,6 +20,7 @@ describe('restartPlayback', () => {
     vi.clearAllMocks()
     vi.useFakeTimers()
     Player.set(null)
+    Playing.set(false)
   })
 
   afterEach(() => {
@@ -29,6 +30,7 @@ describe('restartPlayback', () => {
   it('restarts playback if player is currently playing', async () => {
     mockPlayer.state = 'started'
     Player.set(mockPlayer)
+    Playing.set(true)
 
     restartPlayback()
 
@@ -41,6 +43,20 @@ describe('restartPlayback', () => {
   it('does not restart playback if player is stopped', async () => {
     mockPlayer.state = 'stopped'
     Player.set(mockPlayer)
+    Playing.set(false)
+
+    restartPlayback()
+
+    // Wait for debounce
+    await vi.runAllTimersAsync()
+
+    expect(playArrangement).not.toHaveBeenCalled()
+  })
+
+  it('does not restart playback if Playing state is false', async () => {
+    mockPlayer.state = 'started'
+    Player.set(mockPlayer)
+    Playing.set(false)
 
     restartPlayback()
 
@@ -64,6 +80,7 @@ describe('restartPlayback', () => {
   it('debounces multiple calls', async () => {
     mockPlayer.state = 'started'
     Player.set(mockPlayer)
+    Playing.set(true)
 
     restartPlayback()
     restartPlayback()
@@ -79,12 +96,14 @@ describe('restartPlayback', () => {
   it('checks player state when debounced function executes', async () => {
     mockPlayer.state = 'started'
     Player.set(mockPlayer)
+    Playing.set(true)
 
     restartPlayback()
 
     // Change state during debounce - the function checks state when it executes
     mockPlayer.state = 'stopped'
     Player.set(mockPlayer)
+    Playing.set(false)
 
     await vi.runAllTimersAsync()
 
@@ -92,4 +111,3 @@ describe('restartPlayback', () => {
     expect(playArrangement).not.toHaveBeenCalled()
   })
 })
-

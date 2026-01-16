@@ -38,3 +38,5 @@ export const Arrangement = singletonState<Note[]>(
 export const Playing = singletonState(false)
 export const PlayStartTimestamp = singletonState<number | null>(null)
 export const PlayDuration = singletonState<number | null>(null) // Duration in seconds
+export const FillGaps = singletonState(false)
+export const ShortenNotes = singletonState(false)

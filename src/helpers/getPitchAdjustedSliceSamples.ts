@@ -11,6 +11,7 @@ export const getPitchAdjustedSliceSamples = (p: {
   layerPitch: number
   noteLength: number
   noteFadeOut: number
+  fillGaps: boolean
 }): [Float32Array, Float32Array] | null => {
   const loadedFiles = LoadedFiles.ref()
   const loadedFile = loadedFiles.find(file => file.name === p.layerName)
@@ -34,7 +35,14 @@ export const getPitchAdjustedSliceSamples = (p: {
   const wav = new WaveFile()
   wav.fromScratch(2, SAMPLE_RATE, '16', sliceSamples)
   wav.toSampleRate(SAMPLE_RATE * pitchMult, { method: 'sinc' })
-  const [left, right] = wav.getSamples() as unknown as [Float32Array, Float32Array]
+  let [left, right] = wav.getSamples() as unknown as [Float32Array, Float32Array]
+
+  if (p.fillGaps) {
+    const reversedLeft = left.slice().reverse()
+    const reversedRight = right.slice().reverse()
+    left = new Float32Array([...left, ...reversedLeft])
+    right = new Float32Array([...right, ...reversedRight])
+  }
 
   const noteLengthInSamples = Math.round((p.noteLength / 1000) * SAMPLE_RATE)
   const fadeOutLengthInSamples = Math.round((p.noteFadeOut / 1000) * SAMPLE_RATE)

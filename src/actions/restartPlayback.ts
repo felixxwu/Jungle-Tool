@@ -1,7 +1,7 @@
 import { debounce } from '../lib/debounce'
-import { Player } from '../lib/store'
+import { Player, Playing } from '../lib/store'
 import { playArrangement } from './playArrangement'
 
 export const restartPlayback = debounce(() => {
-  if (Player.ref()?.state === 'started') playArrangement()
+  if (Playing.ref() && Player.ref()?.state === 'started') playArrangement()
 }, 200)

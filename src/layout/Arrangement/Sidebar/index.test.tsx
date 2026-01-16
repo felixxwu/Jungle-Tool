@@ -1,42 +1,43 @@
 import { describe, it, expect, beforeEach, vi } from 'vitest'
 import { render, act } from '../../../test/test-utils'
 import { Sidebar } from './index'
-import { Tab, WindowSize } from '../../../lib/store'
+import { Tab, WindowSize, ShortenNotes } from '../../../lib/store'
 import { appWidth, arrangementSidebarWidth } from '../../../lib/consts'
 
 // Mock child components
 vi.mock('./LayerControls', () => ({
-  LayerControls: () => <div data-testid="layer-controls">LayerControls</div>,
+  LayerControls: () => <div data-testid='layer-controls'>LayerControls</div>,
 }))
 
 vi.mock('./BPMSlider', () => ({
-  BPMSlider: () => <div data-testid="bpm-slider">BPMSlider</div>,
+  BPMSlider: () => <div data-testid='bpm-slider'>BPMSlider</div>,
 }))
 
 vi.mock('./SwingSlider', () => ({
-  SwingSlider: () => <div data-testid="swing-slider">SwingSlider</div>,
+  SwingSlider: () => <div data-testid='swing-slider'>SwingSlider</div>,
 }))
 
 vi.mock('./SaturationSlider', () => ({
-  SaturationSlider: () => <div data-testid="saturation-slider">SaturationSlider</div>,
+  SaturationSlider: () => <div data-testid='saturation-slider'>SaturationSlider</div>,
 }))
 
 vi.mock('./NoteLengthSlider', () => ({
-  NoteLengthSlider: () => <div data-testid="note-length-slider">NoteLengthSlider</div>,
+  NoteLengthSlider: () => <div data-testid='note-length-slider'>NoteLengthSlider</div>,
 }))
 
 vi.mock('./FadeOutSlider', () => ({
-  FadeOutSlider: () => <div data-testid="fade-out-slider">FadeOutSlider</div>,
+  FadeOutSlider: () => <div data-testid='fade-out-slider'>FadeOutSlider</div>,
 }))
 
 vi.mock('../Main/BottomBar', () => ({
-  BottomBar: () => <div data-testid="bottom-bar">BottomBar</div>,
+  BottomBar: () => <div data-testid='bottom-bar'>BottomBar</div>,
 }))
 
 describe('Sidebar', () => {
   beforeEach(() => {
     WindowSize.set({ width: 1200, height: 800 })
     Tab.set('arrangement')
+    ShortenNotes.set(true) // Enable ShortenNotes so NoteLengthSlider and FadeOutSlider are rendered
   })
 
   it('renders all control sliders', () => {
@@ -100,4 +101,3 @@ describe('Sidebar', () => {
     expect((container2.firstChild as HTMLElement).style.width).toBe('')
   })
 })
-

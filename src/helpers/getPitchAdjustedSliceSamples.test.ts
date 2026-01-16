@@ -51,6 +51,7 @@ describe('getPitchAdjustedSliceSamples', () => {
       layerPitch: 0,
       noteLength: 200,
       noteFadeOut: 50,
+      fillGaps: false,
     })
 
     expect(result).toBe(null)
@@ -70,6 +71,7 @@ describe('getPitchAdjustedSliceSamples', () => {
       layerPitch: 12, // +12 semitones (octave up)
       noteLength: 200,
       noteFadeOut: 50,
+      fillGaps: false,
     })
 
     // Verify WaveFile was used for pitch adjustment
@@ -97,6 +99,7 @@ describe('getPitchAdjustedSliceSamples', () => {
       layerPitch: 0,
       noteLength: 100, // 100ms
       noteFadeOut: 0,
+      fillGaps: false,
     })
 
     expect(result).not.toBe(null)
@@ -131,6 +134,7 @@ describe('getPitchAdjustedSliceSamples', () => {
       layerPitch: 0,
       noteLength: 100, // 100ms
       noteFadeOut: 50, // 50ms fade-out
+      fillGaps: false,
     })
 
     expect(result).not.toBe(null)
@@ -156,6 +160,7 @@ describe('getPitchAdjustedSliceSamples', () => {
       layerPitch: 0,
       noteLength: 200,
       noteFadeOut: 50,
+      fillGaps: false,
     }
 
     // First call
@@ -192,6 +197,7 @@ describe('getPitchAdjustedSliceSamples', () => {
       layerPitch: 0,
       noteLength: 200,
       noteFadeOut: 50,
+      fillGaps: false,
     })
     const callCount1 = mockWaveFile.fromScratch.mock.calls.length
 
@@ -202,6 +208,7 @@ describe('getPitchAdjustedSliceSamples', () => {
       layerPitch: 5, // Different pitch
       noteLength: 200,
       noteFadeOut: 50,
+      fillGaps: false,
     })
     const callCount2 = mockWaveFile.fromScratch.mock.calls.length
 

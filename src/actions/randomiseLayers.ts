@@ -1,10 +1,13 @@
 import { getBestLayerPitch } from '../helpers/getBestLayerPitch'
 import { getBestLayerVolume } from '../helpers/getBestLayerVolume'
 import { Layers, LoadedFiles } from '../lib/store'
+import { playArrangement } from './playArrangement'
 
 export const randomiseLayers = async () => {
   const savedLayers = [...Layers.ref()]
   Layers.set([])
+
+  await new Promise(r => setTimeout(r))
 
   const loadedFiles = LoadedFiles.ref()
   for (let i = 0; i < savedLayers.length; i++) {
@@ -22,4 +25,6 @@ export const randomiseLayers = async () => {
   }
 
   Layers.set([...savedLayers])
+  await new Promise(r => setTimeout(r))
+  await playArrangement()
 }
