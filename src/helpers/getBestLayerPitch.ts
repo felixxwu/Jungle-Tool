@@ -29,5 +29,5 @@ export const getBestLayerPitch = (layerName: string) => {
   })
   const pitchMult = Math.max(...pitchMults)
   const pitchShift = 12 * Math.log2(1 / pitchMult)
-  return Math.ceil(pitchShift)
+  return Math.max(0, Math.ceil(pitchShift))
 }

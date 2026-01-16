@@ -52,6 +52,7 @@ describe('getPitchAdjustedSliceSamples', () => {
       noteLength: 200,
       noteFadeOut: 50,
       fillGaps: false,
+      shortenNotes: true,
     })
 
     expect(result).toBe(null)
@@ -72,6 +73,7 @@ describe('getPitchAdjustedSliceSamples', () => {
       noteLength: 200,
       noteFadeOut: 50,
       fillGaps: false,
+      shortenNotes: true,
     })
 
     // Verify WaveFile was used for pitch adjustment
@@ -100,6 +102,7 @@ describe('getPitchAdjustedSliceSamples', () => {
       noteLength: 100, // 100ms
       noteFadeOut: 0,
       fillGaps: false,
+      shortenNotes: true,
     })
 
     expect(result).not.toBe(null)
@@ -135,6 +138,7 @@ describe('getPitchAdjustedSliceSamples', () => {
       noteLength: 100, // 100ms
       noteFadeOut: 50, // 50ms fade-out
       fillGaps: false,
+      shortenNotes: true,
     })
 
     expect(result).not.toBe(null)
@@ -161,6 +165,7 @@ describe('getPitchAdjustedSliceSamples', () => {
       noteLength: 200,
       noteFadeOut: 50,
       fillGaps: false,
+      shortenNotes: true,
     }
 
     // First call
@@ -198,6 +203,7 @@ describe('getPitchAdjustedSliceSamples', () => {
       noteLength: 200,
       noteFadeOut: 50,
       fillGaps: false,
+      shortenNotes: true,
     })
     const callCount1 = mockWaveFile.fromScratch.mock.calls.length
 
@@ -209,10 +215,48 @@ describe('getPitchAdjustedSliceSamples', () => {
       noteLength: 200,
       noteFadeOut: 50,
       fillGaps: false,
+      shortenNotes: true,
     })
     const callCount2 = mockWaveFile.fromScratch.mock.calls.length
 
     // Should recalculate, so WaveFile should be called again
     expect(callCount2).toBeGreaterThan(callCount1)
+  })
+
+  it('does not apply note length or fade out when shortenNotes is false', () => {
+    const mockWaveFile = {
+      fromScratch: vi.fn(),
+      toSampleRate: vi.fn(),
+      getSamples: vi.fn(() => {
+        // Create samples with non-zero values
+        const left = new Float32Array(5000)
+        const right = new Float32Array(5000)
+        left.fill(0.5)
+        right.fill(0.5)
+        return [left, right]
+      }),
+    }
+    ;(WaveFile as ReturnType<typeof vi.fn>).mockImplementation(() => mockWaveFile)
+
+    const result = getPitchAdjustedSliceSamples({
+      layerName: 'test-file',
+      sliceIndex: 0,
+      layerPitch: 0,
+      noteLength: 100, // 100ms
+      noteFadeOut: 50, // 50ms fade-out
+      fillGaps: false,
+      shortenNotes: false, // Disabled
+    })
+
+    expect(result).not.toBe(null)
+    if (result) {
+      // When shortenNotes is false, samples should not be modified
+      // All values should remain 0.5 (no fade-out applied)
+      expect(result[0].length).toBe(5000)
+      expect(result[1].length).toBe(5000)
+      // Check that values are not faded (should still be 0.5)
+      expect(result[0][3000]).toBe(0.5)
+      expect(result[1][3000]).toBe(0.5)
+    }
   })
 })

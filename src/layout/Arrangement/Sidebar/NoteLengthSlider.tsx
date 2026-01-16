@@ -21,7 +21,7 @@ export const NoteLengthSlider = () => {
         max={maxNoteLength}
         value={localNoteLength}
         onInput={setLocalNoteLength}
-        label={`Note Len: ${localNoteLength}ms`}
+        label={`Slice Len: ${localNoteLength}ms`}
       />
     </>
   )

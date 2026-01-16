@@ -12,6 +12,7 @@ export const getPitchAdjustedSliceSamples = (p: {
   noteLength: number
   noteFadeOut: number
   fillGaps: boolean
+  shortenNotes: boolean
 }): [Float32Array, Float32Array] | null => {
   const loadedFiles = LoadedFiles.ref()
   const loadedFile = loadedFiles.find(file => file.name === p.layerName)
@@ -44,14 +45,16 @@ export const getPitchAdjustedSliceSamples = (p: {
     right = new Float32Array([...right, ...reversedRight])
   }
 
-  const noteLengthInSamples = Math.round((p.noteLength / 1000) * SAMPLE_RATE)
-  const fadeOutLengthInSamples = Math.round((p.noteFadeOut / 1000) * SAMPLE_RATE)
-  for (let i = 0; i < left.length; i++) {
-    if (i > noteLengthInSamples) {
-      const fadeOutProgress = (i - noteLengthInSamples) / fadeOutLengthInSamples
-      const fadeOutMultiplier = Math.max(0, 1 - fadeOutProgress)
-      left[i] *= fadeOutMultiplier
-      right[i] *= fadeOutMultiplier
+  if (p.shortenNotes) {
+    const noteLengthInSamples = Math.round((p.noteLength / 1000) * SAMPLE_RATE)
+    const fadeOutLengthInSamples = Math.round((p.noteFadeOut / 1000) * SAMPLE_RATE)
+    for (let i = 0; i < left.length; i++) {
+      if (i > noteLengthInSamples) {
+        const fadeOutProgress = (i - noteLengthInSamples) / fadeOutLengthInSamples
+        const fadeOutMultiplier = Math.max(0, 1 - fadeOutProgress)
+        left[i] *= fadeOutMultiplier
+        right[i] *= fadeOutMultiplier
+      }
     }
   }
 

@@ -8,6 +8,7 @@ import {
   NumBars,
   NoteLength,
   NoteFadeOut,
+  ShortenNotes,
 } from '../lib/store'
 import { getSliceIndexFromStepNum } from './getSliceIndexFromStepNum'
 import { getPitchAdjustedSliceSamples } from './getPitchAdjustedSliceSamples'
@@ -68,6 +69,7 @@ describe('getArrangementLayerSamples', () => {
     NumBars.set(1)
     NoteLength.set(200)
     NoteFadeOut.set(50)
+    ShortenNotes.set(true)
     LoadedFiles.set([mockFile])
     Arrangement.set([
       { startStep: 0, stepNumToPlay: 0 },
@@ -123,6 +125,7 @@ describe('getArrangementLayerSamples', () => {
       expect.objectContaining({
         layerName: 'test-file',
         layerPitch: 0,
+        shortenNotes: true,
       })
     )
   })

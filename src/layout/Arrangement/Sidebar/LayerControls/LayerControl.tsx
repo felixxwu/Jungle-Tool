@@ -56,8 +56,14 @@ export const LayerControl = (p: { layer: Layer }) => {
 
   const pitch = localPitch
 
+  const handlePointerLeave = () => {
+    if (selectedLayerName === p.layer.filename) {
+      SelectedLayerName.set(null)
+    }
+  }
+
   return (
-    <>
+    <LayerControlContainer onPointerLeave={handlePointerLeave}>
       <HDivider />
       <Row>
         <TitleAndInfo onClick={handleToggleSelectedLayer}>
@@ -108,9 +114,13 @@ export const LayerControl = (p: { layer: Layer }) => {
           />
         </>
       )}
-    </>
+    </LayerControlContainer>
   )
 }
+
+const LayerControlContainer = styled('div')`
+  width: 100%;
+`
 
 const Row = styled('div')`
   display: flex;

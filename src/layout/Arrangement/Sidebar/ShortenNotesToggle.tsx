@@ -4,7 +4,6 @@ import { ShortenNotes, FillGaps } from '../../../lib/store'
 
 export const ShortenNotesToggle = () => {
   const shortenNotes = ShortenNotes.useState()
-  const fillGaps = FillGaps.useState()
 
   return (
     <>
@@ -19,7 +18,6 @@ export const ShortenNotesToggle = () => {
             FillGaps.set(false)
           }
         }}
-        disabled={fillGaps}
       />
     </>
   )

@@ -11,19 +11,19 @@ describe('NoteLengthSlider', () => {
 
   it('renders the note length slider', () => {
     render(<NoteLengthSlider />)
-    expect(screen.getByText(/Note Len:/)).toBeInTheDocument()
+    expect(screen.getByText(/Slice Len:/)).toBeInTheDocument()
   })
 
   it('displays the current note length in milliseconds', () => {
     NoteLength.set(200)
     render(<NoteLengthSlider />)
-    expect(screen.getByText('Note Len: 200ms')).toBeInTheDocument()
+    expect(screen.getByText('Slice Len: 200ms')).toBeInTheDocument()
   })
 
   it('updates note length value when slider is changed', async () => {
     render(<NoteLengthSlider />)
 
-    const slider = screen.getByLabelText(/Note Len:/) as HTMLInputElement
+    const slider = screen.getByLabelText(/Slice Len:/) as HTMLInputElement
 
     await act(async () => {
       Object.defineProperty(slider, 'value', {
@@ -45,7 +45,7 @@ describe('NoteLengthSlider', () => {
     NoteLength.set(200)
     render(<NoteLengthSlider />)
 
-    const slider = screen.getByLabelText(/Note Len:/) as HTMLInputElement
+    const slider = screen.getByLabelText(/Slice Len:/) as HTMLInputElement
 
     await act(async () => {
       Object.defineProperty(slider, 'value', {
@@ -66,7 +66,7 @@ describe('NoteLengthSlider', () => {
     NoteLength.set(200)
     render(<NoteLengthSlider />)
 
-    const slider = screen.getByLabelText(/Note Len:/) as HTMLInputElement
+    const slider = screen.getByLabelText(/Slice Len:/) as HTMLInputElement
 
     await act(async () => {
       Object.defineProperty(slider, 'value', {
@@ -86,19 +86,19 @@ describe('NoteLengthSlider', () => {
   it('updates display when note length value changes externally', () => {
     NoteLength.set(150)
     const { rerender } = render(<NoteLengthSlider />)
-    expect(screen.getByText('Note Len: 150ms')).toBeInTheDocument()
+    expect(screen.getByText('Slice Len: 150ms')).toBeInTheDocument()
 
     act(() => {
       NoteLength.set(250)
     })
     rerender(<NoteLengthSlider />)
-    expect(screen.getByText('Note Len: 250ms')).toBeInTheDocument()
+    expect(screen.getByText('Slice Len: 250ms')).toBeInTheDocument()
   })
 
   it('debounces note length value updates', async () => {
     render(<NoteLengthSlider />)
 
-    const slider = screen.getByLabelText(/Note Len:/) as HTMLInputElement
+    const slider = screen.getByLabelText(/Slice Len:/) as HTMLInputElement
 
     // Rapidly change the value multiple times
     await act(async () => {
@@ -128,4 +128,3 @@ describe('NoteLengthSlider', () => {
     expect(NoteLength.ref()).toBe(300)
   })
 })
-

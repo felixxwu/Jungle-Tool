@@ -14,9 +14,9 @@ export const zoomInFactor = 7
 export const waveformHeight = 200
 export const largeTextHeight = 35
 export const minNoteLength = 10
-export const maxNoteLength = 500
+export const maxNoteLength = 200
 export const minNoteFadeOut = 10
-export const maxNoteFadeOut = 500
+export const maxNoteFadeOut = 200
 export const arrangementPlayHead = 'arrangement-play-head'
 export const libraryPlayHead = 'library-play-head'
 
