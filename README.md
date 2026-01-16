@@ -25,9 +25,13 @@ Jungle Tool is an in-browser music production tool for slicing classic drum brea
 
 ### 🎚️ Controls
 
-- **BPM** (80-180), **Swing** (0-33%), **Saturation**, **Note Length & Fade Out**
-- **Per-Layer**: Independent pitch (±12 semitones) and volume (0-100) for each break
+- **BPM**, **Swing**, **Saturation**, **Slice Length & Fade Out**
+- **Per-Layer**: Independent pitch and volume for each break
 - **Randomize Layers**: Quickly try different break combinations
+
+### 🔄 Fill Gaps
+
+When enabled, **Fill Gaps** aims to fill the silence between two slices if either the pitch of the slice is too high or the BPM is too low. The gaps are filled by reversing each slice and appending it end to end, making playback smooth and continuous.
 
 ## How to Use
 

@@ -4,7 +4,6 @@ import { AddLayerMode, LibraryLoading, SelectedFileIndex, Tab, WindowSize } from
 import styled from 'styled-components'
 import { colors } from '../lib/colors'
 import { appWidth, arrangementSidebarWidth, largeTextHeight } from '../lib/consts'
-import { useDebouncedLocalState } from '../hooks/useDebouncedLocalState'
 import type { ITab } from '../lib/types'
 
 export const TopBar = () => {
@@ -13,33 +12,27 @@ export const TopBar = () => {
   const windowSize = WindowSize.useState()
   const collapsed = windowSize.width < appWidth - arrangementSidebarWidth
 
-  const [localTab, setLocalTab] = useDebouncedLocalState(tab, Tab.set, 10)
-
   const handleSelectTab = (tab: ITab) => {
     SelectedFileIndex.set(null)
     AddLayerMode.set(false)
-    setLocalTab(tab)
+    Tab.set(tab)
   }
 
   return (
     <Row>
-      <Text
-        onClick={() => handleSelectTab('arrangement')}
-        selected={localTab === 'arrangement'}
-        big
-      >
+      <Text onClick={() => handleSelectTab('arrangement')} selected={tab === 'arrangement'} big>
         Arrangement
       </Text>
       {collapsed && (
         <>
           <VDivider />
-          <Text onClick={() => handleSelectTab('layers')} selected={localTab === 'layers'} big>
+          <Text onClick={() => handleSelectTab('layers')} selected={tab === 'layers'} big>
             Layers
           </Text>
         </>
       )}
       <VDivider />
-      <Text onClick={() => handleSelectTab('library')} selected={localTab === 'library'}>
+      <Text onClick={() => handleSelectTab('library')} selected={tab === 'library'}>
         {libraryLoading ? ' Loading...' : 'Library'}
       </Text>
       <VDivider />

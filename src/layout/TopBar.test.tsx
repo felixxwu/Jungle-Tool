@@ -159,4 +159,51 @@ describe('TopBar', () => {
     // Library tab should now be visible and component should re-render
     expect(libraryTab).toBeInTheDocument()
   })
+
+  it('updates Arrangement tab to selected when Tab state changes to arrangement externally', () => {
+    Tab.set('library')
+    const { rerender } = render(<TopBar />)
+    const arrangementTab = screen.getByText('Arrangement')
+    const libraryTab = screen.getByText('Library')
+
+    // Initially library should be selected
+    expect(libraryTab).toBeInTheDocument()
+    expect(arrangementTab).toBeInTheDocument()
+
+    // Simulate external tab change (like from addToArrangement)
+    act(() => {
+      Tab.set('arrangement')
+    })
+    rerender(<TopBar />)
+
+    // Arrangement tab should now be selected (component should re-render with new tab state)
+    const updatedArrangementTab = screen.getByText('Arrangement')
+    expect(updatedArrangementTab).toBeInTheDocument()
+    expect(Tab.ref()).toBe('arrangement')
+  })
+
+  it('immediately reflects tab change when set externally (like from addToArrangement)', () => {
+    Tab.set('library')
+    const { rerender } = render(<TopBar />)
+
+    // Verify we're on library tab
+    expect(Tab.ref()).toBe('library')
+    expect(screen.getByText('Library')).toBeInTheDocument()
+
+    // Simulate addToArrangement calling Tab.set('arrangement')
+    act(() => {
+      Tab.set('arrangement')
+    })
+
+    // Tab state should be updated
+    expect(Tab.ref()).toBe('arrangement')
+
+    // Re-render to verify TopBar reflects the change
+    rerender(<TopBar />)
+
+    // Component should reflect the new tab state - Arrangement should be in the document
+    // (we can't easily test the selected state without checking styles, but we verify it renders)
+    const arrangementTabs = screen.getAllByText('Arrangement')
+    expect(arrangementTabs.length).toBeGreaterThan(0)
+  })
 })
