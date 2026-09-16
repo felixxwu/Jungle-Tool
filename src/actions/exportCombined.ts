@@ -1,8 +1,7 @@
-import { getArrangementSamples } from '../helpers/getArrangementSamples'
+import { audioBufferToSamples, renderOffline } from '../lib/offlineRender'
 import { downloadAsWav } from './downloadAsWav'
 
-export const exportCombined = () => {
-  const arrangementSamples = getArrangementSamples({})
-
-  downloadAsWav(arrangementSamples, 'Jungle Tool Break')
+export const exportCombined = async () => {
+  const buffer = await renderOffline()
+  downloadAsWav(audioBufferToSamples(buffer), 'Jungle Tool Break')
 }

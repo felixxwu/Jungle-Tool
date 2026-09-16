@@ -13,13 +13,6 @@ vi.mock('../helpers/getBestLayerVolume', () => ({
   getBestLayerVolume: vi.fn(() => 75),
 }))
 
-// Mock restartPlayback
-vi.mock('./restartPlayback', () => ({
-  restartPlayback: vi.fn(),
-}))
-
-import { restartPlayback } from './restartPlayback'
-
 describe('addToArrangement', () => {
   const mockFile = {
     name: 'test-file',
@@ -95,28 +88,25 @@ describe('addToArrangement', () => {
     expect(layers[0].volume).toBe(90)
   })
 
-  it('calls restartPlayback when adding a layer', async () => {
+  it('appends the layer and switches to the arrangement tab, with no restart', () => {
     addToArrangement(0)
 
-    // Wait for debounce (200ms)
-    await vi.runAllTimersAsync()
-
-    expect(restartPlayback).toHaveBeenCalledTimes(1)
+    expect(Layers.ref().length).toBe(1)
+    expect(Layers.ref()[0].filename).toBe('test-file')
+    expect(Tab.ref()).toBe('arrangement')
   })
 
-  it('calls restartPlayback even when not playing', async () => {
+  it('appends the layer even when not playing', () => {
     Playing.set(false)
     Player.set(null)
 
     addToArrangement(0)
 
-    // Wait for debounce (200ms)
-    await vi.runAllTimersAsync()
-
-    expect(restartPlayback).toHaveBeenCalledTimes(1)
+    expect(Layers.ref().length).toBe(1)
+    expect(Tab.ref()).toBe('arrangement')
   })
 
-  it('calls restartPlayback when adding a layer while playing', async () => {
+  it('appends the layer while playing, without restarting', () => {
     const mockPlayer = {
       state: 'started' as const,
       start: vi.fn(),
@@ -128,13 +118,11 @@ describe('addToArrangement', () => {
 
     addToArrangement(0)
 
-    // Wait for debounce (200ms)
-    await vi.runAllTimersAsync()
-
-    expect(restartPlayback).toHaveBeenCalledTimes(1)
+    expect(Layers.ref().length).toBe(1)
+    expect(Tab.ref()).toBe('arrangement')
   })
 
-  it('calls restartPlayback when adding multiple layers', async () => {
+  it('appends multiple layers when called repeatedly', () => {
     const mockFile2 = {
       name: 'test-file-2',
       artist: 'Test Artist 2',
@@ -149,11 +137,7 @@ describe('addToArrangement', () => {
     addToArrangement(0)
     addToArrangement(1)
 
-    // Wait for debounce (200ms)
-    await vi.runAllTimersAsync()
-
-    // Should be called twice (once for each addToArrangement call)
-    // But due to debouncing, might be called less if calls are within 200ms
-    expect(restartPlayback).toHaveBeenCalled()
+    expect(Layers.ref().length).toBe(2)
+    expect(Tab.ref()).toBe('arrangement')
   })
 })

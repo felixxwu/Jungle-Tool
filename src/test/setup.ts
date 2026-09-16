@@ -1,6 +1,7 @@
 import '@testing-library/jest-dom'
 import { cleanup } from '@testing-library/react'
 import { afterEach, vi } from 'vitest'
+import { createFakeAudioContext } from './audio-mock'
 
 // Cleanup after each test
 afterEach(() => {
@@ -25,6 +26,20 @@ vi.mock('../lib/tone', () => ({
     })),
   },
 }))
+
+// jsdom has no Web Audio. Provide a constructible default so modules that
+// create a context at call time work without each test wiring its own.
+;(globalThis as any).AudioContext = vi
+  .fn()
+  .mockImplementation(() => createFakeAudioContext())
+;(globalThis as any).OfflineAudioContext = vi
+  .fn()
+  .mockImplementation((channels: number, length: number, sampleRate: number) => ({
+    ...createFakeAudioContext({ sampleRate }),
+    length,
+    numberOfChannels: channels,
+    startRendering: async () => createFakeAudioContext().createBuffer(channels, length, sampleRate),
+  }))
 
 // Mock window.matchMedia
 Object.defineProperty(window, 'matchMedia', {

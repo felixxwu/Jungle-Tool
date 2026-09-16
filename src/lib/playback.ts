@@ -1,6 +1,7 @@
 import { Player, Playing, PlayStartTimestamp, PlayDuration } from './store'
 import { Tone } from './tone'
 import { SAMPLE_RATE } from './consts'
+import { stopScheduler } from './scheduler'
 import type { Tone as ToneType } from './tone'
 
 /**
@@ -11,11 +12,18 @@ export const calculateDuration = (sampleCount: number): number => {
 }
 
 /**
- * Stops current playback and clears all playback state
+ * Stops the arrangement. The Library preview is stopPreview's job.
  */
-export const stopPlayback = () => {
-  Player.ref()?.stop()
+export const stopArrangement = async () => {
+  await stopScheduler()
   Playing.set(false)
+}
+
+/**
+ * Stops a one-shot Library preview.
+ */
+export const stopPreview = () => {
+  Player.ref()?.stop()
   PlayStartTimestamp.set(null)
   PlayDuration.set(null)
 }

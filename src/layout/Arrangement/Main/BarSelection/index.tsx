@@ -1,35 +1,23 @@
 import styled, { keyframes, css } from 'styled-components'
 import { Text } from '../../../../components/Text'
-import {
-  Arrangement,
-  NumBars,
-  SelectedBar,
-  BPM,
-  Player,
-  PlayStartTimestamp,
-} from '../../../../lib/store'
+import { Arrangement, NumBars, SelectedBar, BPM, Playing } from '../../../../lib/store'
 import { VDivider } from '../../../../components/Dividers'
 import { Fragment } from 'react/jsx-runtime'
 import { useDebouncedLocalState } from '../../../../hooks/useDebouncedLocalState'
 import { useState, useEffect } from 'react'
+import { getLoopPosition } from '../../../../lib/scheduler'
 
 export const BarSelection = () => {
   const numBars = NumBars.useState()
   const selectedBar = SelectedBar.useState()
   const bpm = BPM.useState()
-  const player = Player.useState()
-  const playStartTimestamp = PlayStartTimestamp.useState()
-  const isPlaying = !!playStartTimestamp && player?.state !== 'stopped'
+  const isPlaying = Playing.useState()
 
   const [localSelectedBar, setLocalSelectedBar] = useDebouncedLocalState(
     selectedBar,
     SelectedBar.set,
     10
   )
-
-  // Calculate bar duration in milliseconds for arrangement playback
-  const stepLength = 60 / bpm / 4
-  const barDurationMs = 16 * stepLength * 1000
 
   // Calculate beat duration in milliseconds: 60 seconds / BPM * 1000ms
   const beatDurationMs = (60 / bpm) * 1000 * 2
@@ -38,23 +26,21 @@ export const BarSelection = () => {
   const [currentPlayingBar, setCurrentPlayingBar] = useState<number | null>(null)
 
   useEffect(() => {
-    if (!isPlaying || !playStartTimestamp) {
+    if (!isPlaying) {
       setCurrentPlayingBar(null)
       return
     }
 
+    let frame = 0
     const updatePlayingBar = () => {
-      const elapsed = Date.now() - playStartTimestamp
-      const arrangementDuration = barDurationMs * numBars
-      const playingBar = Math.floor((elapsed % arrangementDuration) / barDurationMs)
-      setCurrentPlayingBar(playingBar)
+      setCurrentPlayingBar(getLoopPosition()?.bar ?? null)
+      frame = requestAnimationFrame(updatePlayingBar)
     }
 
-    updatePlayingBar()
-    const intervalId = setInterval(updatePlayingBar, 16) // 60fps
+    frame = requestAnimationFrame(updatePlayingBar)
 
-    return () => clearInterval(intervalId)
-  }, [isPlaying, playStartTimestamp, barDurationMs, numBars])
+    return () => cancelAnimationFrame(frame)
+  }, [isPlaying])
 
   const addBars = () => {
     NumBars.set(numBars + 1)
@@ -90,7 +76,7 @@ export const BarSelection = () => {
       {Array.from({ length: numBars }).map((_, i) => (
         <Fragment key={i}>
           <FlashingTextWrapper
-            key={playStartTimestamp || `bar-${i}`}
+            key={`bar-${i}`}
             $isPlaying={isPlaying && currentPlayingBar === i}
             $isSelected={localSelectedBar === i}
             $beatDuration={beatDurationMs}

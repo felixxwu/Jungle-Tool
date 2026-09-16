@@ -6,7 +6,7 @@ import { playArrangement } from '../../../../actions/playArrangement'
 import { randomiseArrangement } from '../../../../actions/randomiseArrangement'
 import { useEffect, useState } from 'react'
 import { ExportModal } from '../../../../modals/ExportModal'
-import { stopPlayback } from '../../../../lib/playback'
+import { stopArrangement } from '../../../../lib/playback'
 
 export const BottomBar = () => {
   const playing = Playing.useState()
@@ -21,7 +21,7 @@ export const BottomBar = () => {
   }, [arrangement])
 
   const handleStop = () => {
-    stopPlayback()
+    stopArrangement()
   }
 
   const handlePlayPause = () => {

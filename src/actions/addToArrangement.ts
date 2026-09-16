@@ -1,7 +1,6 @@
 import { getBestLayerPitch } from '../helpers/getBestLayerPitch'
 import { getBestLayerVolume } from '../helpers/getBestLayerVolume'
 import { Layers, LoadedFiles, Tab } from '../lib/store'
-import { restartPlayback } from './restartPlayback'
 
 export const addToArrangement = (index: number) => {
   const loadedFiles = LoadedFiles.ref()
@@ -15,5 +14,4 @@ export const addToArrangement = (index: number) => {
     pitch: getBestLayerPitch(layerName),
   })
   Layers.set([...layers])
-  restartPlayback()
 }

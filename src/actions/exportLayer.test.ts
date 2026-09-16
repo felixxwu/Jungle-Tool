@@ -1,83 +1,32 @@
-import { describe, it, expect, beforeEach, vi } from 'vitest'
+import { describe, it, expect, vi, beforeEach } from 'vitest'
 import { exportLayer } from './exportLayer'
-import { getArrangementLayerSamples } from '../helpers/getArrangementLayerSamples'
+import { renderOffline } from '../lib/offlineRender'
 import { downloadAsWav } from './downloadAsWav'
+import { createFakeAudioContext } from '../test/audio-mock'
 import type { Layer } from '../lib/types'
 
-// Mock dependencies
-vi.mock('../helpers/getArrangementLayerSamples', () => ({
-  getArrangementLayerSamples: vi.fn(),
-}))
-
-vi.mock('./downloadAsWav', () => ({
-  downloadAsWav: vi.fn(),
-}))
+vi.mock('../lib/offlineRender', async () => {
+  const actual = await vi.importActual<typeof import('../lib/offlineRender')>('../lib/offlineRender')
+  return { ...actual, renderOffline: vi.fn() }
+})
+vi.mock('./downloadAsWav')
 
 describe('exportLayer', () => {
-  const mockLayer: Layer = {
-    filename: 'Amen Brother (1)',
-    volume: 50,
-    pitch: 0,
-  }
-
-  const mockSamples: [Float32Array, Float32Array] = [
-    new Float32Array(44100),
-    new Float32Array(44100),
-  ]
+  const layer = { filename: 'Amen', volume: 100, pitch: 0 } as Layer
 
   beforeEach(() => {
     vi.clearAllMocks()
-    ;(getArrangementLayerSamples as ReturnType<typeof vi.fn>).mockReturnValue(mockSamples)
+    const ctx = createFakeAudioContext()
+    ;(renderOffline as ReturnType<typeof vi.fn>).mockResolvedValue(ctx.createBuffer(2, 16, 44100))
   })
 
-  it('exports layer as WAV file', () => {
-    exportLayer(mockLayer)
-
-    expect(getArrangementLayerSamples).toHaveBeenCalledWith({ layer: mockLayer })
-    expect(downloadAsWav).toHaveBeenCalledWith(
-      mockSamples,
-      'Jungle Tool Break - Amen Brother (1)'
-    )
+  it('renders only the given layer offline', async () => {
+    await exportLayer(layer)
+    expect(renderOffline).toHaveBeenCalledWith({ layers: [layer] })
   })
 
-  it('does not export when layer samples are null', () => {
-    ;(getArrangementLayerSamples as ReturnType<typeof vi.fn>).mockReturnValue(null)
-
-    exportLayer(mockLayer)
-
-    expect(getArrangementLayerSamples).toHaveBeenCalledWith({ layer: mockLayer })
-    expect(downloadAsWav).not.toHaveBeenCalled()
-  })
-
-  it('uses correct filename format for layer export', () => {
-    const layer2: Layer = {
-      filename: 'Think (About It) (1)',
-      volume: 70,
-      pitch: 3,
-    }
-
-    exportLayer(layer2)
-
-    expect(downloadAsWav).toHaveBeenCalledWith(
-      mockSamples,
-      'Jungle Tool Break - Think (About It) (1)'
-    )
-  })
-
-  it('handles different layer configurations', () => {
-    const layer3: Layer = {
-      filename: 'Apache',
-      volume: 100,
-      pitch: -5,
-    }
-
-    exportLayer(layer3)
-
-    expect(getArrangementLayerSamples).toHaveBeenCalledWith({ layer: layer3 })
-    expect(downloadAsWav).toHaveBeenCalledWith(
-      mockSamples,
-      'Jungle Tool Break - Apache'
-    )
+  it('downloads the rendered samples as a wav', async () => {
+    await exportLayer(layer)
+    expect(downloadAsWav).toHaveBeenCalledWith(expect.anything(), 'Jungle Tool Break - Amen')
   })
 })
-

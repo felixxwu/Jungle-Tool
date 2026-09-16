@@ -1,11 +1,8 @@
-import { getArrangementLayerSamples } from '../helpers/getArrangementLayerSamples'
+import { audioBufferToSamples, renderOffline } from '../lib/offlineRender'
 import type { Layer } from '../lib/types'
 import { downloadAsWav } from './downloadAsWav'
 
-export const exportLayer = (layer: Layer) => {
-  const layerSamples = getArrangementLayerSamples({ layer })
-
-  if (!layerSamples) return
-
-  downloadAsWav(layerSamples, `Jungle Tool Break - ${layer.filename}`)
+export const exportLayer = async (layer: Layer) => {
+  const buffer = await renderOffline({ layers: [layer] })
+  downloadAsWav(audioBufferToSamples(buffer), `Jungle Tool Break - ${layer.filename}`)
 }

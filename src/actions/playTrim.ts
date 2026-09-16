@@ -2,7 +2,7 @@ import { createPlayer, stereoSlice } from '../lib/audio'
 import { LoadedFiles, Player, Playing } from '../lib/store'
 import {
   setupPlayback,
-  stopPlayback,
+  stopPreview,
   setupPlayerStopHandler,
   startPlayback,
   calculateDuration,
@@ -20,7 +20,7 @@ export const playTrim = async (fileIndex: number) => {
     endSlice?.start ?? loadedFiles[fileIndex].samples[0].length
   )
 
-  stopPlayback() // Stop and clear state before starting new playback
+  stopPreview() // Stop and clear state before starting new playback
   await setupPlayback()
 
   const player = await createPlayer(samples)

@@ -677,7 +677,8 @@ git commit -m "feat: add getStepSeconds helper"
 
 ```ts
 export type ScheduledNote = {
-  filename: string
+  filename: string   // which break: selects the AudioBuffer
+  layerKey: string   // which layer: selects the GainNode ("<filename>#<index>")
   sliceIndex: number
   timeInSeconds: number
   playbackRate: number
@@ -702,6 +703,7 @@ export const getScheduledNotes: (p: {
 **Notes for the implementer:**
 - `timeInSeconds` is relative to step 0 of the pass.
 - There is deliberately **no** `gain` field. Layer volume lives on the layer `GainNode` (Task 7) so it can affect already-sounding notes, and so live and offline apply it identically.
+- `filename` and `layerKey` are **different things** and both are needed. `addToArrangement` can add the same break twice, giving two layers with the same filename but different volume and pitch. `filename` picks the audio buffer; `layerKey` (`` `${filename}#${layerIndex}` ``) picks the gain node, so two layers of the same break keep independent volumes.
 - The bar range is **half-open**. `getArrangementLayerSamples.ts:50` uses `>` where it should use `>=`, which lets a note at `startStep === (bar + 1) * 16` leak into a single-bar render. That is harmless today (the typed array drops the write) but not once notes are real scheduled sources.
 - `playbackRate = 2 ** (pitch / 12)`. This reproduces today's direction: `getPitchAdjustedSliceSamples.ts:34-38` resamples to `44100 / 2 ** (pitch/12)` and plays back at 44100, a net speed ratio of `2 ** (pitch/12)`.
 - Swing delays **odd** steps by `(swing / 100) * stepSeconds`, matching `getArrangementLayerSamples.ts:31-34`.
@@ -789,6 +791,12 @@ describe('getScheduledNotes', () => {
     expect(result).toHaveLength(6)
   })
 
+  it('gives two layers of the same break distinct layer keys', () => {
+    const second: Layer = { filename: 'Break', volume: 50, pitch: 7 }
+    const result = getScheduledNotes({ ...base, layers: [layer, second] })
+    expect(new Set(result.map(n => n.layerKey))).toEqual(new Set(['Break#0', 'Break#1']))
+  })
+
   it('skips layers whose file is not loaded', () => {
     const missing: Layer = { filename: 'Nope', volume: 100, pitch: 0 }
     expect(getScheduledNotes({ ...base, layers: [missing] })).toHaveLength(0)
@@ -835,7 +843,8 @@ import { getSliceIndexFromStepNum } from './getSliceIndexFromStepNum'
 import { getStepSeconds } from './getStepSeconds'
 
 export type ScheduledNote = {
-  filename: string
+  filename: string   // which break: selects the AudioBuffer
+  layerKey: string   // which layer: selects the GainNode ("<filename>#<index>")
   sliceIndex: number
   timeInSeconds: number
   playbackRate: number
@@ -868,11 +877,14 @@ export const getScheduledNotes = (p: {
 
   const scheduled: ScheduledNote[] = []
 
-  for (const layer of p.layers) {
+  for (const [layerIndex, layer] of p.layers.entries()) {
     const loadedFile = p.loadedFiles.find(file => file.name === layer.filename)
     if (!loadedFile) continue
 
     const playbackRate = Math.pow(2, layer.pitch / 12)
+    // Two layers can share a filename (the same break added twice at
+    // different pitches), so the gain node is keyed by position, not name.
+    const layerKey = `${layer.filename}#${layerIndex}`
 
     for (const note of p.arrangement) {
       // Half-open range: a note on the exclusive bound belongs to the next
@@ -889,6 +901,7 @@ export const getScheduledNotes = (p: {
 
       scheduled.push({
         filename: layer.filename,
+        layerKey,
         sliceIndex,
         timeInSeconds,
         playbackRate,
@@ -905,7 +918,7 @@ export const getScheduledNotes = (p: {
 - [ ] **Step 4: Run test to verify it passes**
 
 Run: `npx vitest run src/helpers/getScheduledNotes.test.ts`
-Expected: PASS (10 tests).
+Expected: PASS (11 tests).
 
 - [ ] **Step 5: Commit**
 
@@ -928,9 +941,9 @@ git commit -m "feat: add pure getScheduledNotes planning core"
 
 ```ts
 export type Graph = {
-  layerGain: (filename: string) => GainNode
-  setLayerVolume: (filename: string, volume: number) => void
-  pruneLayers: (filenames: string[]) => void
+  layerGain: (layerKey: string) => GainNode
+  setLayerVolume: (layerKey: string, volume: number) => void
+  pruneLayers: (layerKeys: string[]) => void
   setSaturation: (saturation: number) => void
   rampTrimTo: (value: number, seconds: number) => void
   disconnect: () => void
@@ -940,7 +953,7 @@ export const buildGraph: (ctx: BaseAudioContext) => Graph
 ```
 
 **Notes for the implementer:**
-- Layer gains are keyed by **filename**, not index: `randomiseLayers` replaces the whole list, so indices are not stable.
+- Layer gains are keyed by `layerKey` (`` `${filename}#${layerIndex}` ``, produced by `getScheduledNotes` in Task 6), never by filename alone: the same break can appear as two layers with different volumes.
 - Volume and trim use `setTargetAtTime` with a 15 ms time constant, not direct assignment, so dragging a slider does not produce zipper noise.
 - `setSaturation` rebuilds the curve only when the value actually changed; a curve swap can click, and it should not happen on every tick.
 
@@ -963,20 +976,26 @@ describe('buildGraph', () => {
   it('returns the same gain node for a repeated filename', () => {
     const ctx = createFakeAudioContext()
     const graph = buildGraph(ctx as unknown as BaseAudioContext)
-    expect(graph.layerGain('Amen')).toBe(graph.layerGain('Amen'))
+    expect(graph.layerGain('Amen#0')).toBe(graph.layerGain('Amen#0'))
   })
 
   it('creates separate gain nodes per layer filename', () => {
     const ctx = createFakeAudioContext()
     const graph = buildGraph(ctx as unknown as BaseAudioContext)
-    expect(graph.layerGain('Amen')).not.toBe(graph.layerGain('Think'))
+    expect(graph.layerGain('Amen#0')).not.toBe(graph.layerGain('Think#1'))
+  })
+
+  it('keeps two layers of the same break independent', () => {
+    const ctx = createFakeAudioContext()
+    const graph = buildGraph(ctx as unknown as BaseAudioContext)
+    expect(graph.layerGain('Amen#0')).not.toBe(graph.layerGain('Amen#1'))
   })
 
   it('ramps layer volume rather than assigning it', () => {
     const ctx = createFakeAudioContext()
     const graph = buildGraph(ctx as unknown as BaseAudioContext)
-    graph.setLayerVolume('Amen', 50)
-    const gain = graph.layerGain('Amen') as unknown as { gain: { calls: unknown[]; value: number } }
+    graph.setLayerVolume('Amen#0', 50)
+    const gain = graph.layerGain('Amen#0') as unknown as { gain: { calls: unknown[]; value: number } }
     expect(gain.gain.calls).toHaveLength(1)
     expect(gain.gain.value).toBeCloseTo(0.5, 6)
   })
@@ -984,9 +1003,9 @@ describe('buildGraph', () => {
   it('drops gain nodes for layers that no longer exist', () => {
     const ctx = createFakeAudioContext()
     const graph = buildGraph(ctx as unknown as BaseAudioContext)
-    const first = graph.layerGain('Amen')
-    graph.pruneLayers(['Think'])
-    expect(graph.layerGain('Amen')).not.toBe(first)
+    const first = graph.layerGain('Amen#0')
+    graph.pruneLayers(['Think#0'])
+    expect(graph.layerGain('Amen#0')).not.toBe(first)
   })
 })
 ```
@@ -1006,9 +1025,9 @@ import { getSaturationCurve } from './saturationCurve'
 const RAMP_TIME_CONSTANT = 0.015
 
 export type Graph = {
-  layerGain: (filename: string) => GainNode
-  setLayerVolume: (filename: string, volume: number) => void
-  pruneLayers: (filenames: string[]) => void
+  layerGain: (layerKey: string) => GainNode
+  setLayerVolume: (layerKey: string, volume: number) => void
+  pruneLayers: (layerKeys: string[]) => void
   setSaturation: (saturation: number) => void
   rampTrimTo: (value: number, seconds: number) => void
   disconnect: () => void
@@ -1029,34 +1048,34 @@ export const buildGraph = (ctx: BaseAudioContext): Graph => {
   shaper.oversample = '4x'
   shaper.connect(trim)
 
-  const gains: { [filename: string]: GainNode } = {}
+  const gains: { [layerKey: string]: GainNode } = {}
   let saturation: number | null = null
 
-  const layerGain = (filename: string) => {
-    if (!gains[filename]) {
+  const layerGain = (layerKey: string) => {
+    if (!gains[layerKey]) {
       const gain = ctx.createGain()
       gain.connect(shaper)
-      gains[filename] = gain
+      gains[layerKey] = gain
     }
-    return gains[filename]
+    return gains[layerKey]
   }
 
   return {
     layerGain,
-    setLayerVolume: (filename, volume) => {
+    setLayerVolume: (layerKey, volume) => {
       // setTargetAtTime rather than a direct assignment: a slider drag would
       // otherwise step the gain and produce zipper noise.
-      layerGain(filename).gain.setTargetAtTime(
+      layerGain(layerKey).gain.setTargetAtTime(
         volume / 100,
         ctx.currentTime,
         RAMP_TIME_CONSTANT
       )
     },
-    pruneLayers: filenames => {
-      for (const filename of Object.keys(gains)) {
-        if (filenames.includes(filename)) continue
-        gains[filename].disconnect()
-        delete gains[filename]
+    pruneLayers: layerKeys => {
+      for (const layerKey of Object.keys(gains)) {
+        if (layerKeys.includes(layerKey)) continue
+        gains[layerKey].disconnect()
+        delete gains[layerKey]
       }
     },
     setSaturation: value => {
@@ -1072,9 +1091,9 @@ export const buildGraph = (ctx: BaseAudioContext): Graph => {
       trim.gain.linearRampToValueAtTime(value, ctx.currentTime + seconds)
     },
     disconnect: () => {
-      for (const filename of Object.keys(gains)) {
-        gains[filename].disconnect()
-        delete gains[filename]
+      for (const layerKey of Object.keys(gains)) {
+        gains[layerKey].disconnect()
+        delete gains[layerKey]
       }
       shaper.disconnect()
       trim.disconnect()
@@ -1136,6 +1155,7 @@ const loadedFile: LoadedFile = {
 
 const note: ScheduledNote = {
   filename: 'Break',
+  layerKey: 'Break#0',
   sliceIndex: 0,
   timeInSeconds: 0.25,
   playbackRate: 1.5,
@@ -1223,8 +1243,13 @@ export const fireNote = (p: {
 
   const when = p.passStartTime + p.note.timeInSeconds
 
+  // Resolve the layer gain first so the note gain is the last node created:
+  // the tests identify it that way, and creating them the other way round
+  // makes the layer gain the last one instead.
+  const layerGain = p.graph.layerGain(p.note.layerKey)
+
   const noteGain = p.ctx.createGain()
-  noteGain.connect(p.graph.layerGain(p.note.filename))
+  noteGain.connect(layerGain)
 
   const source = p.ctx.createBufferSource()
   source.buffer = buffer
@@ -1355,7 +1380,9 @@ describe('scheduler', () => {
   it('picks up a grid edit without restarting', () => {
     startScheduler(ctx as unknown as BaseAudioContext)
     Arrangement.set([{ stepNumToPlay: 4, startStep: 8 }])
-    ctx.advance(0.9)
+    // 0.95 s, not 0.9: the note sits at step 8 = 1.0 s and the lookahead
+    // condition is strictly < horizon, so 0.9 would exclude it.
+    ctx.advance(0.95)
     tick()
     const lastSource = ctx.createdSources[ctx.createdSources.length - 1]
     expect(lastSource.startedAt).toBeCloseTo(8 * 0.125, 6)
@@ -1509,8 +1536,11 @@ export const tick = () => {
   // also affect notes that are already sounding.
   graph.setSaturation(Saturation.ref())
   const layers = Layers.ref()
-  graph.pruneLayers(layers.map(layer => layer.filename))
-  for (const layer of layers) graph.setLayerVolume(layer.filename, layer.volume)
+  const layerKeys = layers.map((layer, index) => `${layer.filename}#${index}`)
+  graph.pruneLayers(layerKeys)
+  for (const [index, layer] of layers.entries()) {
+    graph.setLayerVolume(layerKeys[index], layer.volume)
+  }
 
   const horizon = ctx.currentTime + LOOKAHEAD_SECONDS
   const stepsPerPass = snapshot.numBars * 16
@@ -1980,7 +2010,9 @@ export const renderOffline = async (p?: { bar?: number; layers?: Layer[] }) => {
   const ctx = new OfflineAudioContext(2, length + tailLength, SAMPLE_RATE)
   const graph = buildGraph(ctx)
   graph.setSaturation(Saturation.ref())
-  for (const layer of layers) graph.setLayerVolume(layer.filename, layer.volume)
+  for (const [index, layer] of layers.entries()) {
+    graph.setLayerVolume(`${layer.filename}#${index}`, layer.volume)
+  }
 
   const notes = getScheduledNotes({
     fromStep: firstStep,
@@ -2214,12 +2246,19 @@ describe('exportCombined', () => {
 })
 ```
 
-- [ ] **Step 2: Run to verify failure**
+- [ ] **Step 2: Write the exportLayer test**
 
-Run: `npx vitest run src/actions/exportCombined.test.ts`
-Expected: FAIL — `exportCombined` still imports `getArrangementSamples`.
+Same shape as the test above, in `src/actions/exportLayer.test.ts`: mock
+`renderOffline` and `downloadAsWav`, call `exportLayer({ filename: 'Amen', volume: 100, pitch: 0 })`,
+and assert (a) `renderOffline` was called with `{ layers: [thatLayer] }` and
+(b) `downloadAsWav` was called with `'Jungle Tool Break - Amen'`.
 
-- [ ] **Step 3: Rewrite both actions**
+- [ ] **Step 3: Run to verify failure**
+
+Run: `npx vitest run src/actions/exportCombined.test.ts src/actions/exportLayer.test.ts`
+Expected: FAIL — both still import `getArrangementSamples`.
+
+- [ ] **Step 4: Rewrite both actions**
 
 ```ts
 // src/actions/exportCombined.ts
@@ -2244,11 +2283,11 @@ export const exportLayer = async (layer: Layer) => {
 }
 ```
 
-- [ ] **Step 4: Update the callers to await**
+- [ ] **Step 5: Update the callers to await**
 
 `ExportModal.tsx` calls both. Make its handlers async and await the calls, disabling the button while in flight.
 
-- [ ] **Step 5: Run tests and commit**
+- [ ] **Step 6: Run tests and commit**
 
 Run: `npx vitest run src/actions/exportCombined.test.ts src/actions/exportLayer.test.ts src/modals/ExportModal.test.tsx`
 Expected: PASS.

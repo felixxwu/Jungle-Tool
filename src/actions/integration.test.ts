@@ -14,16 +14,23 @@ import {
   Tab,
 } from '../lib/store'
 import { createPlayer } from '../lib/audio'
-import { getArrangementSamples } from '../helpers/getArrangementSamples'
+import { startScheduler } from '../lib/scheduler'
+import { resumeAudioContext } from '../lib/audioContext'
 
 // Mock dependencies
 vi.mock('../lib/audio')
-vi.mock('../helpers/getArrangementSamples')
 vi.mock('../helpers/getBestLayerPitch', () => ({
   getBestLayerPitch: vi.fn(() => 0),
 }))
 vi.mock('../helpers/getBestLayerVolume', () => ({
   getBestLayerVolume: vi.fn(() => 50),
+}))
+vi.mock('../lib/scheduler', () => ({
+  startScheduler: vi.fn(),
+  stopScheduler: vi.fn().mockResolvedValue(undefined),
+}))
+vi.mock('../lib/audioContext', () => ({
+  resumeAudioContext: vi.fn().mockResolvedValue(undefined),
 }))
 
 describe('Main Functionality Integration Tests', () => {
@@ -71,10 +78,6 @@ describe('Main Functionality Integration Tests', () => {
 
     // Setup mocks
     ;(createPlayer as ReturnType<typeof vi.fn>).mockResolvedValue(mockPlayer)
-    ;(getArrangementSamples as ReturnType<typeof vi.fn>).mockReturnValue([
-      new Float32Array(44100),
-      new Float32Array(44100),
-    ])
   })
 
   describe('Adding layers to arrangement', () => {
@@ -116,28 +119,24 @@ describe('Main Functionality Integration Tests', () => {
       await playArrangement()
 
       expect(Playing.ref()).toBe(true)
-      expect(Player.ref()).toBe(mockPlayer)
-      expect(mockPlayer.loop).toBe(true)
-      expect(mockPlayer.start).toHaveBeenCalledTimes(1)
-      expect(PlayStartTimestamp.ref()).not.toBe(null)
+      expect(startScheduler).toHaveBeenCalled()
     })
 
-    it('does not start playback if no samples are available', async () => {
+    it('starts playback even if no samples are available yet', async () => {
       Layers.set([{ filename: 'test-file-1', volume: 50, pitch: 0 }])
-      ;(getArrangementSamples as ReturnType<typeof vi.fn>).mockReturnValue(null)
 
       await playArrangement()
 
-      // Playing should be set to true, but player might not be set if samples are null
+      // Playing should be set to true; the scheduler handles missing samples per-tick
       expect(Playing.ref()).toBe(true)
     })
 
-    it('sets up player stop handler correctly', async () => {
+    it('resumes the audio context before starting the scheduler', async () => {
       Layers.set([{ filename: 'test-file-1', volume: 50, pitch: 0 }])
 
       await playArrangement()
 
-      expect(mockPlayer.onstop).not.toBe(null)
+      expect(resumeAudioContext).toHaveBeenCalled()
     })
   })
 
@@ -314,10 +313,10 @@ describe('Main Functionality Integration Tests', () => {
       // Step 2: Play arrangement
       await playArrangement()
       expect(Playing.ref()).toBe(true)
-      expect(Player.ref()).toBe(mockPlayer)
+      expect(startScheduler).toHaveBeenCalled()
 
       // Step 3: Randomise notes (should not stop playback)
-      const wasPlaying = Playing.ref() && Player.ref()?.state === 'started'
+      const wasPlaying = Playing.ref()
       randomiseArrangement()
 
       // Verify arrangement was randomised

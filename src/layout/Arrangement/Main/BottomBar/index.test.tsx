@@ -4,7 +4,7 @@ import { BottomBar } from './index'
 import { Playing, Player, Tab, LibraryLoading, Modal } from '../../../../lib/store'
 import { playArrangement } from '../../../../actions/playArrangement'
 import { randomiseArrangement } from '../../../../actions/randomiseArrangement'
-import { stopPlayback } from '../../../../lib/playback'
+import { stopArrangement } from '../../../../lib/playback'
 
 // Mock the actions
 vi.mock('../../../../actions/playArrangement', () => ({
@@ -16,7 +16,7 @@ vi.mock('../../../../actions/randomiseArrangement', () => ({
 }))
 
 vi.mock('../../../../lib/playback', () => ({
-  stopPlayback: vi.fn(),
+  stopArrangement: vi.fn(),
 }))
 
 describe('BottomBar', () => {
@@ -67,7 +67,7 @@ describe('BottomBar', () => {
       pauseButton.click()
     })
 
-    expect(stopPlayback).toHaveBeenCalledTimes(1)
+    expect(stopArrangement).toHaveBeenCalledTimes(1)
   })
 
   it('shows Randomise notes button when not on layers tab', () => {
