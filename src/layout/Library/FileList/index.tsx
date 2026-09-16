@@ -7,6 +7,7 @@ import {
   Layers,
   LoadedFiles,
   Playing,
+  ReplaceLayerIndex,
   SelectedFileIndex,
   SelectedSliceIndex,
   WindowSize,
@@ -21,11 +22,13 @@ import { Fragment } from 'react/jsx-runtime'
 import { useDebouncedLocalState } from '../../../hooks/useDebouncedLocalState'
 import { addToArrangement } from '../../../actions/addToArrangement'
 import { previewInArrangement } from '../../../actions/previewInArrangement'
+import { replaceInArrangement } from '../../../actions/replaceInArrangement'
 
 export const FileList = () => {
   const loadedFiles = LoadedFiles.useState()
   const selectedFile = SelectedFileIndex.useState()
   const addLayerMode = AddLayerMode.useState()
+  const replaceLayerIndex = ReplaceLayerIndex.useState()
   const layers = Layers.useState()
 
   const [localSelectedFile, setLocalSelectedFile] = useDebouncedLocalState(
@@ -50,7 +53,9 @@ export const FileList = () => {
   }
 
   const handleClick = (index: number) => {
-    if (addLayerMode) {
+    if (replaceLayerIndex !== null) {
+      replaceInArrangement(replaceLayerIndex, index)
+    } else if (addLayerMode) {
       addToArrangement(index)
       AddLayerMode.set(false)
     } else {
@@ -61,9 +66,9 @@ export const FileList = () => {
   return (
     <FileListStyle style={windowSize.width < appWidth ? { width: '100%' } : {}}>
       <Scrollable>
-        {addLayerMode && (
+        {(addLayerMode || replaceLayerIndex !== null) && (
           <>
-            <Text>Choose a break:</Text>
+            <Text>{replaceLayerIndex !== null ? 'Choose a replacement:' : 'Choose a break:'}</Text>
             <HDivider />
           </>
         )}
@@ -74,7 +79,10 @@ export const FileList = () => {
               {index !== 0 && <HDivider />}
               <Text
                 onClick={() => handleClick(index)}
-                selected={localSelectedFile === index}
+                selected={
+                  localSelectedFile === index ||
+                  (replaceLayerIndex !== null && layers[replaceLayerIndex]?.filename === file.name)
+                }
                 disabled={
                   addLayerMode && layers.some(layer => layer.filename === file.name && !layer.temp)
                 }

@@ -68,4 +68,14 @@ describe('previewInArrangement', () => {
     expect(layers.length).toBe(1)
     expect(layers[0].temp).toBeFalsy()
   })
+
+  it('confirms the active temp preview when the same break is clicked again', () => {
+    previewInArrangement(0)
+    previewInArrangement(0)
+
+    const layers = Layers.ref()
+    expect(layers.length).toBe(1)
+    expect(layers[0].filename).toBe('test-file')
+    expect(layers[0].temp).toBe(false)
+  })
 })

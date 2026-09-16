@@ -7,10 +7,12 @@ import {
   AddLayerMode,
   Layers,
   Playing,
+  ReplaceLayerIndex,
   WindowSize,
 } from '../../../lib/store'
 import { playFile } from '../../../actions/playFile'
 import { previewInArrangement } from '../../../actions/previewInArrangement'
+import { replaceInArrangement } from '../../../actions/replaceInArrangement'
 
 // Mock playFile action
 vi.mock('../../../actions/playFile', () => ({
@@ -25,6 +27,11 @@ vi.mock('../../../actions/addToArrangement', () => ({
 // Mock previewInArrangement action
 vi.mock('../../../actions/previewInArrangement', () => ({
   previewInArrangement: vi.fn(),
+}))
+
+// Mock replaceInArrangement action
+vi.mock('../../../actions/replaceInArrangement', () => ({
+  replaceInArrangement: vi.fn(),
 }))
 
 describe('FileList', () => {
@@ -63,6 +70,7 @@ describe('FileList', () => {
     LoadedFiles.set([])
     SelectedFileIndex.set(null)
     AddLayerMode.set(false)
+    ReplaceLayerIndex.set(null)
     Layers.set([])
     Playing.set(false)
     WindowSize.set({ width: 1000, height: 650 })
@@ -171,6 +179,29 @@ describe('FileList', () => {
 
     expect(previewInArrangement).toHaveBeenCalledWith(1)
     expect(playFile).not.toHaveBeenCalled()
+  })
+
+  it('shows "Choose a replacement:" header in replace mode', () => {
+    LoadedFiles.set([mockFile1])
+    ReplaceLayerIndex.set(1)
+    render(<FileList />)
+
+    expect(screen.getByText('Choose a replacement:')).toBeInTheDocument()
+  })
+
+  it('calls replaceInArrangement (which itself handles preview vs. confirm) when a file is clicked in replace mode', () => {
+    LoadedFiles.set([mockFile1, mockFile2])
+    ReplaceLayerIndex.set(1)
+    render(<FileList />)
+
+    const funkyDrummerItem = screen.getByText('Funky Drummer')
+    act(() => {
+      funkyDrummerItem.click()
+    })
+
+    expect(replaceInArrangement).toHaveBeenCalledWith(1, 1)
+    expect(playFile).not.toHaveBeenCalled()
+    expect(previewInArrangement).not.toHaveBeenCalled()
   })
 
   it('shows import file button', () => {

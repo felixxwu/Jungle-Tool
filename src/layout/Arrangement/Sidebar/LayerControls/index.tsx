@@ -19,9 +19,9 @@ export const LayerControls = () => {
   return (
     <LayerControlsStyle>
       <Text>Layers:</Text>
-      {layers.map(layer => (
+      {layers.map((layer, index) => (
         <Row key={layer.filename}>
-          <LayerControl layer={layer} />
+          <LayerControl layer={layer} index={index} />
         </Row>
       ))}
       <HDivider />

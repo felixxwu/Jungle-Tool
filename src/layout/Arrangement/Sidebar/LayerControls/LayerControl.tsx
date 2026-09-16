@@ -1,13 +1,19 @@
 import styled from 'styled-components'
 import { HDivider, VDivider } from '../../../../components/Dividers'
-import { Layers } from '../../../../lib/store'
+import {
+  AddLayerMode,
+  Layers,
+  ReplaceLayerIndex,
+  ReplaceOriginalLayer,
+  Tab,
+} from '../../../../lib/store'
 import { Slider, sliderHeight } from '../../../../components/Slider'
 import type { Layer } from '../../../../lib/types'
 import { maxPitch, minPitch } from '../../../../lib/consts'
 import { useDebouncedLocalState } from '../../../../hooks/useDebouncedLocalState'
 import { colors } from '../../../../lib/colors'
 
-export const LayerControl = (p: { layer: Layer }) => {
+export const LayerControl = (p: { layer: Layer; index: number }) => {
   const [localVolume, setLocalVolume] = useDebouncedLocalState(
     p.layer.volume,
     value => {
@@ -44,6 +50,14 @@ export const LayerControl = (p: { layer: Layer }) => {
     Layers.set(layers.filter(l => l.filename !== p.layer.filename))
   }
 
+  const handleReplace = (e: React.MouseEvent<HTMLDivElement>) => {
+    e.stopPropagation()
+    ReplaceLayerIndex.set(p.index)
+    ReplaceOriginalLayer.set(p.layer)
+    AddLayerMode.set(false)
+    Tab.set('library')
+  }
+
   const pitch = localPitch
 
   return (
@@ -66,7 +80,7 @@ export const LayerControl = (p: { layer: Layer }) => {
               />
             </SliderWrapper>
             <VDivider />
-            <IconBox onClick={handleDelete}>x</IconBox>
+            <DeleteIconBox onClick={handleDelete}>x</DeleteIconBox>
           </SliderRow>
           <HDivider />
           <SliderRow>
@@ -80,7 +94,7 @@ export const LayerControl = (p: { layer: Layer }) => {
               />
             </SliderWrapper>
             <VDivider />
-            <IconBox />
+            <IconBox onClick={handleReplace}>R</IconBox>
           </SliderRow>
         </SlidersSide>
       </Row>
@@ -141,7 +155,6 @@ const IconBox = styled('div')<{ onClick?: (e: React.MouseEvent<HTMLDivElement>) 
   justify-content: center;
   background-color: ${colors.white};
   color: ${colors.black};
-  text-transform: lowercase;
   cursor: ${p => (p.onClick ? 'pointer' : 'default')};
 
   &:hover {
@@ -149,4 +162,8 @@ const IconBox = styled('div')<{ onClick?: (e: React.MouseEvent<HTMLDivElement>) 
       background-color: ${p => (p.onClick ? colors.grey : 'transparent')};
     }
   }
+`
+
+const DeleteIconBox = styled(IconBox)`
+  text-transform: lowercase;
 `
