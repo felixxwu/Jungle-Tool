@@ -1,7 +1,7 @@
+import { useState } from 'react'
 import styled from 'styled-components'
-import { HDivider } from '../../../../components/Dividers'
-import { Text } from '../../../../components/Text'
-import { Layers, SelectedLayerName } from '../../../../lib/store'
+import { HDivider, VDivider } from '../../../../components/Dividers'
+import { Layers } from '../../../../lib/store'
 import { Slider } from '../../../../components/Slider'
 import type { Layer } from '../../../../lib/types'
 import { maxPitch, minPitch } from '../../../../lib/consts'
@@ -9,7 +9,7 @@ import { useDebouncedLocalState } from '../../../../hooks/useDebouncedLocalState
 import { colors } from '../../../../lib/colors'
 
 export const LayerControl = (p: { layer: Layer }) => {
-  const selectedLayerName = SelectedLayerName.useState()
+  const [hovered, setHovered] = useState(false)
   const [localVolume, setLocalVolume] = useDebouncedLocalState(
     p.layer.volume,
     value => {
@@ -46,56 +46,28 @@ export const LayerControl = (p: { layer: Layer }) => {
     Layers.set(layers.filter(l => l.filename !== p.layer.filename))
   }
 
-  const handleToggleSelectedLayer = () => {
-    if (selectedLayerName === p.layer.filename) {
-      SelectedLayerName.set(null)
-    } else {
-      SelectedLayerName.set(p.layer.filename)
-    }
-  }
-
   const pitch = localPitch
 
-  const handlePointerLeave = () => {
-    if (selectedLayerName === p.layer.filename) {
-      SelectedLayerName.set(null)
-    }
-  }
-
   return (
-    <LayerControlContainer onPointerLeave={handlePointerLeave}>
+    <LayerControlContainer
+      onPointerEnter={() => setHovered(true)}
+      onPointerLeave={() => setHovered(false)}
+    >
       <HDivider />
       <Row>
-        <TitleAndInfo onClick={handleToggleSelectedLayer}>
-          <Row>
-            <Text onClick={handleToggleSelectedLayer} key={p.layer.filename} fullWidth big>
-              {p.layer.filename}
-            </Text>
-            {selectedLayerName === p.layer.filename ? (
-              <Text onClick={handleToggleSelectedLayer}>‹</Text>
-            ) : (
-              <Text
-                onClick={handleDelete}
-                style={{ textTransform: 'lowercase', paddingTop: '4px' }}
-              >
-                x
-              </Text>
-            )}
-          </Row>
-          {selectedLayerName !== p.layer.filename && (
-            <Row>
-              <Text big onClick={handleToggleSelectedLayer}>
-                Vol: {p.layer.volume}
-              </Text>
-              <Text big onClick={handleToggleSelectedLayer}>
-                Pitch: {pitch > 0 ? `+${pitch}` : pitch}
-              </Text>
-            </Row>
-          )}
-        </TitleAndInfo>
-      </Row>
-      {selectedLayerName === p.layer.filename && (
-        <>
+        <NameSide>
+          <NameText>{p.layer.filename}</NameText>
+          {hovered && <DeleteButton onClick={handleDelete}>x</DeleteButton>}
+        </NameSide>
+        <VDivider />
+        <SlidersSide>
+          <Slider
+            min={0}
+            max={100}
+            value={localVolume}
+            onInput={setLocalVolume}
+            label={`Vol: ${localVolume}`}
+          />
           <HDivider />
           <Slider
             min={minPitch}
@@ -104,16 +76,8 @@ export const LayerControl = (p: { layer: Layer }) => {
             onInput={setLocalPitch}
             label={`Pitch: ${pitch > 0 ? `+${pitch}` : pitch}`}
           />
-          <HDivider />
-          <Slider
-            min={0}
-            max={100}
-            value={localVolume}
-            onInput={setLocalVolume}
-            label={`Vol: ${localVolume}`}
-          />
-        </>
-      )}
+        </SlidersSide>
+      </Row>
     </LayerControlContainer>
   )
 }
@@ -124,11 +88,41 @@ const LayerControlContainer = styled('div')`
 
 const Row = styled('div')`
   display: flex;
+  width: 100%;
 `
 
-const TitleAndInfo = styled('div')`
+const NameSide = styled('div')`
+  position: relative;
+  width: 40%;
+  display: flex;
+  align-items: center;
+  padding: 6px 15px 5px 15px;
+  box-sizing: border-box;
+  background-color: ${colors.white};
+  overflow: hidden;
+`
+
+const NameText = styled('div')`
+  width: 100%;
+  word-break: break-all;
+  overflow-wrap: break-word;
+  color: ${colors.black};
+`
+
+const DeleteButton = styled('div')`
+  position: absolute;
+  inset: 0;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  background-color: ${colors.grey};
+  color: ${colors.black};
+  cursor: pointer;
+  text-transform: lowercase;
+`
+
+const SlidersSide = styled('div')`
+  width: 60%;
   display: flex;
   flex-direction: column;
-  width: 100%;
-  background-color: ${colors.white};
 `

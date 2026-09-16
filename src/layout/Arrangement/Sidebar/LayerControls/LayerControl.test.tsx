@@ -1,7 +1,7 @@
 import { describe, it, expect, beforeEach } from 'vitest'
-import { render, screen, act } from '../../../../test/test-utils'
+import { render, screen, act, fireEvent } from '../../../../test/test-utils'
 import { LayerControl } from './LayerControl'
-import { Layers, SelectedLayerName } from '../../../../lib/store'
+import { Layers } from '../../../../lib/store'
 import type { Layer } from '../../../../lib/types'
 
 describe('LayerControl', () => {
@@ -13,7 +13,6 @@ describe('LayerControl', () => {
 
   beforeEach(() => {
     Layers.set([mockLayer])
-    SelectedLayerName.set(null)
   })
 
   it('renders layer filename', () => {
@@ -21,36 +20,34 @@ describe('LayerControl', () => {
     expect(screen.getByText('Test Break')).toBeInTheDocument()
   })
 
-  it('displays current volume and pitch when not selected', () => {
+  it('always shows volume and pitch sliders', () => {
     render(<LayerControl layer={mockLayer} />)
-    expect(screen.getByText('Vol: 50')).toBeInTheDocument()
-    expect(screen.getByText('Pitch: 0')).toBeInTheDocument()
+    expect(screen.getByLabelText(/Vol:/)).toBeInTheDocument()
+    expect(screen.getByLabelText(/Pitch:/)).toBeInTheDocument()
   })
 
-  it('displays positive pitch with + prefix', () => {
-    const layerWithPositivePitch: Layer = { ...mockLayer, pitch: 5 }
-    Layers.set([layerWithPositivePitch])
-    render(<LayerControl layer={layerWithPositivePitch} />)
-    expect(screen.getByText('Pitch: +5')).toBeInTheDocument()
-  })
-
-  it('displays negative pitch without prefix', () => {
-    const layerWithNegativePitch: Layer = { ...mockLayer, pitch: -3 }
-    Layers.set([layerWithNegativePitch])
-    render(<LayerControl layer={layerWithNegativePitch} />)
-    expect(screen.getByText('Pitch: -3')).toBeInTheDocument()
-  })
-
-  it('shows delete button when not selected', () => {
+  it('does not show the delete button until hovered', () => {
     render(<LayerControl layer={mockLayer} />)
-    const deleteButton = screen.getByText('x')
-    expect(deleteButton).toBeInTheDocument()
+    expect(screen.queryByText('x')).not.toBeInTheDocument()
+  })
+
+  it('shows the delete button on hover and hides it on unhover', () => {
+    const { container } = render(<LayerControl layer={mockLayer} />)
+    const containerEl = container.firstChild as HTMLElement
+
+    fireEvent.pointerEnter(containerEl)
+    expect(screen.getByText('x')).toBeInTheDocument()
+
+    fireEvent.pointerLeave(containerEl)
+    expect(screen.queryByText('x')).not.toBeInTheDocument()
   })
 
   it('removes layer when delete button is clicked', async () => {
     Layers.set([mockLayer, { filename: 'Other Break', volume: 50, pitch: 0 }])
-    render(<LayerControl layer={mockLayer} />)
+    const { container } = render(<LayerControl layer={mockLayer} />)
+    const containerEl = container.firstChild as HTMLElement
 
+    fireEvent.pointerEnter(containerEl)
     const deleteButton = screen.getByText('x')
     await act(async () => {
       deleteButton.click()
@@ -66,35 +63,22 @@ describe('LayerControl', () => {
     expect(layers[0].filename).toBe('Other Break')
   })
 
-  it('shows volume and pitch sliders when selected', async () => {
-    render(<LayerControl layer={mockLayer} />)
+  it('displays positive pitch with + prefix', () => {
+    const layerWithPositivePitch: Layer = { ...mockLayer, pitch: 5 }
+    Layers.set([layerWithPositivePitch])
+    render(<LayerControl layer={layerWithPositivePitch} />)
+    expect(screen.getByLabelText('Pitch: +5')).toBeInTheDocument()
+  })
 
-    const layerName = screen.getByText('Test Break')
-    await act(async () => {
-      layerName.click()
-    })
-
-    // Wait for state update
-    await act(async () => {
-      await new Promise(r => setTimeout(r, 10))
-    })
-
-    expect(screen.getByLabelText(/Vol:/)).toBeInTheDocument()
-    expect(screen.getByLabelText(/Pitch:/)).toBeInTheDocument()
+  it('displays negative pitch without prefix', () => {
+    const layerWithNegativePitch: Layer = { ...mockLayer, pitch: -3 }
+    Layers.set([layerWithNegativePitch])
+    render(<LayerControl layer={layerWithNegativePitch} />)
+    expect(screen.getByLabelText('Pitch: -3')).toBeInTheDocument()
   })
 
   it('updates volume when volume slider is changed', async () => {
     render(<LayerControl layer={mockLayer} />)
-
-    // Select the layer first
-    const layerName = screen.getByText('Test Break')
-    await act(async () => {
-      layerName.click()
-    })
-
-    await act(async () => {
-      await new Promise(r => setTimeout(r, 10))
-    })
 
     const volumeSlider = screen.getByLabelText(/Vol:/) as HTMLInputElement
 
@@ -117,16 +101,6 @@ describe('LayerControl', () => {
 
   it('updates pitch when pitch slider is changed', async () => {
     render(<LayerControl layer={mockLayer} />)
-
-    // Select the layer first
-    const layerName = screen.getByText('Test Break')
-    await act(async () => {
-      layerName.click()
-    })
-
-    await act(async () => {
-      await new Promise(r => setTimeout(r, 10))
-    })
 
     const pitchSlider = screen.getByLabelText(/Pitch:/) as HTMLInputElement
 
@@ -154,16 +128,6 @@ describe('LayerControl', () => {
 
     render(<LayerControl layer={layer1} />)
 
-    // Select layer1
-    const layerName = screen.getByText('Break 1')
-    await act(async () => {
-      layerName.click()
-    })
-
-    await act(async () => {
-      await new Promise(r => setTimeout(r, 10))
-    })
-
     const volumeSlider = screen.getByLabelText(/Vol:/) as HTMLInputElement
 
     await act(async () => {
@@ -182,47 +146,5 @@ describe('LayerControl', () => {
     const layers = Layers.ref()
     expect(layers[0].volume).toBe(80) // layer1 updated
     expect(layers[1].volume).toBe(60) // layer2 unchanged
-  })
-
-  it('hides sliders when deselected', async () => {
-    render(<LayerControl layer={mockLayer} />)
-
-    // Select the layer
-    const layerName = screen.getByText('Test Break')
-    await act(async () => {
-      layerName.click()
-    })
-
-    await act(async () => {
-      await new Promise(r => setTimeout(r, 10))
-    })
-
-    expect(screen.getByLabelText(/Vol:/)).toBeInTheDocument()
-
-    // Deselect the layer
-    await act(async () => {
-      layerName.click()
-    })
-
-    await act(async () => {
-      await new Promise(r => setTimeout(r, 10))
-    })
-
-    expect(screen.queryByLabelText(/Vol:/)).not.toBeInTheDocument()
-  })
-
-  it('shows collapse indicator when selected', async () => {
-    render(<LayerControl layer={mockLayer} />)
-
-    const layerName = screen.getByText('Test Break')
-    await act(async () => {
-      layerName.click()
-    })
-
-    await act(async () => {
-      await new Promise(r => setTimeout(r, 10))
-    })
-
-    expect(screen.getByText('‹')).toBeInTheDocument()
   })
 })

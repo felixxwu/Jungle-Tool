@@ -25,7 +25,6 @@ export const Layers = singletonState<Layer[]>([
   { filename: 'Think (About It) (1)', volume: 50, pitch: 3 },
   { filename: 'Mr. Sandman', volume: 100, pitch: 7 },
 ])
-export const SelectedLayerName = singletonState<string | null>(null)
 export const SelectedBar = singletonState(0)
 export const NumBars = singletonState(1)
 export const Arrangement = singletonState<Note[]>(
