@@ -1,6 +1,5 @@
 import { Waveform } from '../../../../components/Waveform'
 import { useArrangementSamples } from '../../../../hooks/useArrangementSamples'
-import { mono } from '../../../../lib/audio'
 import { appWidth, arrangementPlayHead, arrangementSidebarWidth } from '../../../../lib/consts'
 import { SelectedBar, Playing, NumBars } from '../../../../lib/store'
 
@@ -14,12 +13,10 @@ export const ArragementWaveform = () => {
 
   if (!samples) return null
 
-  const monoSamples = mono(samples)
-
   return (
     <Waveform
       playHeadId={arrangementPlayHead}
-      samples={monoSamples}
+      samples={samples}
       width={waveformWidth}
       height={166}
       offset={0}

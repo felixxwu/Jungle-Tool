@@ -9,6 +9,7 @@ import {
   NoteFadeOut,
   Saturation,
   FillGaps,
+  ShortenNotes,
 } from '../lib/store'
 
 /**
@@ -26,6 +27,7 @@ export const useArrangementStates = () => {
   NoteFadeOut.useState()
   Saturation.useState()
   FillGaps.useState()
+  ShortenNotes.useState()
 }
 
 /**
@@ -38,9 +40,11 @@ export const useArrangementStateValues = () => {
     layers: Layers.useState(),
     bpm: BPM.useState(),
     swing: Swing.useState(),
+    numBars: NumBars.useState(),
     noteLength: NoteLength.useState(),
     noteFadeOut: NoteFadeOut.useState(),
     saturation: Saturation.useState(),
     fillGaps: FillGaps.useState(),
+    shortenNotes: ShortenNotes.useState(),
   }
 }

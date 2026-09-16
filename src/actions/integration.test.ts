@@ -14,13 +14,11 @@ import {
   Tab,
 } from '../lib/store'
 import { createPlayer } from '../lib/audio'
-import { getArrangementSamples } from '../helpers/getArrangementSamples'
 import { startScheduler } from '../lib/scheduler'
 import { resumeAudioContext } from '../lib/audioContext'
 
 // Mock dependencies
 vi.mock('../lib/audio')
-vi.mock('../helpers/getArrangementSamples')
 vi.mock('../helpers/getBestLayerPitch', () => ({
   getBestLayerPitch: vi.fn(() => 0),
 }))
@@ -80,10 +78,6 @@ describe('Main Functionality Integration Tests', () => {
 
     // Setup mocks
     ;(createPlayer as ReturnType<typeof vi.fn>).mockResolvedValue(mockPlayer)
-    ;(getArrangementSamples as ReturnType<typeof vi.fn>).mockReturnValue([
-      new Float32Array(44100),
-      new Float32Array(44100),
-    ])
   })
 
   describe('Adding layers to arrangement', () => {
@@ -130,7 +124,6 @@ describe('Main Functionality Integration Tests', () => {
 
     it('starts playback even if no samples are available yet', async () => {
       Layers.set([{ filename: 'test-file-1', volume: 50, pitch: 0 }])
-      ;(getArrangementSamples as ReturnType<typeof vi.fn>).mockReturnValue(null)
 
       await playArrangement()
 
