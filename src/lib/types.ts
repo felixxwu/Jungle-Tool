@@ -14,3 +14,23 @@ export type LoadedFile = {
   whosampledLink: string
   whosampledCount: number
 }
+
+export type ArrangementState = {
+  bpm: number
+  swing: number
+  noteLength: number
+  noteFadeOut: number
+  saturation: number
+  layers: Layer[]
+  numBars: number
+  arrangement: Note[]
+  fillGaps: boolean
+  shortenNotes: boolean
+}
+
+export type SavedArrangement = {
+  id: string
+  name: string
+  updatedAt: number
+  state: ArrangementState
+}

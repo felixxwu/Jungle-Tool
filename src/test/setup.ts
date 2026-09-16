@@ -69,6 +69,36 @@ if (!Element.prototype.animate) {
   })) as any
 }
 
+// Mock Firebase so tests don't require real project credentials
+vi.mock('../lib/firebase', () => ({
+  auth: {},
+  googleProvider: {},
+  db: {},
+}))
+vi.mock('firebase/auth', () => ({
+  GoogleAuthProvider: vi.fn(),
+  getAuth: vi.fn(() => ({})),
+  onAuthStateChanged: vi.fn(() => () => {}),
+  signInWithPopup: vi.fn(),
+  signOut: vi.fn(),
+}))
+vi.mock('firebase/app', () => ({
+  initializeApp: vi.fn(() => ({})),
+}))
+vi.mock('firebase/firestore', () => ({
+  getFirestore: vi.fn(() => ({})),
+  collection: vi.fn(() => ({})),
+  doc: vi.fn(() => ({})),
+  query: vi.fn(() => ({})),
+  where: vi.fn(() => ({})),
+  orderBy: vi.fn(() => ({})),
+  getDocs: vi.fn(async () => ({ docs: [] })),
+  addDoc: vi.fn(),
+  updateDoc: vi.fn(),
+  deleteDoc: vi.fn(),
+  serverTimestamp: vi.fn(),
+}))
+
 // Polyfill PointerEvent for jsdom (not available by default)
 if (typeof PointerEvent === 'undefined') {
   class PointerEventPolyfill extends MouseEvent {

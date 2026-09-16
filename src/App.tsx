@@ -4,7 +4,7 @@ import { appHeight, appWidth, library, lineThickness } from './lib/consts'
 import { HDivider } from './components/Dividers'
 import { TopBar } from './layout/TopBar'
 import { ArrangementView } from './layout/Arrangement'
-import { LibraryLoading, LoadedFiles, LowestRMS, Modal, Tab, WindowSize } from './lib/store'
+import { CurrentUser, LibraryLoading, LoadedFiles, LowestRMS, Modal, Tab, WindowSize } from './lib/store'
 import { Library } from './layout/Library'
 import { useEffect, useRef } from 'react'
 import { loadJson } from './actions/loadJson'
@@ -13,6 +13,8 @@ import { useCleanupTempLayer } from './hooks/useCleanupTempLayer'
 import { Sidebar } from './layout/Arrangement/Sidebar'
 import { getRMS } from './helpers/getRMS'
 import { mono } from './lib/audio'
+import { onAuthStateChanged } from 'firebase/auth'
+import { auth } from './lib/firebase'
 
 export default function App() {
   const tab = Tab.useState()
@@ -22,6 +24,10 @@ export default function App() {
 
   useWindowListeners()
   useCleanupTempLayer()
+
+  useEffect(() => {
+    return onAuthStateChanged(auth, user => CurrentUser.set(user))
+  }, [])
 
   useEffect(() => {
     ;(async () => {

@@ -1,4 +1,5 @@
 import { singletonState } from 'singleton-state-hook'
+import type { User } from 'firebase/auth'
 import type { ITab, Layer, LoadedFile, Note } from './types'
 import { maxNoteLength, minNoteFadeOut } from './consts'
 
@@ -39,3 +40,4 @@ export const PlayStartTimestamp = singletonState<number | null>(null)
 export const PlayDuration = singletonState<number | null>(null) // Duration in seconds
 export const FillGaps = singletonState(true)
 export const ShortenNotes = singletonState(false)
+export const CurrentUser = singletonState<User | null>(null)

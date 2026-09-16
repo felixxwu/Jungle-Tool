@@ -16,6 +16,7 @@
     "test:browser": "vitest run --config vitest.browser.config.ts"
   },
   "dependencies": {
+    "firebase": "^12.19.0",
     "react": "^19.1.0",
     "react-dom": "^19.1.0",
     "singleton-state-hook": "^1.2.2",

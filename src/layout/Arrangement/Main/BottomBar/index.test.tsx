@@ -98,14 +98,14 @@ describe('BottomBar', () => {
 
   it('shows Export button', () => {
     render(<BottomBar />)
-    expect(screen.getByText('Export')).toBeInTheDocument()
+    expect(screen.getByText('Save / Export')).toBeInTheDocument()
   })
 
   it('opens Export modal when Export button is clicked', async () => {
     Modal.set(null) // Ensure modal is closed initially
     render(<BottomBar />)
 
-    const exportButton = screen.getByText('Export')
+    const exportButton = screen.getByText('Save / Export')
     await act(async () => {
       exportButton.click()
     })

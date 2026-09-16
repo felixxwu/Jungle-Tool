@@ -54,7 +54,7 @@ export const BottomBar = () => {
         )}
         <VDivider />
         <VDivider style={{ marginLeft: 'auto' }} />
-        <Text onClick={() => Modal.set(<ExportModal />)}>Export</Text>
+        <Text onClick={() => Modal.set(<ExportModal />)}>Save / Export</Text>
       </Row>
     </>
   )
