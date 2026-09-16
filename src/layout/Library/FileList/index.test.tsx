@@ -6,9 +6,11 @@ import {
   SelectedFileIndex,
   AddLayerMode,
   Layers,
+  Playing,
   WindowSize,
 } from '../../../lib/store'
 import { playFile } from '../../../actions/playFile'
+import { previewInArrangement } from '../../../actions/previewInArrangement'
 
 // Mock playFile action
 vi.mock('../../../actions/playFile', () => ({
@@ -18,6 +20,11 @@ vi.mock('../../../actions/playFile', () => ({
 // Mock addToArrangement action
 vi.mock('../../../actions/addToArrangement', () => ({
   addToArrangement: vi.fn(),
+}))
+
+// Mock previewInArrangement action
+vi.mock('../../../actions/previewInArrangement', () => ({
+  previewInArrangement: vi.fn(),
 }))
 
 describe('FileList', () => {
@@ -57,6 +64,7 @@ describe('FileList', () => {
     SelectedFileIndex.set(null)
     AddLayerMode.set(false)
     Layers.set([])
+    Playing.set(false)
     WindowSize.set({ width: 1000, height: 650 })
   })
 
@@ -145,6 +153,24 @@ describe('FileList', () => {
     })
 
     expect(playFile).toHaveBeenCalledWith(1) // Second file (index 1)
+  })
+
+  it('previews in sync with the arrangement instead of stopping playback when playing', async () => {
+    LoadedFiles.set([mockFile1, mockFile2])
+    Playing.set(true)
+    render(<FileList />)
+
+    const funkyDrummerItem = screen.getByText('Funky Drummer')
+    await act(async () => {
+      funkyDrummerItem.click()
+    })
+
+    await act(async () => {
+      await new Promise(r => setTimeout(r, 20))
+    })
+
+    expect(previewInArrangement).toHaveBeenCalledWith(1)
+    expect(playFile).not.toHaveBeenCalled()
   })
 
   it('shows import file button', () => {

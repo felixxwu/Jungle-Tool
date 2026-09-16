@@ -9,6 +9,7 @@ import { Library } from './layout/Library'
 import { useEffect, useRef } from 'react'
 import { loadJson } from './actions/loadJson'
 import { useWindowListeners } from './hooks/useWindowListeners'
+import { useCleanupTempLayer } from './hooks/useCleanupTempLayer'
 import { Sidebar } from './layout/Arrangement/Sidebar'
 import { getRMS } from './helpers/getRMS'
 import { mono } from './lib/audio'
@@ -20,6 +21,7 @@ export default function App() {
   const audio = useRef<HTMLAudioElement>(null)
 
   useWindowListeners()
+  useCleanupTempLayer()
 
   useEffect(() => {
     ;(async () => {

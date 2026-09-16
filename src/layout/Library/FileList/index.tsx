@@ -6,6 +6,7 @@ import {
   HoveredSliceIndex,
   Layers,
   LoadedFiles,
+  Playing,
   SelectedFileIndex,
   SelectedSliceIndex,
   WindowSize,
@@ -19,6 +20,7 @@ import { importFile } from '../../../actions/importFile'
 import { Fragment } from 'react/jsx-runtime'
 import { useDebouncedLocalState } from '../../../hooks/useDebouncedLocalState'
 import { addToArrangement } from '../../../actions/addToArrangement'
+import { previewInArrangement } from '../../../actions/previewInArrangement'
 
 export const FileList = () => {
   const loadedFiles = LoadedFiles.useState()
@@ -40,7 +42,11 @@ export const FileList = () => {
     EditSliceMode.set(false)
     HoveredSliceIndex.set(null)
 
-    await playFile(index)
+    if (Playing.ref()) {
+      previewInArrangement(index)
+    } else {
+      await playFile(index)
+    }
   }
 
   const handleClick = (index: number) => {
@@ -69,7 +75,9 @@ export const FileList = () => {
               <Text
                 onClick={() => handleClick(index)}
                 selected={localSelectedFile === index}
-                disabled={addLayerMode && layers.some(layer => layer.filename === file.name)}
+                disabled={
+                  addLayerMode && layers.some(layer => layer.filename === file.name && !layer.temp)
+                }
               >
                 <FileListItemStyle>
                   <div>{file.name}</div>

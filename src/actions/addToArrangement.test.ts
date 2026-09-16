@@ -113,6 +113,20 @@ describe('addToArrangement', () => {
     expect(Tab.ref()).toBe('arrangement')
   })
 
+  it('confirms an existing temp layer instead of adding a duplicate', () => {
+    Layers.set([{ filename: 'test-file', volume: 60, pitch: 1, temp: true }])
+
+    addToArrangement(0)
+
+    const layers = Layers.ref()
+    expect(layers.length).toBe(1)
+    expect(layers[0].temp).toBe(false)
+    expect(layers[0].volume).toBe(60)
+    expect(layers[0].pitch).toBe(1)
+    expect(getBestLayerVolume).not.toHaveBeenCalled()
+    expect(Tab.ref()).toBe('arrangement')
+  })
+
   it('appends multiple layers when called repeatedly', () => {
     const mockFile2 = {
       name: 'test-file-2',
