@@ -58,7 +58,7 @@ describe('WavExportModal', () => {
       combinedButton.click()
     })
 
-    expect(exportCombined).toHaveBeenCalledTimes(1)
+    expect(exportCombined).toHaveBeenCalledWith({ saturation: undefined, swing: undefined })
   })
 
   it('disables combined mix button after export', async () => {
@@ -81,7 +81,7 @@ describe('WavExportModal', () => {
       layer1Button.click()
     })
 
-    expect(exportLayer).toHaveBeenCalledWith(mockLayer1)
+    expect(exportLayer).toHaveBeenCalledWith(mockLayer1, { saturation: undefined, swing: undefined })
   })
 
   it('disables layer button after export', async () => {
@@ -110,9 +110,47 @@ describe('WavExportModal', () => {
       layer2Button.click()
     })
 
-    expect(exportLayer).toHaveBeenCalledWith(mockLayer1)
-    expect(exportLayer).toHaveBeenCalledWith(mockLayer2)
+    expect(exportLayer).toHaveBeenCalledWith(mockLayer1, { saturation: undefined, swing: undefined })
+    expect(exportLayer).toHaveBeenCalledWith(mockLayer2, { saturation: undefined, swing: undefined })
     expect(exportLayer).toHaveBeenCalledTimes(2)
+  })
+
+  it('renders saturation and swing toggles, both on by default', () => {
+    render(<WavExportModal />)
+    expect(screen.getByText('Saturation: yes')).toBeInTheDocument()
+    expect(screen.getByText('Swing: yes')).toBeInTheDocument()
+  })
+
+  it('exports with saturation disabled when toggled off', async () => {
+    render(<WavExportModal />)
+
+    await act(async () => {
+      screen.getByText('Saturation: yes').click()
+    })
+
+    expect(screen.getByText('Saturation: no')).toBeInTheDocument()
+
+    await act(async () => {
+      screen.getByText('Export combined mix').click()
+    })
+
+    expect(exportCombined).toHaveBeenCalledWith({ saturation: 0, swing: undefined })
+  })
+
+  it('exports with swing disabled when toggled off', async () => {
+    render(<WavExportModal />)
+
+    await act(async () => {
+      screen.getByText('Swing: yes').click()
+    })
+
+    expect(screen.getByText('Swing: no')).toBeInTheDocument()
+
+    await act(async () => {
+      screen.getByText('Export combined mix').click()
+    })
+
+    expect(exportCombined).toHaveBeenCalledWith({ saturation: undefined, swing: 0 })
   })
 
   it('closes modal when close button is clicked', async () => {

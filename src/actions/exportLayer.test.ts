@@ -29,4 +29,9 @@ describe('exportLayer', () => {
     await exportLayer(layer)
     expect(downloadAsWav).toHaveBeenCalledWith(expect.anything(), 'Jungle Tool Break - Amen')
   })
+
+  it('forwards saturation/swing overrides to renderOffline', async () => {
+    await exportLayer(layer, { saturation: 0, swing: 0 })
+    expect(renderOffline).toHaveBeenCalledWith({ saturation: 0, swing: 0, layers: [layer] })
+  })
 })

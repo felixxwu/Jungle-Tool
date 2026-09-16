@@ -26,4 +26,9 @@ describe('exportCombined', () => {
     await exportCombined()
     expect(downloadAsWav).toHaveBeenCalledWith(expect.anything(), 'Jungle Tool Break')
   })
+
+  it('forwards saturation/swing overrides to renderOffline', async () => {
+    await exportCombined({ saturation: 0, swing: 0 })
+    expect(renderOffline).toHaveBeenCalledWith({ saturation: 0, swing: 0 })
+  })
 })

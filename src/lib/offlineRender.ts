@@ -39,7 +39,12 @@ export const audioBufferToSamples = (buffer: AudioBuffer): [Float32Array, Float3
  * One extra bar is rendered and folded back onto the start: live, note tails
  * ring into the next pass, and a plain truncating render would not match.
  */
-export const renderOffline = async (p?: { bar?: number; layers?: Layer[] }) => {
+export const renderOffline = async (p?: {
+  bar?: number
+  layers?: Layer[]
+  saturation?: number
+  swing?: number
+}) => {
   const bars = p?.bar === undefined ? NumBars.ref() : 1
   const firstStep = (p?.bar ?? 0) * 16
   const layers = p?.layers ?? Layers.ref()
@@ -53,7 +58,7 @@ export const renderOffline = async (p?: { bar?: number; layers?: Layer[] }) => {
 
   const ctx = new OfflineAudioContext(2, length + tailLength, SAMPLE_RATE)
   const graph = buildGraph(ctx)
-  graph.setSaturation(Saturation.ref())
+  graph.setSaturation(p?.saturation ?? Saturation.ref())
   for (const [index, layer] of layers.entries()) {
     graph.setLayerVolume(`${layer.filename}#${index}`, layer.volume)
   }
@@ -62,7 +67,7 @@ export const renderOffline = async (p?: { bar?: number; layers?: Layer[] }) => {
     fromStep: firstStep,
     toStep: firstStep + bars * 16,
     bpm,
-    swing: Swing.ref(),
+    swing: p?.swing ?? Swing.ref(),
     layers,
     loadedFiles,
     arrangement: Arrangement.ref(),

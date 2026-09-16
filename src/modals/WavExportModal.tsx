@@ -13,15 +13,31 @@ export const WavExportModal = () => {
   const [exportedLayers, setExportedLayers] = useState<Layer[]>([])
   const [exportingCombined, setExportingCombined] = useState(false)
   const [exportingLayers, setExportingLayers] = useState<Layer[]>([])
+  const [keepSaturation, setKeepSaturation] = useState(true)
+  const [keepSwing, setKeepSwing] = useState(true)
+
+  const overrides = {
+    saturation: keepSaturation ? undefined : 0,
+    swing: keepSwing ? undefined : 0,
+  }
 
   return (
     <>
       <ModalContent>
+        <div>Include in export:</div>
+        <Row>
+          <Text selected={keepSaturation} onClick={() => setKeepSaturation(v => !v)}>
+            Saturation: {keepSaturation ? 'yes' : ' no'}
+          </Text>
+          <Text selected={keepSwing} onClick={() => setKeepSwing(v => !v)}>
+            Swing: {keepSwing ? 'yes' : ' no'}
+          </Text>
+        </Row>
         <Text
           disabled={combinedExported || exportingCombined}
           onClick={async () => {
             setExportingCombined(true)
-            await exportCombined()
+            await exportCombined(overrides)
             setExportingCombined(false)
             setCombinedExported(true)
           }}
@@ -34,7 +50,7 @@ export const WavExportModal = () => {
             disabled={exportedLayers.includes(layer) || exportingLayers.includes(layer)}
             onClick={async () => {
               setExportingLayers([...exportingLayers, layer])
-              await exportLayer(layer)
+              await exportLayer(layer, overrides)
               setExportingLayers(exportingLayers.filter(l => l !== layer))
               setExportedLayers([...exportedLayers, layer])
             }}
@@ -59,4 +75,9 @@ const ModalContent = styled('div')`
   & > * {
     white-space: normal;
   }
+`
+
+const Row = styled('div')`
+  display: flex;
+  gap: 10px;
 `
