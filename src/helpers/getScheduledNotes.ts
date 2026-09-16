@@ -13,7 +13,9 @@ export type ScheduledNote = {
   // Fill Gaps doubles a slice's buffer (original + reversed) with no regard
   // for how long the step actually is, so left unbounded it can ring into
   // the next step's onset. This is the time at which it must be cut off:
-  // exactly one nominal step after this note's own start.
+  // the swing-adjusted position of the next step, not just "one step later"
+  // -- on a swing-delayed step, a flat step distance would land past the
+  // following (non-delayed) step's own onset and still bleed into it.
   stopAtSeconds: number | null
 }
 
@@ -64,7 +66,12 @@ export const getScheduledNotes = (p: {
       const fadeStartSeconds = p.shortenNotes ? timeInSeconds + p.noteLength / 1000 : null
       const fadeEndSeconds =
         fadeStartSeconds === null ? null : fadeStartSeconds + p.noteFadeOut / 1000
-      const stopAtSeconds = p.fillGaps ? timeInSeconds + stepSeconds : null
+      // Bound to the NEXT step's actual (swing-adjusted) position, not a
+      // flat step distance -- swing only delays odd steps, so a note on an
+      // odd step must stop sooner than "timeInSeconds + stepSeconds" or the
+      // bound lands past the following even step's un-delayed onset.
+      const nextStepStart = (note.startStep + 1) * stepSeconds + swingOffset(note.startStep + 1)
+      const stopAtSeconds = p.fillGaps ? nextStepStart : null
 
       scheduled.push({
         filename: layer.filename,

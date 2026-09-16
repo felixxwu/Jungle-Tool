@@ -119,9 +119,25 @@ describe('getScheduledNotes', () => {
     expect(result[0].stopAtSeconds).toBeNull()
   })
 
-  it('bounds stopAtSeconds to one step past the note when fill gaps is on', () => {
+  it('bounds stopAtSeconds to the next step when fill gaps is on', () => {
     const result = getScheduledNotes({ ...base, fillGaps: true })
     expect(result[0].stopAtSeconds).toBeCloseTo(0 + 0.125, 10)
     expect(result[1].stopAtSeconds).toBeCloseTo(0.125 + 0.125, 10)
+  })
+
+  it('bounds stopAtSeconds to the swing-adjusted next step, not a flat step distance', () => {
+    // swing=50 delays odd steps by half a step (0.0625s at 120 BPM).
+    const result = getScheduledNotes({ ...base, fillGaps: true, swing: 50 })
+    // Step 0 (even, no delay) is followed by step 1 (odd, delayed) -- the
+    // bound must include that delay or it would cut off before step 1
+    // actually starts.
+    expect(result[0].timeInSeconds).toBeCloseTo(0, 10)
+    expect(result[0].stopAtSeconds).toBeCloseTo(0.125 + 0.0625, 10)
+    // Step 1 (odd, delayed) is followed by step 2 (even, no delay) -- a flat
+    // "+stepSeconds" from step 1's own (delayed) start would land AFTER
+    // step 2's actual onset and still bleed into it; the bound must be
+    // exactly step 2's undelayed position instead.
+    expect(result[1].timeInSeconds).toBeCloseTo(0.125 + 0.0625, 10)
+    expect(result[1].stopAtSeconds).toBeCloseTo(0.25, 10)
   })
 })
