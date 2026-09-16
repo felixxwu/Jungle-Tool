@@ -57,3 +57,8 @@ export const library = [
   'Ode To Billie Joe',
   'Wicked Beat',
 ]
+
+// Fixed headroom before the destination. The master chain has no limiter
+// (by design), so this keeps ordinary arrangements clear of the +/-1 ceiling
+// where the WaveShaperNode would hard-clip them.
+export const masterTrim = 0.3
