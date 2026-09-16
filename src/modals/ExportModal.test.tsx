@@ -1,136 +1,114 @@
-import { describe, it, expect, beforeEach, vi } from 'vitest'
+import { describe, it, expect, beforeEach, afterEach, vi } from 'vitest'
 import { render, screen, act } from '../test/test-utils'
 import { ExportModal } from './ExportModal'
-import { Layers, Modal } from '../lib/store'
-import { exportCombined } from '../actions/exportCombined'
-import { exportLayer } from '../actions/exportLayer'
-import type { Layer } from '../lib/types'
+import { CurrentUser, Modal } from '../lib/store'
+import { signInWithPopup, signOut } from 'firebase/auth'
 
-// Mock actions
-vi.mock('../actions/exportCombined', () => ({
-  exportCombined: vi.fn(),
-}))
-
-vi.mock('../actions/exportLayer', () => ({
-  exportLayer: vi.fn(),
+vi.mock('firebase/auth', async importOriginal => ({
+  ...(await importOriginal<typeof import('firebase/auth')>()),
+  signInWithPopup: vi.fn(),
+  signOut: vi.fn(),
 }))
 
 describe('ExportModal', () => {
-  const mockLayer1: Layer = {
-    filename: 'Amen Brother (1)',
-    volume: 50,
-    pitch: 0,
-  }
-
-  const mockLayer2: Layer = {
-    filename: 'Think (About It) (1)',
-    volume: 70,
-    pitch: 3,
-  }
-
   beforeEach(() => {
     vi.clearAllMocks()
-    Layers.set([mockLayer1, mockLayer2])
     Modal.set(null)
+    CurrentUser.set(null)
   })
 
-  it('renders export combined mix option', () => {
-    render(<ExportModal />)
-    expect(screen.getByText('Export combined mix')).toBeInTheDocument()
+  afterEach(() => {
+    CurrentUser.set(null)
   })
 
-  it('renders export options for each layer', () => {
+  it('renders the WAV export entry point', () => {
     render(<ExportModal />)
-    expect(screen.getByText('Export Amen Brother (1) layer')).toBeInTheDocument()
-    expect(screen.getByText('Export Think (About It) (1) layer')).toBeInTheDocument()
+    expect(screen.getByText('Export layers to WAV')).toBeInTheDocument()
   })
 
-  it('renders close button', () => {
-    render(<ExportModal />)
-    expect(screen.getByText('Close')).toBeInTheDocument()
-  })
-
-  it('calls exportCombined when combined mix is clicked', async () => {
+  it('opens the WavExportModal when clicked', async () => {
     render(<ExportModal />)
 
-    const combinedButton = screen.getByText('Export combined mix')
     await act(async () => {
-      combinedButton.click()
+      screen.getByText('Export layers to WAV').click()
     })
 
-    expect(exportCombined).toHaveBeenCalledTimes(1)
+    expect(Modal.ref()).not.toBe(null)
   })
 
-  it('disables combined mix button after export', async () => {
+  it('shows log in with Google when logged out', () => {
     render(<ExportModal />)
-
-    const combinedButton = screen.getByText('Export combined mix')
-    await act(async () => {
-      combinedButton.click()
-    })
-
-    // Button should be disabled after export
-    expect(combinedButton).toHaveAttribute('disabled')
+    expect(screen.getByText('Log in with Google')).toBeInTheDocument()
   })
 
-  it('calls exportLayer when a layer export is clicked', async () => {
+  it('disables save/load arrangement when logged out', () => {
     render(<ExportModal />)
-
-    const layer1Button = screen.getByText('Export Amen Brother (1) layer')
-    await act(async () => {
-      layer1Button.click()
-    })
-
-    expect(exportLayer).toHaveBeenCalledWith(mockLayer1)
+    expect(screen.getByText('Save / load arrangement')).toHaveAttribute('disabled')
   })
 
-  it('disables layer button after export', async () => {
+  it('does not open ArrangementsModal when disabled save/load is clicked', async () => {
     render(<ExportModal />)
 
-    const layer1Button = screen.getByText('Export Amen Brother (1) layer')
     await act(async () => {
-      layer1Button.click()
-    })
-
-    // Button should be disabled after export
-    expect(layer1Button).toHaveAttribute('disabled')
-  })
-
-  it('allows exporting multiple layers independently', async () => {
-    render(<ExportModal />)
-
-    const layer1Button = screen.getByText('Export Amen Brother (1) layer')
-    const layer2Button = screen.getByText('Export Think (About It) (1) layer')
-
-    await act(async () => {
-      layer1Button.click()
-    })
-
-    await act(async () => {
-      layer2Button.click()
-    })
-
-    expect(exportLayer).toHaveBeenCalledWith(mockLayer1)
-    expect(exportLayer).toHaveBeenCalledWith(mockLayer2)
-    expect(exportLayer).toHaveBeenCalledTimes(2)
-  })
-
-  it('closes modal when close button is clicked', async () => {
-    render(<ExportModal />)
-
-    const closeButton = screen.getByText('Close')
-    await act(async () => {
-      closeButton.click()
+      screen.getByText('Save / load arrangement').click()
     })
 
     expect(Modal.ref()).toBe(null)
   })
 
-  it('handles empty layers list', () => {
-    Layers.set([])
+  it('calls signInWithPopup when log in is clicked', async () => {
     render(<ExportModal />)
 
-    expect(screen.getByText('Export combined mix')).toBeInTheDocument()
-    expect(screen.queryByText(/Export .* layer/)).not.toBeInTheDocument()
+    await act(async () => {
+      screen.getByText('Log in with Google').click()
+    })
+
+    expect(signInWithPopup).toHaveBeenCalledTimes(1)
+  })
+
+  it('shows log out and save/load option when logged in', () => {
+    act(() => {
+      CurrentUser.set({ uid: '123', displayName: 'Felix Wu' } as never)
+    })
+    render(<ExportModal />)
+
+    expect(screen.getByText('Log out (Felix Wu)')).toBeInTheDocument()
+    expect(screen.getByText('Save / load arrangement')).not.toHaveAttribute('disabled')
+  })
+
+  it('opens ArrangementsModal when save/load is clicked while logged in', async () => {
+    act(() => {
+      CurrentUser.set({ uid: '123', displayName: 'Felix Wu' } as never)
+    })
+    render(<ExportModal />)
+
+    await act(async () => {
+      screen.getByText('Save / load arrangement').click()
+    })
+
+    expect(Modal.ref()).not.toBe(null)
+  })
+
+  it('calls signOut when log out is clicked', async () => {
+    act(() => {
+      CurrentUser.set({ uid: '123', displayName: 'Felix Wu' } as never)
+    })
+    render(<ExportModal />)
+
+    await act(async () => {
+      screen.getByText('Log out (Felix Wu)').click()
+    })
+
+    expect(signOut).toHaveBeenCalledTimes(1)
+  })
+
+  it('closes modal when close button is clicked', async () => {
+    render(<ExportModal />)
+
+    await act(async () => {
+      screen.getByText('Close').click()
+    })
+
+    expect(Modal.ref()).toBe(null)
   })
 })

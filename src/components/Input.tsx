@@ -4,6 +4,7 @@ import { colors } from '../lib/colors'
 export const Input = (p: {
   value: string
   onChange: (value: string) => void
+  placeholder?: string
   selected?: boolean
   disabled?: boolean
   $fullWidth?: boolean
@@ -14,6 +15,7 @@ export const Input = (p: {
     <InputStyle
       value={p.value}
       onChange={e => p.onChange(e.target.value)}
+      placeholder={p.placeholder}
       selected={p.selected}
       disabled={p.disabled}
       $fullWidth={p.$fullWidth}
@@ -34,6 +36,15 @@ const InputStyle = styled('input')<{
   padding: 6px 15px 5px 15px;
   background-color: ${p => (p.selected ? colors.black : colors.white)};
   white-space: nowrap;
+  border: 1px solid ${colors.black};
+  outline: none;
+
+  &:focus,
+  &:focus-visible {
+    outline: none;
+    box-shadow: none;
+  }
+
   color: ${p => {
     if (p.disabled) return colors.darkGrey
     if (p.selected) return colors.white
@@ -51,5 +62,9 @@ const InputStyle = styled('input')<{
       if (p.onClick) return colors.grey
       return colors.white
     }};
+  }
+
+  &::placeholder {
+    color: ${colors.darkGrey};
   }
 `

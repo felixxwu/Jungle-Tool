@@ -32,6 +32,11 @@ export const listSavedArrangements = async (uid: string): Promise<SavedArrangeme
 }
 
 export const saveNewArrangement = async (uid: string, name: string, state: ArrangementState) => {
+  const existing = await getDocs(
+    query(arrangementsCollection, where('uid', '==', uid), where('name', '==', name))
+  )
+  if (!existing.empty) throw new Error('An arrangement with this name already exists.')
+
   await addDoc(arrangementsCollection, {
     uid,
     name,
