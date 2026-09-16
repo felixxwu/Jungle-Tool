@@ -188,7 +188,15 @@ export const Waveform = (p: {
   }, [p.useLoopPosition, p.playHeadId, p.isPlaying, p.totalBars, p.selectedBarIndex])
 
   const scaleX = (p.width / (p.samples.length - 1)) * p.scaleX
-  const scaleY = p.height / Math.pow(2, 16)
+
+  // Scale to the actual peak in the buffer rather than the full int16 range,
+  // so quieter material still visibly fills the available height.
+  let peak = 0
+  for (let i = 0; i < p.samples.length; i++) {
+    const abs = Math.abs(p.samples[i])
+    if (abs > peak) peak = abs
+  }
+  const scaleY = peak > 0 ? p.height / 2 / peak : 0
 
   let path = 'M'
   for (let i = 0; i < p.samples.length; i++) {
