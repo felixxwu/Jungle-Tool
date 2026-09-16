@@ -1,5 +1,4 @@
 import { singletonState } from 'singleton-state-hook'
-import type { Tone } from './tone'
 import type { ITab, Layer, LoadedFile, Note } from './types'
 import { maxNoteLength, minNoteFadeOut } from './consts'
 
@@ -10,7 +9,7 @@ export const Swing = singletonState(17)
 export const NoteLength = singletonState(maxNoteLength)
 export const NoteFadeOut = singletonState(minNoteFadeOut)
 export const Saturation = singletonState(50)
-export const Player = singletonState<Tone.Player | null>(null)
+export const PreviewSource = singletonState<AudioBufferSourceNode | null>(null)
 export const LibraryLoading = singletonState(true)
 export const LoadedFiles = singletonState<LoadedFile[]>([])
 export const LowestRMS = singletonState<number>(Infinity)

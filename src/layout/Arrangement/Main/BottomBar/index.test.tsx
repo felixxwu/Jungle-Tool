@@ -1,7 +1,7 @@
 import { describe, it, expect, beforeEach, vi } from 'vitest'
 import { render, screen, act } from '../../../../test/test-utils'
 import { BottomBar } from './index'
-import { Playing, Player, Tab, LibraryLoading, Modal } from '../../../../lib/store'
+import { Playing, Tab, LibraryLoading, Modal } from '../../../../lib/store'
 import { playArrangement } from '../../../../actions/playArrangement'
 import { randomiseArrangement } from '../../../../actions/randomiseArrangement'
 import { stopArrangement } from '../../../../lib/playback'
@@ -23,7 +23,6 @@ describe('BottomBar', () => {
   beforeEach(() => {
     vi.clearAllMocks()
     Playing.set(false)
-    Player.set(null)
     Tab.set('arrangement')
     LibraryLoading.set(false)
   })
@@ -54,11 +53,6 @@ describe('BottomBar', () => {
 
   it('stops playback when Pause button is clicked', async () => {
     Playing.set(true)
-    const mockPlayer = {
-      state: 'started',
-      stop: vi.fn(),
-    } as any
-    Player.set(mockPlayer)
 
     render(<BottomBar />)
 

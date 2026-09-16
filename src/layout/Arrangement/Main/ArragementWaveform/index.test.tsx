@@ -4,8 +4,7 @@ import { ArragementWaveform } from './index'
 import {
   SelectedBar,
   BPM,
-  Player,
-  PlayStartTimestamp,
+  Playing,
   NumBars,
   Layers,
   LoadedFiles,
@@ -19,23 +18,19 @@ vi.mock('../../../../hooks/useArrangementSamples', () => ({
 }))
 
 describe('ArragementWaveform', () => {
-  const mockSamples: [Float32Array, Float32Array] = [
-    new Float32Array(44100),
-    new Float32Array(44100),
-  ]
+  const mockSamples = new Float32Array(44100)
 
   beforeEach(() => {
     vi.clearAllMocks()
     SelectedBar.set(0)
     BPM.set(120)
     NumBars.set(1)
-    PlayStartTimestamp.set(null)
-    Player.set(null)
+    Playing.set(false)
     Layers.set([{ filename: 'test-file', volume: 50, pitch: 0 }])
     LoadedFiles.set([
       {
         name: 'test-file',
-        samples: mockSamples,
+        samples: [new Float32Array(44100), new Float32Array(44100)],
         slices: [],
         artist: 'Test Artist',
         year: 2024,
@@ -69,13 +64,9 @@ describe('ArragementWaveform', () => {
     expect(container.querySelector('svg')).toBeInTheDocument()
   })
 
-  it('calculates bar duration based on BPM', () => {
-    BPM.set(120)
+  it('requests samples for the selected bar', () => {
     render(<ArragementWaveform />)
 
-    // Bar duration should be calculated as: 16 steps * (60 / 120 / 4) seconds * 1000ms
-    // = 16 * 0.125 * 1000 = 2000ms
-    // The component calculates this and passes it to Waveform
     expect(useArrangementSamples).toHaveBeenCalledWith({ bar: 0 })
   })
 
@@ -91,43 +82,31 @@ describe('ArragementWaveform', () => {
     expect(useArrangementSamples).toHaveBeenCalledWith({ bar: 1 })
   })
 
-  it('passes playhead visibility props based on player state', () => {
-    const mockPlayer = {
-      state: 'started',
-      start: vi.fn(),
-      stop: vi.fn(),
-    } as any
-    Player.set(mockPlayer)
-    PlayStartTimestamp.set(Date.now())
+  it('passes playhead visibility based on the Playing atom', () => {
+    Playing.set(true)
 
     render(<ArragementWaveform />)
 
-    // Component should pass isPlaying based on player state
-    // We verify by checking the component renders correctly
+    // Component should pass isPlaying based on Playing -- we verify by
+    // checking the component renders correctly with the flag set.
     expect(useArrangementSamples).toHaveBeenCalled()
   })
 
-  it('hides playhead when player is stopped', () => {
-    const mockPlayer = {
-      state: 'stopped',
-    } as any
-    Player.set(mockPlayer)
-    PlayStartTimestamp.set(null)
+  it('hides playhead when not playing', () => {
+    Playing.set(false)
 
     render(<ArragementWaveform />)
 
-    // isPlaying should be false when player is stopped
-    // Component should handle this correctly
     expect(useArrangementSamples).toHaveBeenCalled()
   })
 
-  it('passes total bars and bar duration for playhead calculation', () => {
+  it('passes total bars for playhead calculation', () => {
     NumBars.set(2)
     BPM.set(120)
     render(<ArragementWaveform />)
 
-    // Component should pass totalBars and barDuration to Waveform
-    // for calculating which bar is currently playing
+    // Component should pass totalBars to Waveform for calculating which
+    // bar is currently playing.
     expect(useArrangementSamples).toHaveBeenCalled()
   })
 })

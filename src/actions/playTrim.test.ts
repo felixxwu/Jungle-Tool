@@ -1,17 +1,16 @@
 import { describe, it, expect, beforeEach, vi } from 'vitest'
 import { playTrim } from './playTrim'
-import { LoadedFiles, Player, Playing, PlayStartTimestamp, PlayDuration } from '../lib/store'
-import { createPlayer, stereoSlice } from '../lib/audio'
+import { LoadedFiles, PreviewSource, Playing, PlayStartTimestamp, PlayDuration } from '../lib/store'
+import { playSamples, stereoSlice } from '../lib/audio'
+import { resumeAudioContext } from '../lib/audioContext'
 import { calculateDuration, stopPreview } from '../lib/playback'
 
-// Mock dependencies
 vi.mock('../lib/audio')
+vi.mock('../lib/audioContext')
 vi.mock('../lib/playback', async () => {
   const actual = await vi.importActual('../lib/playback')
   return {
     ...actual,
-    setupPlayback: vi.fn().mockResolvedValue(undefined),
-    setupPlayerStopHandler: vi.fn(),
     stopPreview: vi.fn(),
   }
 })
@@ -35,13 +34,10 @@ describe('playTrim', () => {
     new Float32Array(29000),
   ]
 
-  const mockPlayer = {
-    start: vi.fn(),
-    stop: vi.fn(),
-    dispose: vi.fn(),
+  const mockSource = {
     loop: false,
-    state: 'stopped',
-    onstop: null,
+    onended: null as (() => void) | null,
+    stop: vi.fn(),
   }
 
   beforeEach(() => {
@@ -50,8 +46,9 @@ describe('playTrim', () => {
     Playing.set(false)
     PlayStartTimestamp.set(null)
     PlayDuration.set(null)
-    Player.set(null)
-    ;(createPlayer as ReturnType<typeof vi.fn>).mockResolvedValue(mockPlayer)
+    PreviewSource.set(null)
+    ;(resumeAudioContext as ReturnType<typeof vi.fn>).mockResolvedValue(undefined)
+    ;(playSamples as ReturnType<typeof vi.fn>).mockReturnValue(mockSource)
     ;(stereoSlice as ReturnType<typeof vi.fn>).mockReturnValue(mockTrimmedSamples)
   })
 
@@ -59,16 +56,15 @@ describe('playTrim', () => {
     await playTrim(0)
 
     expect(stereoSlice).toHaveBeenCalledWith(mockFile.samples, 1000, 30000)
-    expect(createPlayer).toHaveBeenCalledWith(mockTrimmedSamples)
-    expect(Player.ref()).toBe(mockPlayer)
-    expect(mockPlayer.start).toHaveBeenCalled()
+    expect(playSamples).toHaveBeenCalledWith(mockTrimmedSamples, { loop: true })
+    expect(PreviewSource.ref()).toBe(mockSource)
   })
 
   it('loops trimmed section playback', async () => {
     await playTrim(0)
 
     // Trimmed sections should loop (for seamless loop preview)
-    expect(mockPlayer.loop).toBe(true)
+    expect(playSamples).toHaveBeenCalledWith(mockTrimmedSamples, { loop: true })
   })
 
   it('stops existing playback before starting trim preview', async () => {

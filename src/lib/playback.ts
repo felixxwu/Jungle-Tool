@@ -1,8 +1,6 @@
-import { Player, Playing, PlayStartTimestamp, PlayDuration } from './store'
-import { Tone } from './tone'
+import { PreviewSource, Playing, PlayStartTimestamp, PlayDuration } from './store'
 import { SAMPLE_RATE } from './consts'
 import { stopScheduler } from './scheduler'
-import type { Tone as ToneType } from './tone'
 
 /**
  * Calculates audio duration in seconds from sample count
@@ -23,48 +21,17 @@ export const stopArrangement = async () => {
  * Stops a one-shot Library preview.
  */
 export const stopPreview = () => {
-  Player.ref()?.stop()
+  PreviewSource.ref()?.stop()
+  PreviewSource.set(null)
   PlayStartTimestamp.set(null)
   PlayDuration.set(null)
 }
 
 /**
- * Disposes of the current player
+ * Starts preview timing information. The source itself is already started
+ * by playSamples (src/lib/audio.ts) by the time this is called.
  */
-export const disposePlayer = () => {
-  Player.ref()?.dispose()
-}
-
-/**
- * Sets up player stop handler to clear playback state
- */
-export const setupPlayerStopHandler = (
-  player: ToneType.Player,
-  options?: { clearPlaying?: boolean }
-) => {
-  const clearPlaying = options?.clearPlaying ?? false
-  player.onstop = () => {
-    PlayStartTimestamp.set(null)
-    PlayDuration.set(null)
-    if (clearPlaying) {
-      Playing.set(false)
-    }
-  }
-}
-
-/**
- * Common playback setup: starts Tone, disposes old player, creates new player
- */
-export const setupPlayback = async (): Promise<void> => {
-  await Tone.start()
-  disposePlayer()
-}
-
-/**
- * Starts playback with timing information
- */
-export const startPlayback = (player: ToneType.Player, durationInSeconds?: number | null) => {
-  player.start()
+export const startPreview = (durationInSeconds?: number | null) => {
   PlayStartTimestamp.set(Date.now())
   PlayDuration.set(durationInSeconds ?? null)
 }

@@ -1,20 +1,12 @@
 import { describe, it, expect, beforeEach, vi } from 'vitest'
 import { playFile } from './playFile'
-import { LoadedFiles, Player, Playing, PlayStartTimestamp, PlayDuration } from '../lib/store'
-import { createPlayer } from '../lib/audio'
+import { LoadedFiles, PreviewSource, Playing, PlayStartTimestamp, PlayDuration } from '../lib/store'
+import { playSamples } from '../lib/audio'
+import { resumeAudioContext } from '../lib/audioContext'
 import { calculateDuration } from '../lib/playback'
 
-// Mock only external dependencies that interact with browser/audio APIs
 vi.mock('../lib/audio')
-vi.mock('../lib/playback', async () => {
-  const actual = await vi.importActual('../lib/playback')
-  return {
-    ...actual,
-    setupPlayback: vi.fn().mockResolvedValue(undefined),
-    setupPlayerStopHandler: vi.fn(),
-    // Don't mock startPlayback - we want to test actual state changes
-  }
-})
+vi.mock('../lib/audioContext')
 
 describe('playFile', () => {
   const mockFile = {
@@ -27,25 +19,24 @@ describe('playFile', () => {
     whosampledCount: 0,
   }
 
-  const mockPlayer = {
-    start: vi.fn(),
-    stop: vi.fn(),
-    dispose: vi.fn(),
+  const mockSource = {
     loop: false,
-    state: 'stopped',
-    onstop: null,
+    onended: null as (() => void) | null,
+    stop: vi.fn(),
   }
 
   beforeEach(() => {
+    vi.clearAllMocks()
     // Reset state before each test
     Playing.set(false)
     PlayStartTimestamp.set(null)
     PlayDuration.set(null)
-    Player.set(null)
+    PreviewSource.set(null)
 
     // Setup mock data
     LoadedFiles.set([mockFile])
-    ;(createPlayer as ReturnType<typeof vi.fn>).mockResolvedValue(mockPlayer)
+    ;(resumeAudioContext as ReturnType<typeof vi.fn>).mockResolvedValue(undefined)
+    ;(playSamples as ReturnType<typeof vi.fn>).mockReturnValue(mockSource)
   })
 
   it('sets Playing to false when called', async () => {
@@ -56,16 +47,15 @@ describe('playFile', () => {
     expect(Playing.ref()).toBe(false)
   })
 
-  it('sets the player in store after creating it', async () => {
+  it('sets the preview source in store after creating it', async () => {
     await playFile(0)
 
-    expect(Player.ref()).toBe(mockPlayer)
+    expect(PreviewSource.ref()).toBe(mockSource)
   })
 
   it('sets PlayStartTimestamp and PlayDuration after starting playback', async () => {
     await playFile(0)
 
-    // Verify actual state changes from startPlayback
     expect(PlayStartTimestamp.ref()).not.toBe(null)
     expect(PlayDuration.ref()).toBe(calculateDuration(mockFile.samples[0].length))
     expect(PlayDuration.ref()).toBe(1) // 1 second
@@ -81,7 +71,6 @@ describe('playFile', () => {
 
     await playFile(1)
 
-    // Verify state reflects correct duration for the second file
     const expectedDuration = calculateDuration(mockFile2.samples[0].length)
     expect(PlayDuration.ref()).toBe(expectedDuration)
     expect(PlayDuration.ref()).toBe(2) // 2 seconds

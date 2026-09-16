@@ -9,16 +9,13 @@ import {
   SelectedBar,
   NumBars,
   Playing,
-  Player,
   PlayStartTimestamp,
   Tab,
 } from '../lib/store'
-import { createPlayer } from '../lib/audio'
 import { startScheduler } from '../lib/scheduler'
 import { resumeAudioContext } from '../lib/audioContext'
 
 // Mock dependencies
-vi.mock('../lib/audio')
 vi.mock('../helpers/getBestLayerPitch', () => ({
   getBestLayerPitch: vi.fn(() => 0),
 }))
@@ -54,15 +51,6 @@ describe('Main Functionality Integration Tests', () => {
     whosampledCount: 0,
   }
 
-  const mockPlayer = {
-    start: vi.fn(),
-    stop: vi.fn(),
-    dispose: vi.fn(),
-    loop: false,
-    state: 'stopped',
-    onstop: null,
-  }
-
   beforeEach(() => {
     vi.clearAllMocks()
     // Reset all state
@@ -72,12 +60,8 @@ describe('Main Functionality Integration Tests', () => {
     SelectedBar.set(0)
     NumBars.set(1)
     Playing.set(false)
-    Player.set(null)
     PlayStartTimestamp.set(null)
     Tab.set('library')
-
-    // Setup mocks
-    ;(createPlayer as ReturnType<typeof vi.fn>).mockResolvedValue(mockPlayer)
   })
 
   describe('Adding layers to arrangement', () => {

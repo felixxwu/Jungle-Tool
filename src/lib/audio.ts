@@ -1,7 +1,9 @@
 import { WaveFile } from 'wavefile'
-import { Tone } from './tone'
 import { max } from '../helpers/max'
 import { SAMPLE_RATE } from './consts'
+import { getAudioContext } from './audioContext'
+
+const SAMPLE_SCALE = 2 ** 15
 
 export const fetchFile = async (path: string) => {
   const response = await fetch(path)
@@ -15,13 +17,24 @@ export const fetchFile = async (path: string) => {
   return [left, right] as const satisfies [Float32Array, Float32Array]
 }
 
-export const createPlayer = async (samples: [Float32Array, Float32Array]) => {
-  const wavefile = new WaveFile()
-  wavefile.fromScratch(2, SAMPLE_RATE, '16', samples)
-  const buffer = await new Tone.Player().context.decodeAudioData(
-    wavefile.toBuffer().buffer as ArrayBuffer
-  )
-  return new Tone.Player(buffer).toDestination()
+/** One-shot playback of raw 16-bit-scale samples, for Library previews. */
+export const playSamples = (
+  samples: [Float32Array, Float32Array],
+  opts?: { loop?: boolean }
+) => {
+  const ctx = getAudioContext()
+  const buffer = ctx.createBuffer(2, samples[0].length, SAMPLE_RATE)
+  for (const [channel, data] of samples.entries()) {
+    const target = buffer.getChannelData(channel)
+    for (let i = 0; i < data.length; i++) target[i] = data[i] / SAMPLE_SCALE
+  }
+
+  const source = ctx.createBufferSource()
+  source.buffer = buffer
+  source.loop = opts?.loop ?? false
+  source.connect(ctx.destination)
+  source.start()
+  return source
 }
 
 export const mono = (samples?: [Float32Array, Float32Array]) => {

@@ -15,7 +15,7 @@ import {
   WindowSize,
   PlayStartTimestamp,
   PlayDuration,
-  Player,
+  PreviewSource,
 } from '../../../lib/store'
 import { mono } from '../../../lib/audio'
 import { Waveform } from '../../../components/Waveform'
@@ -32,7 +32,7 @@ export const LibraryWaveform = () => {
   const editSliceMode = EditSliceMode.useState()
   const playStartTimestamp = PlayStartTimestamp.useState()
   const playDuration = PlayDuration.useState()
-  const player = Player.useState()
+  const previewSource = PreviewSource.useState()
 
   if (selectedFileIndex === null) return null
 
@@ -82,7 +82,7 @@ export const LibraryWaveform = () => {
       showLineOnHover={(editSliceMode || trimMode) && selectedSliceIndex !== null}
       playStartTimestamp={playStartTimestamp}
       playDuration={playDuration ? playDuration * 1000 : undefined} // Convert to milliseconds
-      isPlaying={!!playStartTimestamp && player?.state !== 'stopped'}
+      isPlaying={!!playStartTimestamp && previewSource !== null}
       resetTrigger={[selectedFileIndex, selectedSliceIndex]}
     />
   )

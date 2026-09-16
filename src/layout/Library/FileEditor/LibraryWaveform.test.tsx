@@ -10,7 +10,7 @@ import {
   WindowSize,
   PlayStartTimestamp,
   PlayDuration,
-  Player,
+  PreviewSource,
 } from '../../../lib/store'
 import { playFile } from '../../../actions/playFile'
 import { playSlice } from '../../../actions/playSlice'
@@ -57,7 +57,7 @@ describe('LibraryWaveform', () => {
     WindowSize.set({ width: 1000, height: 650 })
     PlayStartTimestamp.set(null)
     PlayDuration.set(null)
-    Player.set(null)
+    PreviewSource.set(null)
   })
 
   it('renders waveform for selected break', () => {

@@ -1,5 +1,6 @@
-import { describe, it, expect } from 'vitest'
-import { sineSaturation, sineSaturationStereo } from './audio'
+import { describe, it, expect, beforeEach } from 'vitest'
+import { sineSaturation, sineSaturationStereo, playSamples } from './audio'
+import { resetAudioContext } from './audioContext'
 
 describe('sineSaturation', () => {
   it('applies saturation effect to audio samples', () => {
@@ -121,6 +122,41 @@ describe('sineSaturationStereo', () => {
 
     expect(resultWithGain[0]).not.toEqual(resultNoGain[0])
     expect(resultWithGain[1]).not.toEqual(resultNoGain[1])
+  })
+})
+
+describe('playSamples', () => {
+  beforeEach(() => resetAudioContext())
+
+  it('starts a source with the samples scaled into -1..1', () => {
+    const samples: [Float32Array, Float32Array] = [
+      Float32Array.from([32768, 0]),
+      Float32Array.from([32768, 0]),
+    ]
+    const source = playSamples(samples) as unknown as {
+      startedAt: number | null
+      buffer: { getChannelData: (c: number) => Float32Array }
+    }
+    expect(source.startedAt).not.toBeNull()
+    expect(source.buffer.getChannelData(0)[0]).toBeCloseTo(1, 4)
+  })
+
+  it('does not loop by default', () => {
+    const samples: [Float32Array, Float32Array] = [
+      new Float32Array([100]),
+      new Float32Array([100]),
+    ]
+    const source = playSamples(samples) as unknown as { loop: boolean }
+    expect(source.loop).toBe(false)
+  })
+
+  it('loops when opts.loop is true', () => {
+    const samples: [Float32Array, Float32Array] = [
+      new Float32Array([100]),
+      new Float32Array([100]),
+    ]
+    const source = playSamples(samples, { loop: true }) as unknown as { loop: boolean }
+    expect(source.loop).toBe(true)
   })
 })
 

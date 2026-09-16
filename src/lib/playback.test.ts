@@ -1,7 +1,7 @@
 import { describe, it, expect, beforeEach, vi } from 'vitest'
-import { calculateDuration, stopArrangement, stopPreview, startPlayback, setupPlayerStopHandler } from './playback'
+import { calculateDuration, stopArrangement, stopPreview, startPreview } from './playback'
 import { SAMPLE_RATE } from './consts'
-import { Player, Playing, PlayStartTimestamp, PlayDuration } from './store'
+import { PreviewSource, Playing, PlayStartTimestamp, PlayDuration } from './store'
 import { stopScheduler } from './scheduler'
 
 vi.mock('./scheduler', () => ({ stopScheduler: vi.fn().mockResolvedValue(undefined) }))
@@ -42,26 +42,28 @@ describe('stopArrangement', () => {
 
 describe('stopPreview', () => {
   beforeEach(() => {
+    PreviewSource.set(null)
     PlayStartTimestamp.set(null)
     PlayDuration.set(null)
   })
 
-  it('stops the player and clears preview playback state', () => {
+  it('stops the source, clears PreviewSource, and clears preview playback state', () => {
     const mockStop = vi.fn()
-    const mockPlayer = { stop: mockStop }
-    Player.set(mockPlayer as any)
+    const mockSource = { stop: mockStop }
+    PreviewSource.set(mockSource as unknown as AudioBufferSourceNode)
     PlayStartTimestamp.set(Date.now())
     PlayDuration.set(10)
 
     stopPreview()
 
     expect(mockStop).toHaveBeenCalledTimes(1)
+    expect(PreviewSource.ref()).toBe(null)
     expect(PlayStartTimestamp.ref()).toBe(null)
     expect(PlayDuration.ref()).toBe(null)
   })
 
-  it('handles null player gracefully', () => {
-    Player.set(null)
+  it('handles a null preview source gracefully', () => {
+    PreviewSource.set(null)
     PlayStartTimestamp.set(Date.now())
     PlayDuration.set(5)
 
@@ -72,30 +74,24 @@ describe('stopPreview', () => {
   })
 })
 
-describe('startPlayback', () => {
+describe('startPreview', () => {
   beforeEach(() => {
     PlayStartTimestamp.set(null)
     PlayDuration.set(null)
   })
 
-  it('sets timestamp and duration when starting playback', () => {
-    const mockPlayer = {
-      start: vi.fn(),
-    } as any
-
+  it('sets timestamp and duration', () => {
     const duration = 5.5
-    startPlayback(mockPlayer, duration)
+    startPreview(duration)
 
-    expect(mockPlayer.start).toHaveBeenCalledTimes(1)
     expect(PlayStartTimestamp.ref()).not.toBe(null)
     expect(PlayDuration.ref()).toBe(duration)
   })
 
   it('sets timestamp to current time', () => {
-    const mockPlayer = { start: vi.fn() } as any
     const beforeTime = Date.now()
 
-    startPlayback(mockPlayer, 10)
+    startPreview(10)
 
     const timestamp = PlayStartTimestamp.ref()
     const afterTime = Date.now()
@@ -106,71 +102,15 @@ describe('startPlayback', () => {
   })
 
   it('handles null duration', () => {
-    const mockPlayer = { start: vi.fn() } as any
-
-    startPlayback(mockPlayer, null)
+    startPreview(null)
 
     expect(PlayDuration.ref()).toBe(null)
     expect(PlayStartTimestamp.ref()).not.toBe(null)
   })
 
   it('handles undefined duration', () => {
-    const mockPlayer = { start: vi.fn() } as any
-
-    startPlayback(mockPlayer, undefined)
+    startPreview(undefined)
 
     expect(PlayDuration.ref()).toBe(null)
-  })
-})
-
-describe('setupPlayerStopHandler', () => {
-  beforeEach(() => {
-    Playing.set(false)
-    PlayStartTimestamp.set(null)
-    PlayDuration.set(null)
-  })
-
-  it('sets up handler that clears state when player stops', () => {
-    const mockPlayer = {
-      onstop: null,
-    } as any
-
-    // Setup initial state
-    Playing.set(true)
-    PlayStartTimestamp.set(Date.now())
-    PlayDuration.set(10)
-
-    // Action: setup stop handler
-    setupPlayerStopHandler(mockPlayer)
-
-    // Verify handler was set
-    expect(mockPlayer.onstop).not.toBe(null)
-
-    // Simulate player stopping
-    mockPlayer.onstop()
-
-    // Verify state was cleared
-    expect(PlayStartTimestamp.ref()).toBe(null)
-    expect(PlayDuration.ref()).toBe(null)
-    // Playing should NOT be cleared by default
-    expect(Playing.ref()).toBe(true)
-  })
-
-  it('clears Playing state when clearPlaying option is true', () => {
-    const mockPlayer = {
-      onstop: null,
-    } as any
-
-    Playing.set(true)
-    PlayStartTimestamp.set(Date.now())
-    PlayDuration.set(10)
-
-    setupPlayerStopHandler(mockPlayer, { clearPlaying: true })
-
-    mockPlayer.onstop()
-
-    expect(PlayStartTimestamp.ref()).toBe(null)
-    expect(PlayDuration.ref()).toBe(null)
-    expect(Playing.ref()).toBe(false)
   })
 })

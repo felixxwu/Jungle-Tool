@@ -1,12 +1,7 @@
-import { createPlayer, stereoSlice } from '../lib/audio'
-import { LoadedFiles, Player, Playing } from '../lib/store'
-import {
-  setupPlayback,
-  stopPreview,
-  setupPlayerStopHandler,
-  startPlayback,
-  calculateDuration,
-} from '../lib/playback'
+import { playSamples, stereoSlice } from '../lib/audio'
+import { resumeAudioContext } from '../lib/audioContext'
+import { LoadedFiles, Playing, PreviewSource } from '../lib/store'
+import { calculateDuration, stopPreview, startPreview } from '../lib/playback'
 
 export const playTrim = async (fileIndex: number) => {
   Playing.set(false)
@@ -21,13 +16,12 @@ export const playTrim = async (fileIndex: number) => {
   )
 
   stopPreview() // Stop and clear state before starting new playback
-  await setupPlayback()
+  await resumeAudioContext()
 
-  const player = await createPlayer(samples)
-  player.loop = true
-  Player.set(player)
+  const source = playSamples(samples, { loop: true })
+  PreviewSource.set(source)
+  source.onended = () => stopPreview()
 
-  setupPlayerStopHandler(player)
   const durationInSeconds = calculateDuration(samples[0].length)
-  startPlayback(player, durationInSeconds)
+  startPreview(durationInSeconds)
 }

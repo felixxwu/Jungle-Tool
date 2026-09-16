@@ -1,21 +1,14 @@
 import { describe, it, expect, beforeEach, vi } from 'vitest'
 import { playSlice } from './playSlice'
-import { LoadedFiles, Player, Playing, PlayStartTimestamp, PlayDuration } from '../lib/store'
-import { createPlayer } from '../lib/audio'
+import { LoadedFiles, PreviewSource, Playing, PlayStartTimestamp, PlayDuration } from '../lib/store'
+import { playSamples } from '../lib/audio'
+import { resumeAudioContext } from '../lib/audioContext'
 import { getSliceSamples } from '../helpers/getSliceSamples'
 import { calculateDuration } from '../lib/playback'
 
-// Mock dependencies
 vi.mock('../lib/audio')
+vi.mock('../lib/audioContext')
 vi.mock('../helpers/getSliceSamples')
-vi.mock('../lib/playback', async () => {
-  const actual = await vi.importActual('../lib/playback')
-  return {
-    ...actual,
-    setupPlayback: vi.fn().mockResolvedValue(undefined),
-    setupPlayerStopHandler: vi.fn(),
-  }
-})
 
 describe('playSlice', () => {
   const mockFile = {
@@ -37,13 +30,10 @@ describe('playSlice', () => {
     new Float32Array(5000),
   ]
 
-  const mockPlayer = {
-    start: vi.fn(),
-    stop: vi.fn(),
-    dispose: vi.fn(),
+  const mockSource = {
     loop: false,
-    state: 'stopped',
-    onstop: null,
+    onended: null as (() => void) | null,
+    stop: vi.fn(),
   }
 
   beforeEach(() => {
@@ -52,8 +42,9 @@ describe('playSlice', () => {
     Playing.set(false)
     PlayStartTimestamp.set(null)
     PlayDuration.set(null)
-    Player.set(null)
-    ;(createPlayer as ReturnType<typeof vi.fn>).mockResolvedValue(mockPlayer)
+    PreviewSource.set(null)
+    ;(resumeAudioContext as ReturnType<typeof vi.fn>).mockResolvedValue(undefined)
+    ;(playSamples as ReturnType<typeof vi.fn>).mockReturnValue(mockSource)
     ;(getSliceSamples as ReturnType<typeof vi.fn>).mockReturnValue(mockSliceSamples)
   })
 
@@ -61,9 +52,8 @@ describe('playSlice', () => {
     await playSlice(0, 0) // Play first slice
 
     expect(getSliceSamples).toHaveBeenCalledWith(mockFile, 0)
-    expect(createPlayer).toHaveBeenCalledWith(mockSliceSamples)
-    expect(Player.ref()).toBe(mockPlayer)
-    expect(mockPlayer.start).toHaveBeenCalled()
+    expect(playSamples).toHaveBeenCalledWith(mockSliceSamples)
+    expect(PreviewSource.ref()).toBe(mockSource)
   })
 
   it('sets Playing to false when called', async () => {
@@ -96,7 +86,7 @@ describe('playSlice', () => {
     await playSlice(0, 1) // Play second slice
 
     expect(getSliceSamples).toHaveBeenCalledWith(mockFile, 1)
-    expect(createPlayer).toHaveBeenCalled()
+    expect(playSamples).toHaveBeenCalled()
   })
 
   it('handles slice with zero length', async () => {
@@ -116,6 +106,7 @@ describe('playSlice', () => {
     await playSlice(0, 0)
 
     // Slices should not loop (unlike arrangement and trim)
-    expect(mockPlayer.loop).toBe(false)
+    expect(playSamples).toHaveBeenCalledWith(mockSliceSamples)
+    expect((playSamples as ReturnType<typeof vi.fn>).mock.calls[0][1]).toBeUndefined()
   })
 })

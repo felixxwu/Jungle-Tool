@@ -1,6 +1,6 @@
 import { describe, it, expect, beforeEach, vi, afterEach } from 'vitest'
 import { addToArrangement } from './addToArrangement'
-import { Layers, LoadedFiles, Tab, Player, Playing } from '../lib/store'
+import { Layers, LoadedFiles, Tab, Playing } from '../lib/store'
 import { getBestLayerPitch } from '../helpers/getBestLayerPitch'
 import { getBestLayerVolume } from '../helpers/getBestLayerVolume'
 
@@ -30,7 +30,6 @@ describe('addToArrangement', () => {
     Layers.set([])
     Tab.set('library')
     LoadedFiles.set([mockFile])
-    Player.set(null)
     Playing.set(false)
   })
 
@@ -98,7 +97,6 @@ describe('addToArrangement', () => {
 
   it('appends the layer even when not playing', () => {
     Playing.set(false)
-    Player.set(null)
 
     addToArrangement(0)
 
@@ -107,13 +105,6 @@ describe('addToArrangement', () => {
   })
 
   it('appends the layer while playing, without restarting', () => {
-    const mockPlayer = {
-      state: 'started' as const,
-      start: vi.fn(),
-      stop: vi.fn(),
-      dispose: vi.fn(),
-    } as any
-    Player.set(mockPlayer)
     Playing.set(true)
 
     addToArrangement(0)

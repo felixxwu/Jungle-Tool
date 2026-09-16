@@ -1,7 +1,7 @@
 import { describe, it, expect, beforeEach, vi } from 'vitest'
 import { render, screen, act, waitFor } from '../../../../test/test-utils'
 import { LayerControls } from './index'
-import { Layers, Playing, Player, Tab } from '../../../../lib/store'
+import { Layers, Playing, Tab } from '../../../../lib/store'
 
 // Mock the actions
 vi.mock('../../../../actions/playArrangement', () => ({
@@ -29,18 +29,11 @@ describe('LayerControls', () => {
       { filename: 'test-file-2', volume: 50, pitch: 0 },
     ])
     Playing.set(false)
-    Player.set(null)
     Tab.set('arrangement')
   })
 
   it('continues playback when randomise layers is clicked while playing', async () => {
     // Setup: Simulate playing state
-    const mockStop = vi.fn()
-    let mockPlayer = {
-      state: 'started' as const,
-      stop: mockStop,
-    } as any
-    Player.set(mockPlayer)
     Playing.set(true)
 
     render(<LayerControls />)
@@ -62,7 +55,6 @@ describe('LayerControls', () => {
   it('does not restart playback when randomise layers is clicked while not playing', async () => {
     // Setup: Not playing
     Playing.set(false)
-    Player.set(null)
 
     render(<LayerControls />)
 
@@ -81,14 +73,8 @@ describe('LayerControls', () => {
     })
   })
 
-  it('does not restart playback if player state is not started', async () => {
-    // Setup: Player exists but is not started
-    const mockPlayer = {
-      state: 'stopped',
-      stop: vi.fn(),
-    } as any
-    Player.set(mockPlayer)
-    Playing.set(false) // Not playing even though player exists
+  it('does not restart playback if not currently playing', async () => {
+    Playing.set(false)
 
     render(<LayerControls />)
 
@@ -108,11 +94,6 @@ describe('LayerControls', () => {
 
   it('restarts playback if it stops after randomisation', async () => {
     // Setup: Playing state
-    const mockPlayer = {
-      state: 'started',
-      stop: vi.fn(),
-    } as any
-    Player.set(mockPlayer)
     Playing.set(true)
 
     render(<LayerControls />)
