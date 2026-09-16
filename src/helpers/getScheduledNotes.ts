@@ -10,6 +10,11 @@ export type ScheduledNote = {
   playbackRate: number
   fadeStartSeconds: number | null
   fadeEndSeconds: number | null
+  // Fill Gaps doubles a slice's buffer (original + reversed) with no regard
+  // for how long the step actually is, so left unbounded it can ring into
+  // the next step's onset. This is the time at which it must be cut off:
+  // exactly one nominal step after this note's own start.
+  stopAtSeconds: number | null
 }
 
 /**
@@ -30,6 +35,7 @@ export const getScheduledNotes = (p: {
   noteLength: number
   noteFadeOut: number
   shortenNotes: boolean
+  fillGaps: boolean
 }): ScheduledNote[] => {
   const stepSeconds = getStepSeconds(p.bpm)
   const swingOffset = (startStep: number) =>
@@ -58,6 +64,7 @@ export const getScheduledNotes = (p: {
       const fadeStartSeconds = p.shortenNotes ? timeInSeconds + p.noteLength / 1000 : null
       const fadeEndSeconds =
         fadeStartSeconds === null ? null : fadeStartSeconds + p.noteFadeOut / 1000
+      const stopAtSeconds = p.fillGaps ? timeInSeconds + stepSeconds : null
 
       scheduled.push({
         filename: layer.filename,
@@ -67,6 +74,7 @@ export const getScheduledNotes = (p: {
         playbackRate,
         fadeStartSeconds,
         fadeEndSeconds,
+        stopAtSeconds,
       })
     }
   }

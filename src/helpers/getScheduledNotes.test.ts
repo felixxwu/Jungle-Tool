@@ -35,6 +35,7 @@ const base = {
   noteLength: 200,
   noteFadeOut: 10,
   shortenNotes: false,
+  fillGaps: false,
 }
 
 describe('getScheduledNotes', () => {
@@ -111,5 +112,16 @@ describe('getScheduledNotes', () => {
     })
     expect(result[1].fadeStartSeconds).toBeCloseTo(0.125 + 0.1, 10)
     expect(result[1].fadeEndSeconds).toBeCloseTo(0.125 + 0.15, 10)
+  })
+
+  it('leaves stopAtSeconds null when fill gaps is off', () => {
+    const result = getScheduledNotes(base)
+    expect(result[0].stopAtSeconds).toBeNull()
+  })
+
+  it('bounds stopAtSeconds to one step past the note when fill gaps is on', () => {
+    const result = getScheduledNotes({ ...base, fillGaps: true })
+    expect(result[0].stopAtSeconds).toBeCloseTo(0 + 0.125, 10)
+    expect(result[1].stopAtSeconds).toBeCloseTo(0.125 + 0.125, 10)
   })
 })

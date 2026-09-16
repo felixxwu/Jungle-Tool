@@ -72,6 +72,7 @@ const scheduleStep = (stepIndex: number) => {
     noteLength: NoteLength.ref(),
     noteFadeOut: NoteFadeOut.ref(),
     shortenNotes: ShortenNotes.ref(),
+    fillGaps,
   })
 
   for (const note of notes) {

@@ -69,6 +69,7 @@ export const renderOffline = async (p?: { bar?: number; layers?: Layer[] }) => {
     noteLength: NoteLength.ref(),
     noteFadeOut: NoteFadeOut.ref(),
     shortenNotes: ShortenNotes.ref(),
+    fillGaps: FillGaps.ref(),
   })
 
   // getScheduledNotes returns times relative to step 0 of the arrangement, so

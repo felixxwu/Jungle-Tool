@@ -3,6 +3,11 @@ import { getSliceBuffer } from './audioBuffers'
 import type { Graph } from './graph'
 import type { LoadedFile } from './types'
 
+// How long before a hard stop (Fill Gaps' step boundary, or Shorten Notes
+// with no fade of its own) to start ramping down, so the cutoff isn't an
+// audible click.
+const DECLICK_SECONDS = 0.005
+
 /**
  * Turn one ScheduledNote into live nodes:
  *   source (playbackRate) -> note gain (shorten-notes ramp) -> layer gain
@@ -39,9 +44,23 @@ export const fireNote = (p: {
 
   source.start(when)
 
-  if (p.note.fadeStartSeconds !== null && p.note.fadeEndSeconds !== null) {
-    noteGain.gain.setValueAtTime(1, p.passStartTime + p.note.fadeStartSeconds)
-    noteGain.gain.linearRampToValueAtTime(0, p.passStartTime + p.note.fadeEndSeconds)
-    source.stop(p.passStartTime + p.note.fadeEndSeconds)
-  }
+  // Two independent upper bounds on how long the note may sound: Shorten
+  // Notes' declared fade end, and Fill Gaps' step-boundary cutoff (see the
+  // comment on ScheduledNote.stopAtSeconds). Whichever is tighter wins.
+  const bounds = [p.note.fadeEndSeconds, p.note.stopAtSeconds].filter(
+    (t): t is number => t !== null
+  )
+  if (bounds.length === 0) return
+
+  const stopSeconds = Math.min(...bounds)
+  // Shorten Notes' own fade start is honoured when it fits before the
+  // effective stop; otherwise there's only room for a short declick ramp.
+  const fadeStartSeconds =
+    p.note.fadeStartSeconds !== null
+      ? Math.min(p.note.fadeStartSeconds, stopSeconds - DECLICK_SECONDS)
+      : stopSeconds - DECLICK_SECONDS
+
+  noteGain.gain.setValueAtTime(1, p.passStartTime + fadeStartSeconds)
+  noteGain.gain.linearRampToValueAtTime(0, p.passStartTime + stopSeconds)
+  source.stop(p.passStartTime + stopSeconds)
 }

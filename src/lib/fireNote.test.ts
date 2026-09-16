@@ -27,6 +27,7 @@ const note: ScheduledNote = {
   playbackRate: 1.5,
   fadeStartSeconds: null,
   fadeEndSeconds: null,
+  stopAtSeconds: null,
 }
 
 const fire = (overrides: Partial<ScheduledNote>) => {
@@ -70,5 +71,33 @@ describe('fireNote', () => {
       { method: 'linearRampToValueAtTime', value: 0, time: 10.4 },
     ])
     expect(ctx.createdSources[0].stoppedAt).toBeCloseTo(10.4, 10)
+  })
+
+  it('declicks and stops at the fill-gaps step boundary when no fade is set', () => {
+    const ctx = fire({ stopAtSeconds: 0.5 })
+    const noteGain = ctx.createdGains[ctx.createdGains.length - 1]
+    expect(noteGain.gain.calls).toEqual([
+      { method: 'setValueAtTime', value: 1, time: 10.5 - 0.005 },
+      { method: 'linearRampToValueAtTime', value: 0, time: 10.5 },
+    ])
+    expect(ctx.createdSources[0].stoppedAt).toBeCloseTo(10.5, 10)
+  })
+
+  it('stops at whichever of the fade end or the fill-gaps boundary comes first', () => {
+    // fill-gaps boundary (0.4) is tighter than the shorten-notes fade end (0.6)
+    const tighterFillGaps = fire({
+      fadeStartSeconds: 0.3,
+      fadeEndSeconds: 0.6,
+      stopAtSeconds: 0.4,
+    })
+    expect(tighterFillGaps.createdSources[0].stoppedAt).toBeCloseTo(10.4, 10)
+
+    // shorten-notes fade end (0.35) is tighter than the fill-gaps boundary (0.6)
+    const tighterFade = fire({
+      fadeStartSeconds: 0.3,
+      fadeEndSeconds: 0.35,
+      stopAtSeconds: 0.6,
+    })
+    expect(tighterFade.createdSources[0].stoppedAt).toBeCloseTo(10.35, 10)
   })
 })
