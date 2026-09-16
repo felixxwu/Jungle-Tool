@@ -22,7 +22,11 @@ export const Grid = () => {
   const barOffset = selectedBar * gridWidth
 
   const handleAddNote = (note: NoteStyle) => {
-    Arrangement.set([...Arrangement.ref().filter(n => n.startStep !== note.startStep), note])
+    const alreadyExists = Arrangement.ref().some(
+      n => n.stepNumToPlay === note.stepNumToPlay && n.startStep === note.startStep
+    )
+    if (alreadyExists) return
+    Arrangement.set([...Arrangement.ref(), note])
   }
 
   const handleRemoveNote = (note: NoteStyle) => {
