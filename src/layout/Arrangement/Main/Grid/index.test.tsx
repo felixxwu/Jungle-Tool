@@ -1,7 +1,7 @@
 import { describe, it, expect, beforeEach } from 'vitest'
 import { render, screen, act } from '../../../../test/test-utils'
 import { Grid } from './index'
-import { Arrangement, SelectedBar, Swing } from '../../../../lib/store'
+import { Arrangement, NumBars, SelectedBar, Swing } from '../../../../lib/store'
 import { appWidth, arrangementSidebarWidth } from '../../../../lib/consts'
 
 describe('Grid', () => {
@@ -13,6 +13,7 @@ describe('Grid', () => {
   beforeEach(() => {
     Arrangement.set([])
     SelectedBar.set(0)
+    NumBars.set(1)
     Swing.set(17) // Default swing
   })
 
@@ -279,5 +280,28 @@ describe('Grid', () => {
     // The swing affects the visual position, which is handled by the component's style calculation
     // We verify that swing is set correctly
     expect(Swing.ref()).toBe(25)
+  })
+
+  it('slides the track to the selected bar and back', async () => {
+    NumBars.set(2)
+    const { container, rerender } = render(<Grid />)
+
+    const track = container.querySelector('[data-testid="grid"]')?.firstChild as HTMLElement
+    expect(track.style.transform).toContain('translateX(-0px)')
+
+    await act(async () => {
+      SelectedBar.set(1)
+      rerender(<Grid />)
+    })
+
+    expect(track.style.transform).not.toContain('translateX(-0px)')
+  })
+
+  it('renders grid cells for every bar so the whole arrangement lives on one continuous track', () => {
+    NumBars.set(2)
+    render(<Grid />)
+
+    // A cell for the last step of bar 1 (absolute step 31, row 0) should exist.
+    expect(screen.getByTestId('grid-cell-0-31')).toBeInTheDocument()
   })
 })

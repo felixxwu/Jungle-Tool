@@ -48,38 +48,42 @@ describe('ArragementWaveform', () => {
     expect(svg).toBeInTheDocument()
   })
 
-  it('renders nothing when no samples are available', () => {
+  it('renders nothing for a bar with no samples available yet', () => {
     ;(useArrangementSamples as ReturnType<typeof vi.fn>).mockReturnValue(null)
 
     const { container } = render(<ArragementWaveform />)
-    expect(container.firstChild).toBeNull()
+    expect(container.querySelector('svg')).not.toBeInTheDocument()
   })
 
-  it('passes selected bar index to Waveform for playhead visibility', () => {
-    SelectedBar.set(1)
-    const { container } = render(<ArragementWaveform />)
-
-    // The component should pass selectedBarIndex to Waveform
-    // We verify by checking that the component renders (which means props are passed correctly)
-    expect(container.querySelector('svg')).toBeInTheDocument()
-  })
-
-  it('requests samples for the selected bar', () => {
+  it('requests samples for every bar in the arrangement, not just the selected one', () => {
+    NumBars.set(3)
     render(<ArragementWaveform />)
 
     expect(useArrangementSamples).toHaveBeenCalledWith({ bar: 0 })
+    expect(useArrangementSamples).toHaveBeenCalledWith({ bar: 1 })
+    expect(useArrangementSamples).toHaveBeenCalledWith({ bar: 2 })
   })
 
-  it('updates when selected bar changes', async () => {
-    const { rerender } = render(<ArragementWaveform />)
+  it('renders one waveform per bar', () => {
+    NumBars.set(3)
+    const { container } = render(<ArragementWaveform />)
+
+    expect(container.querySelectorAll('svg').length).toBe(3)
+  })
+
+  it('slides the track to the selected bar and back', async () => {
+    NumBars.set(2)
+    const { container, rerender } = render(<ArragementWaveform />)
+
+    const track = container.firstChild?.firstChild as HTMLElement
+    expect(track.style.transform).toContain('translateX(-0px)')
 
     await act(async () => {
       SelectedBar.set(1)
       rerender(<ArragementWaveform />)
     })
 
-    // Should request samples for the new bar
-    expect(useArrangementSamples).toHaveBeenCalledWith({ bar: 1 })
+    expect(track.style.transform).not.toContain('translateX(-0px)')
   })
 
   it('passes playhead visibility based on the Playing atom', () => {

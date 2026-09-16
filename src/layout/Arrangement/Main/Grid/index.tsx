@@ -1,8 +1,7 @@
 import styled from 'styled-components'
 import { appWidth, arrangementSidebarWidth } from '../../../../lib/consts'
 import { colors } from '../../../../lib/colors'
-import { Fragment } from 'react/jsx-runtime'
-import { Arrangement, SelectedBar, Swing } from '../../../../lib/store'
+import { Arrangement, NumBars, SelectedBar, Swing } from '../../../../lib/store'
 import type { Note as NoteStyle } from '../../../../lib/types'
 
 const gridWidth = appWidth - arrangementSidebarWidth - 2
@@ -14,12 +13,9 @@ export const Grid = () => {
   const arrangement = Arrangement.useState()
   const swing = Swing.useState()
   const selectedBar = SelectedBar.useState()
+  const numBars = NumBars.useState()
 
-  const arrangementForThisBar = arrangement.filter(
-    n => n.startStep < (selectedBar + 1) * 16 && n.startStep >= selectedBar * 16
-  )
-
-  const barOffset = selectedBar * gridWidth
+  const totalSteps = numBars * 16
 
   const handleAddNote = (note: NoteStyle) => {
     const alreadyExists = Arrangement.ref().some(
@@ -44,48 +40,58 @@ export const Grid = () => {
 
   return (
     <GridStyle data-testid='grid'>
-      {Array.from({ length: 16 }).map((_, i) =>
-        Array.from({ length: 16 }).map((_, j) => (
-          <Clickable
-            key={j}
-            data-testid={`grid-cell-${i}-${j}`}
+      <Track
+        style={{
+          width: totalSteps * cellWidth,
+          transform: `translateX(-${selectedBar * gridWidth}px)`,
+        }}
+      >
+        {Array.from({ length: 16 }).map((_, i) =>
+          Array.from({ length: totalSteps }).map((_, step) => (
+            <Clickable
+              key={step}
+              data-testid={`grid-cell-${i}-${step}`}
+              style={{
+                bottom: i * cellHeight - 0.5,
+                left: step * cellWidth + 0.5 + getSwingOffset(step + 1),
+                width: cellWidth + getSwingOffset(step) - getSwingOffset(step + 1),
+              }}
+              onClick={() => handleAddNote({ stepNumToPlay: i, startStep: step })}
+            >
+              {i === 0 && 'K'}
+              {i === 4 && 'S'}
+              {i === 10 && 'K'}
+              {i === 12 && 'S'}
+            </Clickable>
+          ))
+        )}
+        {Array.from({ length: 15 }).map((_, index) => (
+          <HLine key={index + 'hline'} style={{ top: (index + 1) * cellHeight }} />
+        ))}
+        {Array.from({ length: totalSteps - 1 }).map((_, index) => (
+          <VLine
+            key={index + 'vline'}
+            style={{ left: (index + 1) * cellWidth + getSwingOffset(index) }}
+          />
+        ))}
+        {arrangement.map(({ stepNumToPlay, startStep }, i) => (
+          <NoteStyle
+            key={stepNumToPlay + '-' + startStep + '-' + i}
+            data-testid={`grid-note-${stepNumToPlay}-${startStep}`}
+            onClick={() => handleRemoveNote({ stepNumToPlay, startStep })}
             style={{
-              bottom: i * cellHeight - 0.5,
-              left: j * cellWidth + 0.5 + getSwingOffset(j + 1),
-              width: cellWidth + getSwingOffset(j) - getSwingOffset(j + 1),
+              bottom: stepNumToPlay * cellHeight - 0.5,
+              left: startStep * cellWidth + 0.5 + getSwingOffset(startStep + 1),
+              width: cellWidth + getSwingOffset(startStep) - getSwingOffset(startStep + 1),
             }}
-            onClick={() => handleAddNote({ stepNumToPlay: i, startStep: j + selectedBar * 16 })}
           >
-            {i === 0 && 'K'}
-            {i === 4 && 'S'}
-            {i === 10 && 'K'}
-            {i === 12 && 'S'}
-          </Clickable>
-        ))
-      )}
-      {Array.from({ length: 15 }).map((_, index) => (
-        <Fragment key={index + 'lines'}>
-          <HLine style={{ top: (index + 1) * cellHeight }} />
-          <VLine style={{ left: (index + 1) * cellWidth + getSwingOffset(index) }} />
-        </Fragment>
-      ))}
-      {arrangementForThisBar.map(({ stepNumToPlay, startStep }, i) => (
-        <NoteStyle
-          key={stepNumToPlay + '-' + startStep + '-' + i}
-          data-testid={`grid-note-${stepNumToPlay}-${startStep}`}
-          onClick={() => handleRemoveNote({ stepNumToPlay, startStep })}
-          style={{
-            bottom: stepNumToPlay * cellHeight - 0.5,
-            left: startStep * cellWidth + 0.5 + getSwingOffset(startStep + 1) - barOffset,
-            width: cellWidth + getSwingOffset(startStep) - getSwingOffset(startStep + 1),
-          }}
-        >
-          {stepNumToPlay === 0 && 'K'}
-          {stepNumToPlay === 4 && 'S'}
-          {stepNumToPlay === 10 && 'K'}
-          {stepNumToPlay === 12 && 'S'}
-        </NoteStyle>
-      ))}
+            {stepNumToPlay === 0 && 'K'}
+            {stepNumToPlay === 4 && 'S'}
+            {stepNumToPlay === 10 && 'K'}
+            {stepNumToPlay === 12 && 'S'}
+          </NoteStyle>
+        ))}
+      </Track>
     </GridStyle>
   )
 }
@@ -95,6 +101,13 @@ const GridStyle = styled('div')`
   width: ${gridWidth}px;
   height: ${gridHeight}px;
   background-color: ${colors.white};
+  overflow: hidden;
+`
+
+const Track = styled('div')`
+  position: relative;
+  height: 100%;
+  transition: transform 0.4s cubic-bezier(0.83, 0, 0.17, 1);
 `
 
 const NoteStyle = styled('div')`
@@ -130,7 +143,7 @@ const Clickable = styled('div')`
 
 const HLine = styled('div')`
   position: absolute;
-  width: ${gridWidth}px;
+  width: 100%;
   height: 1px;
   background-color: ${colors.grey};
 `
