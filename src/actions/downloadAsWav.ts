@@ -11,7 +11,7 @@ export const downloadAsWav = (samples: [Float32Array, Float32Array], filename: s
   const url = URL.createObjectURL(blob)
   const a = document.createElement('a')
   a.href = url
-  a.download = filename.replace('.', '')
+  a.download = `${filename.replace(/\./g, '')}.wav`
   document.body.appendChild(a)
   a.click()
 

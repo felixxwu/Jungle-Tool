@@ -27,7 +27,7 @@ describe('exportLayer', () => {
 
   it('downloads the rendered samples as a wav', async () => {
     await exportLayer(layer)
-    expect(downloadAsWav).toHaveBeenCalledWith(expect.anything(), 'Jungle Tool Break - Amen')
+    expect(downloadAsWav).toHaveBeenCalledWith(expect.anything(), 'Amen (Jungle Tool)')
   })
 
   it('forwards saturation/swing overrides to renderOffline', async () => {

@@ -7,5 +7,5 @@ export const exportLayer = async (
   p?: { saturation?: number; swing?: number }
 ) => {
   const buffer = await renderOffline({ ...p, layers: [layer] })
-  downloadAsWav(audioBufferToSamples(buffer), `Jungle Tool Break - ${layer.filename}`)
+  downloadAsWav(audioBufferToSamples(buffer), `${layer.filename} (Jungle Tool)`)
 }

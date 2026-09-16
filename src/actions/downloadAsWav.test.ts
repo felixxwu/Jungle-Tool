@@ -45,22 +45,21 @@ describe('downloadAsWav', () => {
   it('creates download link with correct filename', () => {
     const samples: [Float32Array, Float32Array] = [new Float32Array(1000), new Float32Array(1000)]
 
-    downloadAsWav(samples, 'my-break.wav')
+    downloadAsWav(samples, 'my-break')
 
     expect(document.createElement).toHaveBeenCalledWith('a')
     const link = (document.createElement as ReturnType<typeof vi.fn>).mock.results[0].value
-    expect(link.download).toBe('my-breakwav') // Dots are removed
+    expect(link.download).toBe('my-break.wav')
     expect(link.href).toBe('mocked-url')
   })
 
-  it('removes first dot from filename', () => {
+  it('removes dots from the base name and appends a single .wav extension', () => {
     const samples: [Float32Array, Float32Array] = [new Float32Array(1000), new Float32Array(1000)]
 
-    downloadAsWav(samples, 'test.file.name.wav')
+    downloadAsWav(samples, 'test.file.name')
 
     const link = (document.createElement as ReturnType<typeof vi.fn>).mock.results[0].value
-    // Only the first dot is removed by replace('.', '')
-    expect(link.download).toBe('testfile.name.wav')
+    expect(link.download).toBe('testfilename.wav')
   })
 
   it('creates blob with correct MIME type', () => {
