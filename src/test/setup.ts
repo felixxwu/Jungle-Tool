@@ -8,25 +8,6 @@ afterEach(() => {
   cleanup()
 })
 
-// Mock Tone.js to avoid audio context issues in tests
-vi.mock('../lib/tone', () => ({
-  Tone: {
-    start: vi.fn().mockResolvedValue(undefined),
-    Player: vi.fn().mockImplementation(() => ({
-      context: {
-        decodeAudioData: vi.fn().mockResolvedValue(new ArrayBuffer(8)),
-      },
-      toDestination: vi.fn().mockReturnThis(),
-      start: vi.fn(),
-      stop: vi.fn(),
-      dispose: vi.fn(),
-      loop: false,
-      state: 'stopped',
-      onstop: null,
-    })),
-  },
-}))
-
 // jsdom has no Web Audio. Provide a constructible default so modules that
 // create a context at call time work without each test wiring its own.
 ;(globalThis as any).AudioContext = vi
