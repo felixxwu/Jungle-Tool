@@ -1,52 +1,29 @@
-import { describe, it, expect, beforeEach, vi } from 'vitest'
+import { describe, it, expect, vi, beforeEach } from 'vitest'
 import { exportCombined } from './exportCombined'
-import { getArrangementSamples } from '../helpers/getArrangementSamples'
+import { renderOffline } from '../lib/offlineRender'
 import { downloadAsWav } from './downloadAsWav'
+import { createFakeAudioContext } from '../test/audio-mock'
 
-// Mock dependencies
-vi.mock('../helpers/getArrangementSamples', () => ({
-  getArrangementSamples: vi.fn(),
-}))
-
-vi.mock('./downloadAsWav', () => ({
-  downloadAsWav: vi.fn(),
-}))
+vi.mock('../lib/offlineRender', async () => {
+  const actual = await vi.importActual<typeof import('../lib/offlineRender')>('../lib/offlineRender')
+  return { ...actual, renderOffline: vi.fn() }
+})
+vi.mock('./downloadAsWav')
 
 describe('exportCombined', () => {
-  const mockSamples: [Float32Array, Float32Array] = [
-    new Float32Array(44100),
-    new Float32Array(44100),
-  ]
-
   beforeEach(() => {
     vi.clearAllMocks()
-    ;(getArrangementSamples as ReturnType<typeof vi.fn>).mockReturnValue(mockSamples)
+    const ctx = createFakeAudioContext()
+    ;(renderOffline as ReturnType<typeof vi.fn>).mockResolvedValue(ctx.createBuffer(2, 16, 44100))
   })
 
-  it('exports combined arrangement as WAV file', () => {
-    exportCombined()
-
-    expect(getArrangementSamples).toHaveBeenCalledWith({})
-    expect(downloadAsWav).toHaveBeenCalledWith(mockSamples, 'Jungle Tool Break')
+  it('renders the arrangement offline', async () => {
+    await exportCombined()
+    expect(renderOffline).toHaveBeenCalled()
   })
 
-  it('handles null samples gracefully', () => {
-    ;(getArrangementSamples as ReturnType<typeof vi.fn>).mockReturnValue(null)
-
-    // Should not throw, but downloadAsWav might handle null
-    exportCombined()
-
-    expect(getArrangementSamples).toHaveBeenCalledWith({})
-    // downloadAsWav might be called with null, which would fail, but that's expected behavior
-  })
-
-  it('uses correct filename for combined export', () => {
-    exportCombined()
-
-    expect(downloadAsWav).toHaveBeenCalledWith(
-      expect.any(Array),
-      'Jungle Tool Break'
-    )
+  it('downloads the rendered samples as a wav', async () => {
+    await exportCombined()
+    expect(downloadAsWav).toHaveBeenCalledWith(expect.anything(), 'Jungle Tool Break')
   })
 })
-

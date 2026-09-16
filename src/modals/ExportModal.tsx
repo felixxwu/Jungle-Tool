@@ -11,14 +11,18 @@ export const ExportModal = () => {
 
   const [combinedExported, setCombinedExported] = useState(false)
   const [exportedLayers, setExportedLayers] = useState<Layer[]>([])
+  const [exportingCombined, setExportingCombined] = useState(false)
+  const [exportingLayers, setExportingLayers] = useState<Layer[]>([])
 
   return (
     <>
       <ModalContent>
         <Text
-          disabled={combinedExported}
-          onClick={() => {
-            exportCombined()
+          disabled={combinedExported || exportingCombined}
+          onClick={async () => {
+            setExportingCombined(true)
+            await exportCombined()
+            setExportingCombined(false)
             setCombinedExported(true)
           }}
         >
@@ -27,9 +31,11 @@ export const ExportModal = () => {
         {layers.map(layer => (
           <Text
             key={layer.filename}
-            disabled={exportedLayers.includes(layer)}
-            onClick={() => {
-              exportLayer(layer)
+            disabled={exportedLayers.includes(layer) || exportingLayers.includes(layer)}
+            onClick={async () => {
+              setExportingLayers([...exportingLayers, layer])
+              await exportLayer(layer)
+              setExportingLayers(exportingLayers.filter(l => l !== layer))
               setExportedLayers([...exportedLayers, layer])
             }}
           >
