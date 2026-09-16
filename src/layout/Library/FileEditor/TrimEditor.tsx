@@ -5,7 +5,7 @@ import { Text } from '../../../components/Text'
 import { HDivider } from '../../../components/Dividers'
 import { stereoSlice } from '../../../lib/audio'
 import { autoSlice } from '../../../actions/autoSlice'
-import { stopPlayback } from '../../../lib/playback'
+import { stopPreview } from '../../../lib/playback'
 
 export const TrimEditor = () => {
   const selectedFileIndex = SelectedFileIndex.useState()
@@ -24,7 +24,7 @@ export const TrimEditor = () => {
     selectedFile.samples = trimmedFile
     selectedFile.slices = []
     LoadedFiles.set([...loadedFiles])
-    stopPlayback() // Stop playback and clear state after trimming file
+    stopPreview() // Stop playback and clear state after trimming file
     EditSliceMode.set(true)
     AutoSliceMode.set(true)
     autoSlice()

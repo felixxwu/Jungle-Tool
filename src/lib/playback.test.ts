@@ -1,7 +1,10 @@
 import { describe, it, expect, beforeEach, vi } from 'vitest'
-import { calculateDuration, stopPlayback, startPlayback, setupPlayerStopHandler } from './playback'
+import { calculateDuration, stopArrangement, stopPreview, startPlayback, setupPlayerStopHandler } from './playback'
 import { SAMPLE_RATE } from './consts'
 import { Player, Playing, PlayStartTimestamp, PlayDuration } from './store'
+import { stopScheduler } from './scheduler'
+
+vi.mock('./scheduler', () => ({ stopScheduler: vi.fn().mockResolvedValue(undefined) }))
 
 describe('calculateDuration', () => {
   it('calculates duration correctly for sample count', () => {
@@ -21,45 +24,49 @@ describe('calculateDuration', () => {
   })
 })
 
-describe('stopPlayback', () => {
+describe('stopArrangement', () => {
   beforeEach(() => {
-    // Reset state before each test
+    vi.clearAllMocks()
     Playing.set(false)
+  })
+
+  it('stops the scheduler and clears Playing', async () => {
+    Playing.set(true)
+
+    await stopArrangement()
+
+    expect(stopScheduler).toHaveBeenCalledTimes(1)
+    expect(Playing.ref()).toBe(false)
+  })
+})
+
+describe('stopPreview', () => {
+  beforeEach(() => {
     PlayStartTimestamp.set(null)
     PlayDuration.set(null)
   })
 
-  it('stops the player and clears all playback state', () => {
-    // Setup: simulate playing state
+  it('stops the player and clears preview playback state', () => {
     const mockStop = vi.fn()
     const mockPlayer = { stop: mockStop }
     Player.set(mockPlayer as any)
-    Playing.set(true)
     PlayStartTimestamp.set(Date.now())
     PlayDuration.set(10)
 
-    // Action: stop playback
-    stopPlayback()
+    stopPreview()
 
-    // Verify: player was stopped and all state cleared
     expect(mockStop).toHaveBeenCalledTimes(1)
-    expect(Playing.ref()).toBe(false)
     expect(PlayStartTimestamp.ref()).toBe(null)
     expect(PlayDuration.ref()).toBe(null)
   })
 
   it('handles null player gracefully', () => {
-    // Setup: playing state but no player
     Player.set(null)
-    Playing.set(true)
     PlayStartTimestamp.set(Date.now())
     PlayDuration.set(5)
 
-    // Action: stop playback
-    stopPlayback()
+    stopPreview()
 
-    // Verify: state still cleared even without player
-    expect(Playing.ref()).toBe(false)
     expect(PlayStartTimestamp.ref()).toBe(null)
     expect(PlayDuration.ref()).toBe(null)
   })

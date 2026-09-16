@@ -1,19 +1,9 @@
-import { getArrangementSamples } from '../helpers/getArrangementSamples'
-import { createPlayer } from '../lib/audio'
-import { Player, Playing } from '../lib/store'
-import { setupPlayback, setupPlayerStopHandler, startPlayback } from '../lib/playback'
+import { resumeAudioContext } from '../lib/audioContext'
+import { startScheduler } from '../lib/scheduler'
+import { Playing } from '../lib/store'
 
 export const playArrangement = async () => {
+  await resumeAudioContext()
   Playing.set(true)
-  await setupPlayback()
-
-  const samples = getArrangementSamples({})
-  if (!samples) return
-
-  const player = await createPlayer(samples)
-  player.loop = true
-
-  Player.set(player)
-  setupPlayerStopHandler(player, { clearPlaying: true })
-  startPlayback(player, null) // Arrangement calculates duration dynamically from BPM
+  startScheduler()
 }

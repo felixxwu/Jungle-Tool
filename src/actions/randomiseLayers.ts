@@ -5,9 +5,6 @@ import { playArrangement } from './playArrangement'
 
 export const randomiseLayers = async () => {
   const savedLayers = [...Layers.ref()]
-  Layers.set([])
-
-  await new Promise(r => setTimeout(r))
 
   const loadedFiles = LoadedFiles.ref()
   for (let i = 0; i < savedLayers.length; i++) {

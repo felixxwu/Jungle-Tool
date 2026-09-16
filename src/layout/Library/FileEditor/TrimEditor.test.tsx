@@ -3,7 +3,7 @@ import { render, screen, act } from '../../../test/test-utils'
 import { TrimEditor } from './TrimEditor'
 import { LoadedFiles, SelectedFileIndex, EditSliceMode, AutoSliceMode } from '../../../lib/store'
 import { autoSlice } from '../../../actions/autoSlice'
-import { stopPlayback } from '../../../lib/playback'
+import { stopPreview } from '../../../lib/playback'
 import { stereoSlice } from '../../../lib/audio'
 
 // Mock dependencies
@@ -12,7 +12,7 @@ vi.mock('../../../actions/autoSlice', () => ({
 }))
 
 vi.mock('../../../lib/playback', () => ({
-  stopPlayback: vi.fn(),
+  stopPreview: vi.fn(),
 }))
 
 vi.mock('../../../lib/audio', () => ({
@@ -224,7 +224,7 @@ describe('TrimEditor', () => {
       trimButton.click()
     })
 
-    expect(stopPlayback).toHaveBeenCalledTimes(1)
+    expect(stopPreview).toHaveBeenCalledTimes(1)
   })
 
   it('enables edit slice mode and auto slice mode after trimming', async () => {

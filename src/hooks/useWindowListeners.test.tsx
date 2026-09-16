@@ -3,7 +3,7 @@ import { render } from '../test/test-utils'
 import { useWindowListeners } from './useWindowListeners'
 import { WindowSize, Playing } from '../lib/store'
 import { playArrangement } from '../actions/playArrangement'
-import { stopPlayback } from '../lib/playback'
+import { stopArrangement } from '../lib/playback'
 
 // Mock actions
 vi.mock('../actions/playArrangement', () => ({
@@ -11,7 +11,7 @@ vi.mock('../actions/playArrangement', () => ({
 }))
 
 vi.mock('../lib/playback', () => ({
-  stopPlayback: vi.fn(),
+  stopArrangement: vi.fn(),
 }))
 
 describe('useWindowListeners', () => {
@@ -55,7 +55,7 @@ describe('useWindowListeners', () => {
   it('stops playback when spacebar is pressed and playing', () => {
     vi.clearAllMocks()
     Playing.set(true)
-    ;(stopPlayback as ReturnType<typeof vi.fn>).mockClear()
+    ;(stopArrangement as ReturnType<typeof vi.fn>).mockClear()
     const TestComponent = () => {
       useWindowListeners()
       return null
@@ -65,22 +65,22 @@ describe('useWindowListeners', () => {
     const keydownEvent = new KeyboardEvent('keydown', { key: ' ', bubbles: true })
     window.dispatchEvent(keydownEvent)
 
-    expect(stopPlayback).toHaveBeenCalled()
+    expect(stopArrangement).toHaveBeenCalled()
     expect(playArrangement).not.toHaveBeenCalled()
 
     // Verify cleanup works - listeners should be removed after unmount
     unmount()
-    const stopPlaybackCallCount = (stopPlayback as ReturnType<typeof vi.fn>).mock.calls.length
+    const stopArrangementCallCount = (stopArrangement as ReturnType<typeof vi.fn>).mock.calls.length
     window.dispatchEvent(new KeyboardEvent('keydown', { key: ' ', bubbles: true }))
-    // stopPlayback should not be called again after unmount
-    expect((stopPlayback as ReturnType<typeof vi.fn>).mock.calls.length).toBe(stopPlaybackCallCount)
+    // stopArrangement should not be called again after unmount
+    expect((stopArrangement as ReturnType<typeof vi.fn>).mock.calls.length).toBe(stopArrangementCallCount)
   })
 
   it('starts playback when spacebar is pressed and not playing', () => {
     vi.clearAllMocks()
     Playing.set(false)
     // Clear mocks to start fresh for this test
-    ;(stopPlayback as ReturnType<typeof vi.fn>).mockClear()
+    ;(stopArrangement as ReturnType<typeof vi.fn>).mockClear()
     ;(playArrangement as ReturnType<typeof vi.fn>).mockClear()
 
     const TestComponent = () => {
@@ -99,7 +99,7 @@ describe('useWindowListeners', () => {
     // Playing should be set to true and playArrangement should be called
     expect(Playing.ref()).toBe(true)
     expect(playArrangement).toHaveBeenCalled()
-    expect(stopPlayback).not.toHaveBeenCalled()
+    expect(stopArrangement).not.toHaveBeenCalled()
 
     // Verify cleanup works
     unmount()
@@ -123,7 +123,7 @@ describe('useWindowListeners', () => {
     window.dispatchEvent(keydownEvent)
 
     expect(playArrangement).not.toHaveBeenCalled()
-    expect(stopPlayback).not.toHaveBeenCalled()
+    expect(stopArrangement).not.toHaveBeenCalled()
   })
 
   it('handles multiple resize events', () => {

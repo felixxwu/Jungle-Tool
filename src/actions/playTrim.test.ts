@@ -2,7 +2,7 @@ import { describe, it, expect, beforeEach, vi } from 'vitest'
 import { playTrim } from './playTrim'
 import { LoadedFiles, Player, Playing, PlayStartTimestamp, PlayDuration } from '../lib/store'
 import { createPlayer, stereoSlice } from '../lib/audio'
-import { calculateDuration, stopPlayback } from '../lib/playback'
+import { calculateDuration, stopPreview } from '../lib/playback'
 
 // Mock dependencies
 vi.mock('../lib/audio')
@@ -12,7 +12,7 @@ vi.mock('../lib/playback', async () => {
     ...actual,
     setupPlayback: vi.fn().mockResolvedValue(undefined),
     setupPlayerStopHandler: vi.fn(),
-    stopPlayback: vi.fn(),
+    stopPreview: vi.fn(),
   }
 })
 
@@ -74,7 +74,7 @@ describe('playTrim', () => {
   it('stops existing playback before starting trim preview', async () => {
     await playTrim(0)
 
-    expect(stopPlayback).toHaveBeenCalledTimes(1)
+    expect(stopPreview).toHaveBeenCalledTimes(1)
   })
 
   it('sets Playing to false when called', async () => {

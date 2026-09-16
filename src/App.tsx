@@ -12,7 +12,6 @@ import { useWindowListeners } from './hooks/useWindowListeners'
 import { Sidebar } from './layout/Arrangement/Sidebar'
 import { getRMS } from './helpers/getRMS'
 import { mono } from './lib/audio'
-import { useRestartPlayback } from './hooks/useRestartPlayback'
 
 export default function App() {
   const tab = Tab.useState()
@@ -21,7 +20,6 @@ export default function App() {
   const audio = useRef<HTMLAudioElement>(null)
 
   useWindowListeners()
-  useRestartPlayback()
 
   useEffect(() => {
     ;(async () => {
