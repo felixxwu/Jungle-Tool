@@ -20,7 +20,6 @@ export const EditSliceMode = singletonState(false)
 export const AutoSliceMode = singletonState(false)
 export const AutoSliceSensitivity = singletonState(2000)
 export const Modal = singletonState<React.ReactNode | null>(null)
-export const AddLayerMode = singletonState(false)
 export const ReplaceLayerIndex = singletonState<number | null>(null)
 export const ReplaceOriginalLayer = singletonState<Layer | null>(null)
 export const Layers = singletonState<Layer[]>([

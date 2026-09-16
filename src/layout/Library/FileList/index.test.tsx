@@ -4,7 +4,6 @@ import { FileList } from './index'
 import {
   LoadedFiles,
   SelectedFileIndex,
-  AddLayerMode,
   Layers,
   Playing,
   ReplaceLayerIndex,
@@ -17,11 +16,6 @@ import { replaceInArrangement } from '../../../actions/replaceInArrangement'
 // Mock playFile action
 vi.mock('../../../actions/playFile', () => ({
   playFile: vi.fn().mockResolvedValue(undefined),
-}))
-
-// Mock addToArrangement action
-vi.mock('../../../actions/addToArrangement', () => ({
-  addToArrangement: vi.fn(),
 }))
 
 // Mock previewInArrangement action
@@ -69,7 +63,6 @@ describe('FileList', () => {
     vi.clearAllMocks()
     LoadedFiles.set([])
     SelectedFileIndex.set(null)
-    AddLayerMode.set(false)
     ReplaceLayerIndex.set(null)
     Layers.set([])
     Playing.set(false)

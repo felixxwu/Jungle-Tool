@@ -1,13 +1,7 @@
 import { describe, it, expect, beforeEach } from 'vitest'
 import { render, screen, act } from '../../../../test/test-utils'
 import { LayerControl } from './LayerControl'
-import {
-  AddLayerMode,
-  Layers,
-  ReplaceLayerIndex,
-  ReplaceOriginalLayer,
-  Tab,
-} from '../../../../lib/store'
+import { Layers, ReplaceLayerIndex, ReplaceOriginalLayer, Tab } from '../../../../lib/store'
 import type { Layer } from '../../../../lib/types'
 
 describe('LayerControl', () => {
@@ -19,7 +13,6 @@ describe('LayerControl', () => {
 
   beforeEach(() => {
     Layers.set([mockLayer])
-    AddLayerMode.set(false)
     ReplaceLayerIndex.set(null)
     ReplaceOriginalLayer.set(null)
     Tab.set('arrangement')
@@ -55,16 +48,6 @@ describe('LayerControl', () => {
     expect(ReplaceLayerIndex.ref()).toBe(2)
     expect(ReplaceOriginalLayer.ref()).toEqual(mockLayer)
     expect(Tab.ref()).toBe('library')
-  })
-
-  it('clears add-layer mode when entering replace mode', () => {
-    AddLayerMode.set(true)
-    render(<LayerControl layer={mockLayer} index={0} />)
-
-    const replaceButton = screen.getByText('R')
-    replaceButton.click()
-
-    expect(AddLayerMode.ref()).toBe(false)
   })
 
   it('removes layer when delete button is clicked', async () => {

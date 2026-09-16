@@ -87,6 +87,13 @@ describe('SliceEditor', () => {
     expect(screen.queryByText('Add to arrangement +')).not.toBeInTheDocument()
   })
 
+  it('shows "Add to arrangement" (not "Already added") when the file is only a temp sync-preview layer', () => {
+    Layers.set([{ filename: 'test-file', volume: 50, pitch: 0, temp: true }])
+    render(<SliceEditor />)
+    expect(screen.getByText('Add to arrangement +')).toBeInTheDocument()
+    expect(screen.queryByText('Already added')).not.toBeInTheDocument()
+  })
+
   it('calls addToArrangement when add button is clicked', async () => {
     render(<SliceEditor />)
     const addButton = screen.getByText('Add to arrangement +')

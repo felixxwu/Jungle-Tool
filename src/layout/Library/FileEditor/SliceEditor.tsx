@@ -27,7 +27,9 @@ export const SliceEditor = () => {
 
   if (selectedFileIndex === null) return null
 
-  const alreadyAdded = layers.some(layer => layer.filename === loadedFiles[selectedFileIndex].name)
+  const alreadyAdded = layers.some(
+    layer => layer.filename === loadedFiles[selectedFileIndex].name && !layer.temp
+  )
 
   const selectedFile = loadedFiles[selectedFileIndex]
 

@@ -32,6 +32,15 @@ describe('LayerControls', () => {
     Tab.set('arrangement')
   })
 
+  it('navigates to the library tab when "Add Layer +" is clicked, without any other side effect', () => {
+    render(<LayerControls />)
+
+    const addLayerButton = screen.getByText('Add Layer +')
+    addLayerButton.click()
+
+    expect(Tab.ref()).toBe('library')
+  })
+
   it('continues playback when randomise layers is clicked while playing', async () => {
     // Setup: Simulate playing state
     Playing.set(true)

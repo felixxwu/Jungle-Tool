@@ -1,7 +1,7 @@
 import { useState } from 'react'
 import { HDivider } from '../../../../components/Dividers'
 import { Text } from '../../../../components/Text'
-import { AddLayerMode, Layers, Tab } from '../../../../lib/store'
+import { Layers, Tab } from '../../../../lib/store'
 import { LayerControl } from './LayerControl'
 import { colors } from '../../../../lib/colors'
 import styled from 'styled-components'
@@ -12,7 +12,6 @@ export const LayerControls = () => {
   const [loading, setLoading] = useState(false)
 
   const handleAddLayer = () => {
-    AddLayerMode.set(true)
     Tab.set('library')
   }
 

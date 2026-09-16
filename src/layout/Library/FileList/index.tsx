@@ -1,6 +1,5 @@
 import styled from 'styled-components'
 import {
-  AddLayerMode,
   AutoSliceMode,
   EditSliceMode,
   HoveredSliceIndex,
@@ -20,14 +19,12 @@ import { playFile } from '../../../actions/playFile'
 import { importFile } from '../../../actions/importFile'
 import { Fragment } from 'react/jsx-runtime'
 import { useDebouncedLocalState } from '../../../hooks/useDebouncedLocalState'
-import { addToArrangement } from '../../../actions/addToArrangement'
 import { previewInArrangement } from '../../../actions/previewInArrangement'
 import { replaceInArrangement } from '../../../actions/replaceInArrangement'
 
 export const FileList = () => {
   const loadedFiles = LoadedFiles.useState()
   const selectedFile = SelectedFileIndex.useState()
-  const addLayerMode = AddLayerMode.useState()
   const replaceLayerIndex = ReplaceLayerIndex.useState()
   const layers = Layers.useState()
 
@@ -55,9 +52,6 @@ export const FileList = () => {
   const handleClick = (index: number) => {
     if (replaceLayerIndex !== null) {
       replaceInArrangement(replaceLayerIndex, index)
-    } else if (addLayerMode) {
-      addToArrangement(index)
-      AddLayerMode.set(false)
     } else {
       handleSelectFile(index)
     }
@@ -66,9 +60,9 @@ export const FileList = () => {
   return (
     <FileListStyle style={windowSize.width < appWidth ? { width: '100%' } : {}}>
       <Scrollable>
-        {(addLayerMode || replaceLayerIndex !== null) && (
+        {replaceLayerIndex !== null && (
           <>
-            <Text>{replaceLayerIndex !== null ? 'Choose a replacement:' : 'Choose a break:'}</Text>
+            <Text>Choose a replacement:</Text>
             <HDivider />
           </>
         )}
@@ -82,9 +76,6 @@ export const FileList = () => {
                 selected={
                   localSelectedFile === index ||
                   (replaceLayerIndex !== null && layers[replaceLayerIndex]?.filename === file.name)
-                }
-                disabled={
-                  addLayerMode && layers.some(layer => layer.filename === file.name && !layer.temp)
                 }
               >
                 <FileListItemStyle>

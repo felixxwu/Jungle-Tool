@@ -1,6 +1,6 @@
 import { Text } from '../components/Text'
 import { VDivider } from '../components/Dividers'
-import { AddLayerMode, LibraryLoading, SelectedFileIndex, Tab, WindowSize } from '../lib/store'
+import { LibraryLoading, SelectedFileIndex, Tab, WindowSize } from '../lib/store'
 import styled from 'styled-components'
 import { colors } from '../lib/colors'
 import { appWidth, arrangementSidebarWidth, largeTextHeight } from '../lib/consts'
@@ -14,7 +14,6 @@ export const TopBar = () => {
 
   const handleSelectTab = (tab: ITab) => {
     SelectedFileIndex.set(null)
-    AddLayerMode.set(false)
     Tab.set(tab)
   }
 

@@ -1,12 +1,6 @@
 import styled from 'styled-components'
 import { HDivider, VDivider } from '../../../../components/Dividers'
-import {
-  AddLayerMode,
-  Layers,
-  ReplaceLayerIndex,
-  ReplaceOriginalLayer,
-  Tab,
-} from '../../../../lib/store'
+import { Layers, ReplaceLayerIndex, ReplaceOriginalLayer, Tab } from '../../../../lib/store'
 import { Slider, sliderHeight } from '../../../../components/Slider'
 import type { Layer } from '../../../../lib/types'
 import { maxPitch, minPitch } from '../../../../lib/consts'
@@ -54,7 +48,6 @@ export const LayerControl = (p: { layer: Layer; index: number }) => {
     e.stopPropagation()
     ReplaceLayerIndex.set(p.index)
     ReplaceOriginalLayer.set(p.layer)
-    AddLayerMode.set(false)
     Tab.set('library')
   }
 

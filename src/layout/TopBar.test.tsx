@@ -1,14 +1,13 @@
 import { describe, it, expect, beforeEach } from 'vitest'
 import { render, screen, act } from '../test/test-utils'
 import { TopBar } from './TopBar'
-import { Tab, WindowSize, SelectedFileIndex, AddLayerMode, LibraryLoading } from '../lib/store'
+import { Tab, WindowSize, SelectedFileIndex, LibraryLoading } from '../lib/store'
 
 describe('TopBar', () => {
   beforeEach(() => {
     Tab.set('arrangement')
     WindowSize.set({ width: 1200, height: 800 }) // Desktop size
     SelectedFileIndex.set(null)
-    AddLayerMode.set(false)
     LibraryLoading.set(false)
   })
 
@@ -111,24 +110,6 @@ describe('TopBar', () => {
     })
 
     expect(SelectedFileIndex.ref()).toBe(null)
-  })
-
-  it('disables AddLayerMode when switching tabs', async () => {
-    AddLayerMode.set(true)
-    Tab.set('library')
-    render(<TopBar />)
-
-    const arrangementTab = screen.getByText('Arrangement')
-    await act(async () => {
-      arrangementTab.click()
-    })
-
-    // Wait for debounce
-    await act(async () => {
-      await new Promise(r => setTimeout(r, 20))
-    })
-
-    expect(AddLayerMode.ref()).toBe(false)
   })
 
   it('shows loading state for Library tab', () => {
