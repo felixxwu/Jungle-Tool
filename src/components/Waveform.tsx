@@ -3,6 +3,7 @@ import type { Slice } from '../lib/types'
 import styled from 'styled-components'
 import { colors } from '../lib/colors'
 import { useState, useEffect, useRef } from 'react'
+import { getLoopPosition } from '../lib/scheduler'
 
 const sampleThinning = 10
 
@@ -24,6 +25,7 @@ export const Waveform = (p: {
   selectedBarIndex?: number
   totalBars?: number
   barDuration?: number // Duration of each bar in milliseconds
+  useLoopPosition?: boolean
 }) => {
   const [hoverSampleIndex, setHoverSampleIndex] = useState<number | null>(null)
   const prevProgress = useRef<number>(1000)
@@ -145,6 +147,45 @@ export const Waveform = (p: {
     p.totalBars,
     p.barDuration,
   ])
+
+  // Arrangement mode: drive the playhead from the scheduler's audible clock
+  // rather than wall-clock time. The library preview keeps the old path.
+  useEffect(() => {
+    if (!p.useLoopPosition || !p.playHeadId) return
+
+    let frame = 0
+    const draw = () => {
+      const head = document.getElementById(p.playHeadId!)
+      const position = getLoopPosition()
+
+      if (!head) {
+        frame = requestAnimationFrame(draw)
+        return
+      }
+
+      if (!p.isPlaying || !position) {
+        head.style.display = 'none'
+        frame = requestAnimationFrame(draw)
+        return
+      }
+
+      const bars = p.totalBars ?? 1
+      const bar = p.selectedBarIndex ?? 0
+      const barProgress = position.fraction * bars - bar
+
+      if (barProgress < 0 || barProgress >= 1) {
+        head.style.display = 'none'
+      } else {
+        head.style.display = 'block'
+        head.style.transform = `translateX(${barProgress * 100}%)`
+      }
+
+      frame = requestAnimationFrame(draw)
+    }
+
+    frame = requestAnimationFrame(draw)
+    return () => cancelAnimationFrame(frame)
+  }, [p.useLoopPosition, p.playHeadId, p.isPlaying, p.totalBars, p.selectedBarIndex])
 
   const scaleX = (p.width / (p.samples.length - 1)) * p.scaleX
   const scaleY = p.height / Math.pow(2, 16)

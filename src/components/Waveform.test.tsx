@@ -1,9 +1,12 @@
 import { describe, it, expect, beforeEach, afterEach, vi } from 'vitest'
-import { render } from '../test/test-utils'
+import { render, waitFor } from '../test/test-utils'
 import { act } from '@testing-library/react'
 import { Waveform } from './Waveform'
 import { colors } from '../lib/colors'
 import type { Slice } from '../lib/types'
+import { getLoopPosition } from '../lib/scheduler'
+
+vi.mock('../lib/scheduler', () => ({ getLoopPosition: vi.fn() }))
 
 describe('Waveform', () => {
   const mockSamples = new Float32Array([0, 0.5, 1, 0.5, 0, -0.5, -1, -0.5, 0])
@@ -429,6 +432,55 @@ describe('Waveform', () => {
       const { container } = render(<Waveform {...defaultProps} height={0} />)
       const svg = container.querySelector('svg')
       expect(svg?.getAttribute('height')).toBe('0')
+    })
+  })
+})
+
+describe('Waveform arrangement mode', () => {
+  it('positions the playhead from the scheduler loop position', async () => {
+    ;(getLoopPosition as ReturnType<typeof vi.fn>).mockReturnValue({
+      bar: 0,
+      step: 8,
+      fraction: 0.5,
+    })
+    render(
+      <Waveform
+        samples={new Float32Array(128)}
+        width={100}
+        height={50}
+        offset={0}
+        scaleX={1}
+        slices={[]}
+        playHeadId='test-head'
+        useLoopPosition
+        isPlaying
+        selectedBarIndex={0}
+        totalBars={1}
+      />
+    )
+    await waitFor(() => {
+      const head = document.getElementById('test-head')!
+      expect(head.style.transform).toContain('50')
+    })
+  })
+
+  it('hides the playhead when not playing', async () => {
+    ;(getLoopPosition as ReturnType<typeof vi.fn>).mockReturnValue(null)
+    render(
+      <Waveform
+        samples={new Float32Array(128)}
+        width={100}
+        height={50}
+        offset={0}
+        scaleX={1}
+        slices={[]}
+        playHeadId='test-head-2'
+        useLoopPosition
+        isPlaying={false}
+      />
+    )
+    await waitFor(() => {
+      expect(document.getElementById('test-head-2')!.style.display).toBe('none')
     })
   })
 })
