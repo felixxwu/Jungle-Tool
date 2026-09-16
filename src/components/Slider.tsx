@@ -2,7 +2,7 @@ import styled from 'styled-components'
 import { useRef, useMemo } from 'react'
 import { colors } from '../lib/colors'
 
-const sliderHeight = 25
+export const sliderHeight = 25
 const sidePadding = 15
 
 export const Slider = (p: {

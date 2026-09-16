@@ -1,15 +1,13 @@
-import { useState } from 'react'
 import styled from 'styled-components'
 import { HDivider, VDivider } from '../../../../components/Dividers'
 import { Layers } from '../../../../lib/store'
-import { Slider } from '../../../../components/Slider'
+import { Slider, sliderHeight } from '../../../../components/Slider'
 import type { Layer } from '../../../../lib/types'
 import { maxPitch, minPitch } from '../../../../lib/consts'
 import { useDebouncedLocalState } from '../../../../hooks/useDebouncedLocalState'
 import { colors } from '../../../../lib/colors'
 
 export const LayerControl = (p: { layer: Layer }) => {
-  const [hovered, setHovered] = useState(false)
   const [localVolume, setLocalVolume] = useDebouncedLocalState(
     p.layer.volume,
     value => {
@@ -49,33 +47,41 @@ export const LayerControl = (p: { layer: Layer }) => {
   const pitch = localPitch
 
   return (
-    <LayerControlContainer
-      onPointerEnter={() => setHovered(true)}
-      onPointerLeave={() => setHovered(false)}
-    >
+    <LayerControlContainer>
       <HDivider />
       <Row>
         <NameSide>
           <NameText>{p.layer.filename}</NameText>
-          {hovered && <DeleteButton onClick={handleDelete}>x</DeleteButton>}
         </NameSide>
         <VDivider />
         <SlidersSide>
-          <Slider
-            min={0}
-            max={100}
-            value={localVolume}
-            onInput={setLocalVolume}
-            label={`Vol: ${localVolume}`}
-          />
+          <SliderRow>
+            <SliderWrapper>
+              <Slider
+                min={0}
+                max={100}
+                value={localVolume}
+                onInput={setLocalVolume}
+                label={`Vol: ${localVolume}`}
+              />
+            </SliderWrapper>
+            <VDivider />
+            <IconBox onClick={handleDelete}>x</IconBox>
+          </SliderRow>
           <HDivider />
-          <Slider
-            min={minPitch}
-            max={maxPitch}
-            value={pitch}
-            onInput={setLocalPitch}
-            label={`Pitch: ${pitch > 0 ? `+${pitch}` : pitch}`}
-          />
+          <SliderRow>
+            <SliderWrapper>
+              <Slider
+                min={minPitch}
+                max={maxPitch}
+                value={pitch}
+                onInput={setLocalPitch}
+                label={`Pitch: ${pitch > 0 ? `+${pitch}` : pitch}`}
+              />
+            </SliderWrapper>
+            <VDivider />
+            <IconBox />
+          </SliderRow>
         </SlidersSide>
       </Row>
     </LayerControlContainer>
@@ -109,20 +115,38 @@ const NameText = styled('div')`
   color: ${colors.black};
 `
 
-const DeleteButton = styled('div')`
-  position: absolute;
-  inset: 0;
-  display: flex;
-  align-items: center;
-  justify-content: center;
-  background-color: ${colors.grey};
-  color: ${colors.black};
-  cursor: pointer;
-  text-transform: lowercase;
-`
-
 const SlidersSide = styled('div')`
   width: 60%;
   display: flex;
   flex-direction: column;
+`
+
+const SliderRow = styled('div')`
+  display: flex;
+  align-items: stretch;
+  width: 100%;
+`
+
+const SliderWrapper = styled('div')`
+  flex: 1;
+  min-width: 0;
+`
+
+const IconBox = styled('div')<{ onClick?: (e: React.MouseEvent<HTMLDivElement>) => void }>`
+  width: ${sliderHeight}px;
+  min-width: ${sliderHeight}px;
+  height: ${sliderHeight}px;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  background-color: ${colors.white};
+  color: ${colors.black};
+  text-transform: lowercase;
+  cursor: ${p => (p.onClick ? 'pointer' : 'default')};
+
+  &:hover {
+    @media (hover: hover) {
+      background-color: ${p => (p.onClick ? colors.grey : 'transparent')};
+    }
+  }
 `

@@ -1,5 +1,5 @@
 import { describe, it, expect, beforeEach } from 'vitest'
-import { render, screen, act, fireEvent } from '../../../../test/test-utils'
+import { render, screen, act } from '../../../../test/test-utils'
 import { LayerControl } from './LayerControl'
 import { Layers } from '../../../../lib/store'
 import type { Layer } from '../../../../lib/types'
@@ -26,28 +26,15 @@ describe('LayerControl', () => {
     expect(screen.getByLabelText(/Pitch:/)).toBeInTheDocument()
   })
 
-  it('does not show the delete button until hovered', () => {
+  it('always shows the delete button', () => {
     render(<LayerControl layer={mockLayer} />)
-    expect(screen.queryByText('x')).not.toBeInTheDocument()
-  })
-
-  it('shows the delete button on hover and hides it on unhover', () => {
-    const { container } = render(<LayerControl layer={mockLayer} />)
-    const containerEl = container.firstChild as HTMLElement
-
-    fireEvent.pointerEnter(containerEl)
     expect(screen.getByText('x')).toBeInTheDocument()
-
-    fireEvent.pointerLeave(containerEl)
-    expect(screen.queryByText('x')).not.toBeInTheDocument()
   })
 
   it('removes layer when delete button is clicked', async () => {
     Layers.set([mockLayer, { filename: 'Other Break', volume: 50, pitch: 0 }])
-    const { container } = render(<LayerControl layer={mockLayer} />)
-    const containerEl = container.firstChild as HTMLElement
+    render(<LayerControl layer={mockLayer} />)
 
-    fireEvent.pointerEnter(containerEl)
     const deleteButton = screen.getByText('x')
     await act(async () => {
       deleteButton.click()
