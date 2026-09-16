@@ -13,9 +13,12 @@ export type ScheduledNote = {
   // Fill Gaps doubles a slice's buffer (original + reversed) with no regard
   // for how long the step actually is, so left unbounded it can ring into
   // the next step's onset. This is the time at which it must be cut off:
-  // the swing-adjusted position of the next step, not just "one step later"
-  // -- on a swing-delayed step, a flat step distance would land past the
-  // following (non-delayed) step's own onset and still bleed into it.
+  // the swing-adjusted position of the file's next ACTUAL slice, not just
+  // "one step later" -- a stepNum the file has no slice for (e.g. a break
+  // that skips step 1) lets the previous slice bleed through it instead of
+  // being cut off early, and on a swing-delayed step a flat step distance
+  // would land past the following (non-delayed) step's own onset and still
+  // bleed into it.
   stopAtSeconds: number | null
 }
 
@@ -54,6 +57,13 @@ export const getScheduledNotes = (p: {
     // different pitches), so the gain node is keyed by position, not name.
     const layerKey = `${layer.filename}#${layerIndex}`
 
+    // Sorted once per layer so a slice's bleed length is measured against
+    // its actual neighbour in the file, not an assumed one at stepNum + 1
+    // -- a file that skips a stepNum (e.g. no slice at step 1) should let
+    // the previous slice ring through that gap instead of being cut off as
+    // if a slice were there.
+    const sortedSlices = [...loadedFile.slices].sort((a, b) => a.stepNum - b.stepNum)
+
     for (const note of p.arrangement) {
       // Half-open range: a note on the exclusive bound belongs to the next
       // window, otherwise it would be scheduled twice.
@@ -66,11 +76,14 @@ export const getScheduledNotes = (p: {
       const fadeStartSeconds = p.shortenNotes ? timeInSeconds + p.noteLength / 1000 : null
       const fadeEndSeconds =
         fadeStartSeconds === null ? null : fadeStartSeconds + p.noteFadeOut / 1000
-      // Bound to the NEXT step's actual (swing-adjusted) position, not a
-      // flat step distance -- swing only delays odd steps, so a note on an
-      // odd step must stop sooner than "timeInSeconds + stepSeconds" or the
-      // bound lands past the following even step's un-delayed onset.
-      const nextStepStart = (note.startStep + 1) * stepSeconds + swingOffset(note.startStep + 1)
+      // Bound to the position of the next ACTUAL slice in the file (falling
+      // back to the end of the 16-step cycle if this is the last slice),
+      // not just "one step later" -- and to its swing-adjusted position,
+      // not a flat step distance, for the same reason as above.
+      const sliceListIndex = sortedSlices.findIndex(s => s.stepNum === note.stepNumToPlay)
+      const nextSliceStepNum = sortedSlices[sliceListIndex + 1]?.stepNum ?? 16
+      const nextStep = note.startStep + (nextSliceStepNum - note.stepNumToPlay)
+      const nextStepStart = nextStep * stepSeconds + swingOffset(nextStep)
       const stopAtSeconds = p.fillGaps ? nextStepStart : null
 
       scheduled.push({

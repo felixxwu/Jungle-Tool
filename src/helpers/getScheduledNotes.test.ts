@@ -140,4 +140,32 @@ describe('getScheduledNotes', () => {
     expect(result[1].timeInSeconds).toBeCloseTo(0.125 + 0.0625, 10)
     expect(result[1].stopAtSeconds).toBeCloseTo(0.25, 10)
   })
+
+  it('bleeds a slice across a step the file has no slice for, instead of cutting it off early', () => {
+    // Like "Hot Pants": no slice at stepNum 1, so the slice at stepNum 0
+    // must be allowed to ring through step 1 and stop at step 2's onset.
+    const fileWithGap: LoadedFile = {
+      ...file,
+      slices: [
+        { start: 0, type: 'Kick', stepNum: 0 },
+        { start: 512, type: 'Hat', stepNum: 2 },
+      ],
+    }
+    const result = getScheduledNotes({
+      ...base,
+      loadedFiles: [fileWithGap],
+      arrangement: [{ stepNumToPlay: 0, startStep: 0 }],
+      fillGaps: true,
+    })
+    expect(result[0].stopAtSeconds).toBeCloseTo(0.25, 10) // step 2's onset, not step 1's
+  })
+
+  it('bleeds to the end of the 16-step cycle when the triggered slice is the last one in the file', () => {
+    const result = getScheduledNotes({
+      ...base,
+      arrangement: [{ stepNumToPlay: 2, startStep: 2 }],
+      fillGaps: true,
+    })
+    expect(result[0].stopAtSeconds).toBeCloseTo(16 * 0.125, 10)
+  })
 })
