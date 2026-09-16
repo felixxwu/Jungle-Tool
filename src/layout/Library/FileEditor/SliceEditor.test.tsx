@@ -8,9 +8,11 @@ import {
   EditSliceMode,
   Layers,
   Modal,
+  ReplaceLayerIndex,
 } from '../../../lib/store'
 import { autoSlice } from '../../../actions/autoSlice'
 import { addToArrangement } from '../../../actions/addToArrangement'
+import { replaceInArrangement } from '../../../actions/replaceInArrangement'
 import { addSlice } from '../../../actions/addSlice'
 
 // Mock dependencies
@@ -20,6 +22,10 @@ vi.mock('../../../actions/autoSlice', () => ({
 
 vi.mock('../../../actions/addToArrangement', () => ({
   addToArrangement: vi.fn(),
+}))
+
+vi.mock('../../../actions/replaceInArrangement', () => ({
+  replaceInArrangement: vi.fn(),
 }))
 
 vi.mock('../../../actions/addSlice', () => ({
@@ -66,6 +72,7 @@ describe('SliceEditor', () => {
     EditSliceMode.set(false)
     Layers.set([])
     Modal.set(null)
+    ReplaceLayerIndex.set(null)
   })
 
   it('renders nothing when no file is selected', () => {
@@ -105,6 +112,29 @@ describe('SliceEditor', () => {
     })
 
     expect(addToArrangement).toHaveBeenCalledWith(0)
+  })
+
+  it('shows "Confirm replacement" instead of the add/already-added button while replacing a layer', () => {
+    Layers.set([{ filename: 'test-file', volume: 50, pitch: 0 }])
+    ReplaceLayerIndex.set(2)
+    render(<SliceEditor />)
+
+    expect(screen.getByText('Confirm replacement +')).toBeInTheDocument()
+    expect(screen.queryByText('Already added')).not.toBeInTheDocument()
+    expect(screen.queryByText('Add to arrangement +')).not.toBeInTheDocument()
+  })
+
+  it('calls replaceInArrangement with the target slot and the selected file when confirming a replacement', async () => {
+    ReplaceLayerIndex.set(2)
+    render(<SliceEditor />)
+
+    const confirmButton = screen.getByText('Confirm replacement +')
+    await act(async () => {
+      confirmButton.click()
+    })
+
+    expect(replaceInArrangement).toHaveBeenCalledWith(2, 0)
+    expect(addToArrangement).not.toHaveBeenCalled()
   })
 
   it('shows auto-slice button in edit mode', () => {

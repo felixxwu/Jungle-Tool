@@ -5,6 +5,7 @@ import {
   Layers,
   LoadedFiles,
   Modal,
+  ReplaceLayerIndex,
   SelectedFileIndex,
 } from '../../../lib/store'
 import { HDivider, VDivider } from '../../../components/Dividers'
@@ -17,6 +18,7 @@ import { DownloadFileModal } from '../../../modals/DownloadFileModal'
 import { addSlice } from '../../../actions/addSlice'
 import { CollapsableRow } from '../../../components/CollapsableRow'
 import { addToArrangement } from '../../../actions/addToArrangement'
+import { replaceInArrangement } from '../../../actions/replaceInArrangement'
 
 export const SliceEditor = () => {
   const selectedFileIndex = SelectedFileIndex.useState()
@@ -24,6 +26,7 @@ export const SliceEditor = () => {
   const autoSliceMode = AutoSliceMode.useState()
   const editSliceMode = EditSliceMode.useState()
   const layers = Layers.useState()
+  const replaceLayerIndex = ReplaceLayerIndex.useState()
 
   if (selectedFileIndex === null) return null
 
@@ -59,7 +62,14 @@ export const SliceEditor = () => {
           collapse={450}
           left={
             <>
-              {alreadyAdded ? (
+              {replaceLayerIndex !== null ? (
+                <Text
+                  big
+                  onClick={() => replaceInArrangement(replaceLayerIndex, selectedFileIndex)}
+                >
+                  Confirm replacement +
+                </Text>
+              ) : alreadyAdded ? (
                 <Text big disabled>
                   Already added
                 </Text>

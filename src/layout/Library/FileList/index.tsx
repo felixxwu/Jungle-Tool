@@ -51,6 +51,7 @@ export const FileList = () => {
 
   const handleClick = (index: number) => {
     if (replaceLayerIndex !== null) {
+      setLocalSelectedFile(index)
       replaceInArrangement(replaceLayerIndex, index)
     } else {
       handleSelectFile(index)

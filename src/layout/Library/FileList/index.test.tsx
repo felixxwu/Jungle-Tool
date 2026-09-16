@@ -197,6 +197,23 @@ describe('FileList', () => {
     expect(previewInArrangement).not.toHaveBeenCalled()
   })
 
+  it('selects the clicked candidate in replace mode, so its editor reflects the right file', async () => {
+    LoadedFiles.set([mockFile1, mockFile2])
+    ReplaceLayerIndex.set(1)
+    render(<FileList />)
+
+    const funkyDrummerItem = screen.getByText('Funky Drummer')
+    act(() => {
+      funkyDrummerItem.click()
+    })
+
+    await act(async () => {
+      await new Promise(r => setTimeout(r, 20))
+    })
+
+    expect(SelectedFileIndex.ref()).toBe(1)
+  })
+
   it('shows import file button', () => {
     LoadedFiles.set([mockFile1])
     render(<FileList />)
