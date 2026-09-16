@@ -843,7 +843,8 @@ import { getSliceIndexFromStepNum } from './getSliceIndexFromStepNum'
 import { getStepSeconds } from './getStepSeconds'
 
 export type ScheduledNote = {
-  filename: string
+  filename: string   // which break: selects the AudioBuffer
+  layerKey: string   // which layer: selects the GainNode ("<filename>#<index>")
   sliceIndex: number
   timeInSeconds: number
   playbackRate: number
@@ -917,7 +918,7 @@ export const getScheduledNotes = (p: {
 - [ ] **Step 4: Run test to verify it passes**
 
 Run: `npx vitest run src/helpers/getScheduledNotes.test.ts`
-Expected: PASS (10 tests).
+Expected: PASS (11 tests).
 
 - [ ] **Step 5: Commit**
 
