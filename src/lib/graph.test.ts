@@ -44,4 +44,29 @@ describe('buildGraph', () => {
     graph.pruneLayers(['Think#0'])
     expect(graph.layerGain('Amen#0')).not.toBe(first)
   })
+
+  it('does not rebuild the saturation curve when the value is unchanged', () => {
+    const ctx = createFakeAudioContext()
+    const graph = buildGraph(ctx as unknown as BaseAudioContext)
+    graph.setSaturation(50)
+    const firstCurve = ctx.createdShapers[0].curve
+    graph.setSaturation(50)
+    expect(ctx.createdShapers[0].curve).toBe(firstCurve)
+
+    graph.setSaturation(75)
+    expect(ctx.createdShapers[0].curve).not.toBe(firstCurve)
+  })
+
+  it('cancels and restarts the trim ramp rather than stacking automation', () => {
+    const ctx = createFakeAudioContext()
+    const graph = buildGraph(ctx as unknown as BaseAudioContext)
+    graph.rampTrimTo(0.1, 0.02)
+    const calls = ctx.createdGains[0].gain.calls
+    expect(calls.map(call => call.method)).toEqual([
+      'cancelScheduledValues',
+      'setValueAtTime',
+      'linearRampToValueAtTime',
+    ])
+    expect(calls[2].value).toBeCloseTo(0.1, 6)
+  })
 })

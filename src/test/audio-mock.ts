@@ -1,7 +1,11 @@
 import { SAMPLE_RATE } from '../lib/consts'
 
 export type ParamCall = {
-  method: 'setValueAtTime' | 'linearRampToValueAtTime' | 'setTargetAtTime'
+  method:
+    | 'setValueAtTime'
+    | 'linearRampToValueAtTime'
+    | 'setTargetAtTime'
+    | 'cancelScheduledValues'
   value: number
   time: number
 }
@@ -24,16 +28,25 @@ const createParam = (initial: number) => ({
     this.calls.push({ method: 'setTargetAtTime', value, time })
     return this
   },
-  cancelScheduledValues() {
+  cancelScheduledValues(time: number) {
+    this.calls.push({ method: 'cancelScheduledValues', value: NaN, time })
     return this
   },
 })
 
 export type FakeGain = ReturnType<typeof createGain>
 export type FakeSource = ReturnType<typeof createSource>
+export type FakeShaper = ReturnType<typeof createWaveShaper>
 
 const createGain = () => ({
   gain: createParam(1),
+  connect: (target: unknown) => target,
+  disconnect: () => {},
+})
+
+const createWaveShaper = () => ({
+  curve: null as Float32Array | null,
+  oversample: 'none' as OverSampleType,
   connect: (target: unknown) => target,
   disconnect: () => {},
 })
@@ -57,6 +70,7 @@ const createSource = () => ({
 export const createFakeAudioContext = (opts?: { sampleRate?: number }) => {
   const createdSources: FakeSource[] = []
   const createdGains: FakeGain[] = []
+  const createdShapers: FakeShaper[] = []
 
   return {
     state: 'running' as AudioContextState,
@@ -67,6 +81,7 @@ export const createFakeAudioContext = (opts?: { sampleRate?: number }) => {
     destination: { maxChannelCount: 2 },
     createdSources,
     createdGains,
+    createdShapers,
     advance(seconds: number) {
       this.currentTime += seconds
     },
@@ -81,12 +96,9 @@ export const createFakeAudioContext = (opts?: { sampleRate?: number }) => {
       return gain
     },
     createWaveShaper() {
-      return {
-        curve: null as Float32Array | null,
-        oversample: 'none' as OverSampleType,
-        connect: (target: unknown) => target,
-        disconnect: () => {},
-      }
+      const shaper = createWaveShaper()
+      createdShapers.push(shaper)
+      return shaper
     },
     createBuffer(channels: number, length: number, sampleRate: number) {
       const data = Array.from({ length: channels }, () => new Float32Array(length))
