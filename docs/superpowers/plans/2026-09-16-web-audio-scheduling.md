@@ -1025,9 +1025,9 @@ import { getSaturationCurve } from './saturationCurve'
 const RAMP_TIME_CONSTANT = 0.015
 
 export type Graph = {
-  layerGain: (filename: string) => GainNode
-  setLayerVolume: (filename: string, volume: number) => void
-  pruneLayers: (filenames: string[]) => void
+  layerGain: (layerKey: string) => GainNode
+  setLayerVolume: (layerKey: string, volume: number) => void
+  pruneLayers: (layerKeys: string[]) => void
   setSaturation: (saturation: number) => void
   rampTrimTo: (value: number, seconds: number) => void
   disconnect: () => void
