@@ -35,8 +35,16 @@ export const useArrangementStates = () => {
  * Used for comparison in useRestartPlayback.
  */
 export const useArrangementStateValues = () => {
+  // Loaded files carry full sample buffers, which would be far too expensive
+  // to include in a JSON.stringify'd dependency key -- a lightweight
+  // fingerprint of which files are loaded is enough to detect the change.
+  const loadedFileNames = LoadedFiles.useState()
+    .map(file => file.name)
+    .join(',')
+
   return {
     arrangement: Arrangement.useState(),
+    loadedFileNames,
     layers: Layers.useState(),
     bpm: BPM.useState(),
     swing: Swing.useState(),
