@@ -1,5 +1,6 @@
 import { getBestLayerPitch } from '../helpers/getBestLayerPitch'
 import { getBestLayerVolume } from '../helpers/getBestLayerVolume'
+import { isUntrimmed } from '../helpers/isUntrimmed'
 import { Layers, LoadedFiles } from '../lib/store'
 import { playArrangement } from './playArrangement'
 
@@ -10,7 +11,7 @@ export const randomiseLayers = async () => {
   for (let i = 0; i < savedLayers.length; i++) {
     const takenLayers = savedLayers.slice(0, i).map(l => l.filename.split('(')[0])
     const remainingFiles = loadedFiles.filter(
-      f => !takenLayers.includes(f.name.split('(')[0]) && f.name !== 'PH Break'
+      f => !takenLayers.includes(f.name.split('(')[0]) && f.name !== 'PH Break' && !isUntrimmed(f)
     )
     const randomFile = remainingFiles[Math.floor(Math.random() * remainingFiles.length)]
     savedLayers[i].filename = randomFile.name

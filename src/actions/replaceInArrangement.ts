@@ -1,5 +1,6 @@
 import { getBestLayerPitch } from '../helpers/getBestLayerPitch'
 import { getBestLayerVolume } from '../helpers/getBestLayerVolume'
+import { isUntrimmed } from '../helpers/isUntrimmed'
 import { Layers, LoadedFiles } from '../lib/store'
 import { confirmReplace } from './confirmReplace'
 
@@ -10,6 +11,7 @@ import { confirmReplace } from './confirmReplace'
  */
 export const replaceInArrangement = (targetIndex: number, fileIndex: number) => {
   const loadedFiles = LoadedFiles.ref()
+  if (isUntrimmed(loadedFiles[fileIndex])) return
   const layerName = loadedFiles[fileIndex].name
 
   const layers = Layers.ref()

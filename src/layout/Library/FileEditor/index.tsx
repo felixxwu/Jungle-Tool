@@ -6,6 +6,7 @@ import { TrimEditor } from './TrimEditor'
 import { SliceEditor } from './SliceEditor'
 import { Text } from '../../../components/Text'
 import { appWidth } from '../../../lib/consts'
+import { isUntrimmed } from '../../../helpers/isUntrimmed'
 
 export const FileEditor = () => {
   const selectedFileIndex = SelectedFileIndex.useState()
@@ -15,7 +16,7 @@ export const FileEditor = () => {
   if (selectedFileIndex === null) return null
 
   const selectedFile = loadedFiles[selectedFileIndex]
-  const trimMode = selectedFile.slices.find(slice => slice.type === 'Start' || slice.type === 'End')
+  const trimMode = isUntrimmed(selectedFile)
   const sidebarOpen = windowSize.width > appWidth
 
   return (

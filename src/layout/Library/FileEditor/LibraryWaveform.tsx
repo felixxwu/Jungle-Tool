@@ -22,6 +22,7 @@ import { Waveform } from '../../../components/Waveform'
 import { playFile } from '../../../actions/playFile'
 import { playSlice } from '../../../actions/playSlice'
 import { updateSliceStart } from '../../../actions/updateSliceStart'
+import { isUntrimmed } from '../../../helpers/isUntrimmed'
 
 export const LibraryWaveform = () => {
   const selectedFileIndex = SelectedFileIndex.useState()
@@ -48,7 +49,7 @@ export const LibraryWaveform = () => {
     const halfSamples = monoSamples.length / 2
     return halfSamples / factor - selectedSlice.start
   })()
-  const trimMode = selectedFile.slices.find(slice => slice.type === 'Start' || slice.type === 'End')
+  const trimMode = isUntrimmed(selectedFile)
 
   const handleClick = async (sampleIndex: number) => {
     if ((editSliceMode || trimMode) && selectedSliceIndex !== null) {

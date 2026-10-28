@@ -66,4 +66,21 @@ describe('replaceInArrangement', () => {
     expect(layers[0].filename).toBe('layer-a')
     expect(layers[1].filename).toBe('layer-b')
   })
+
+  it('ignores an import that has not been trimmed yet', () => {
+    const before = Layers.ref()
+    LoadedFiles.set([
+      {
+        ...mockFile,
+        slices: [
+          { start: 0, type: 'Start' as const, stepNum: 0 },
+          { start: 44099, type: 'End' as const, stepNum: 0 },
+        ],
+      },
+    ])
+
+    replaceInArrangement(1, 0)
+
+    expect(Layers.ref()).toEqual(before)
+  })
 })

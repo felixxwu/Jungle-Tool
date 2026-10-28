@@ -78,4 +78,20 @@ describe('previewInArrangement', () => {
     expect(layers[0].filename).toBe('test-file')
     expect(layers[0].temp).toBe(false)
   })
+
+  it('ignores an import that has not been trimmed yet', () => {
+    LoadedFiles.set([
+      {
+        ...mockFile1,
+        slices: [
+          { start: 0, type: 'Start' as const, stepNum: 0 },
+          { start: 44099, type: 'End' as const, stepNum: 0 },
+        ],
+      },
+    ])
+
+    previewInArrangement(0)
+
+    expect(Layers.ref()).toEqual([])
+  })
 })

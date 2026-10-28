@@ -215,4 +215,23 @@ describe('randomiseLayers', () => {
     const uniqueBaseNames = new Set(baseNames)
     expect(uniqueBaseNames.size).toBe(baseNames.length)
   })
+
+  it('never picks an import that has not been trimmed yet', async () => {
+    LoadedFiles.set([
+      mockFile1,
+      {
+        ...mockFile2,
+        slices: [
+          { start: 0, type: 'Start' as const, stepNum: 0 },
+          { start: 44099, type: 'End' as const, stepNum: 0 },
+        ],
+      },
+    ])
+
+    for (let i = 0; i < 20; i++) {
+      Layers.set([{ filename: 'Apache', volume: 50, pitch: 0 }])
+      await randomiseLayers()
+      expect(Layers.ref()[0].filename).toBe('Amen Brother (1)')
+    }
+  })
 })

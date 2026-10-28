@@ -1,5 +1,6 @@
 import { getBestLayerPitch } from '../helpers/getBestLayerPitch'
 import { getBestLayerVolume } from '../helpers/getBestLayerVolume'
+import { isUntrimmed } from '../helpers/isUntrimmed'
 import { Layers, LoadedFiles } from '../lib/store'
 
 /**
@@ -13,6 +14,7 @@ import { Layers, LoadedFiles } from '../lib/store'
  */
 export const previewInArrangement = (index: number) => {
   const loadedFiles = LoadedFiles.ref()
+  if (isUntrimmed(loadedFiles[index])) return
   const layerName = loadedFiles[index].name
   const current = Layers.ref()
 
