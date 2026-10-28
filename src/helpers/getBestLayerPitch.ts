@@ -1,4 +1,6 @@
+import { maxPitch } from '../lib/consts'
 import { BPM, LoadedFiles, Swing } from '../lib/store'
+import { getSliceIndexFromStepNum } from './getSliceIndexFromStepNum'
 import { getStepSize } from './getStepSize'
 
 const getSwungStepSize = (index: number) => {
@@ -16,18 +18,21 @@ export const getBestLayerPitch = (layerName: string) => {
   const file = loadedFiles.find(f => f.name === layerName)
   if (!file) return 0
 
-  const sortedSlices = [...file.slices].sort((a, b) => a.stepNum - b.stepNum)
-  const pitchMults = sortedSlices.map((s, i) => {
-    const nextSliceStart = sortedSlices[i + 1]?.start || file.samples[0].length
-    const sliceLengthInSamples = nextSliceStart - s.start
-    const nextSliceStepNum = sortedSlices[i + 1]?.stepNum || 16
-    const sliceLengthInSteps = nextSliceStepNum - s.stepNum
-    const swungStepSize =
-      getSwungStepSize(s.stepNum) + (sliceLengthInSteps === 2 ? getSwungStepSize(s.stepNum + 1) : 0)
+  // Only the first slice at each stepNum is ever played, so duplicates (an
+  // import's Start/End pair) must not count as slices of their own.
+  const stepNums = [...new Set(file.slices.map(s => s.stepNum))].sort((a, b) => a - b)
+  const pitchMults = stepNums.map((stepNum, i) => {
+    const sliceIndex = getSliceIndexFromStepNum(file, stepNum)!
+    // Same end point getSliceSamples plays to.
+    const sliceEnd = file.slices[sliceIndex + 1]?.start ?? file.samples[0].length
+    const sliceLengthInSamples = sliceEnd - file.slices[sliceIndex].start
+    const nextStepNum = stepNums[i + 1] ?? 16
+    let swungStepSize = 0
+    for (let step = stepNum; step < nextStepNum; step++) swungStepSize += getSwungStepSize(step)
 
     return swungStepSize / sliceLengthInSamples
   })
   const pitchMult = Math.max(...pitchMults)
   const pitchShift = 12 * Math.log2(1 / pitchMult)
-  return Math.max(0, Math.ceil(pitchShift))
+  return Math.min(maxPitch, Math.max(0, Math.ceil(pitchShift)))
 }

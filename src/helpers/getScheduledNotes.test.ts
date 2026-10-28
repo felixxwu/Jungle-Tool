@@ -168,4 +168,23 @@ describe('getScheduledNotes', () => {
     })
     expect(result[0].stopAtSeconds).toBeCloseTo(16 * 0.125, 10)
   })
+
+  it('skips slices that share the triggered stepNum when finding the next one', () => {
+    // Imported WAVs start with Start and End slices both at stepNum 0.
+    const fileWithDuplicate: LoadedFile = {
+      ...file,
+      slices: [
+        { start: 0, type: 'Start', stepNum: 0 },
+        { start: 1000, type: 'End', stepNum: 0 },
+        { start: 512, type: 'Hat', stepNum: 2 },
+      ],
+    }
+    const result = getScheduledNotes({
+      ...base,
+      loadedFiles: [fileWithDuplicate],
+      arrangement: [{ stepNumToPlay: 0, startStep: 0 }],
+      fillGaps: true,
+    })
+    expect(result[0].stopAtSeconds).toBeCloseTo(0.25, 10)
+  })
 })

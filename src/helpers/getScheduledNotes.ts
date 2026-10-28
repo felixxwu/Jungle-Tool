@@ -80,8 +80,8 @@ export const getScheduledNotes = (p: {
       // back to the end of the 16-step cycle if this is the last slice),
       // not just "one step later" -- and to its swing-adjusted position,
       // not a flat step distance, for the same reason as above.
-      const sliceListIndex = sortedSlices.findIndex(s => s.stepNum === note.stepNumToPlay)
-      const nextSliceStepNum = sortedSlices[sliceListIndex + 1]?.stepNum ?? 16
+      const nextSliceStepNum =
+        sortedSlices.find(s => s.stepNum > note.stepNumToPlay)?.stepNum ?? 16
       const nextStep = note.startStep + (nextSliceStepNum - note.stepNumToPlay)
       const nextStepStart = nextStep * stepSeconds + swingOffset(nextStep)
       const stopAtSeconds = p.fillGaps ? nextStepStart : null

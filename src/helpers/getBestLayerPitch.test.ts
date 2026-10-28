@@ -80,6 +80,59 @@ describe('getBestLayerPitch', () => {
     expect(typeof result).toBe('number')
   })
 
+  it('treats a fresh import, whose Start and End slices share stepNum 0, as one slice spanning all 16 steps', () => {
+    Swing.set(0)
+    // 16 steps at 120 BPM last 88200 samples. A 2-bar file holds twice that,
+    // so it needs to go up an octave to fit.
+    const length = 2 * 88200
+    LoadedFiles.set([
+      {
+        ...mockFile,
+        samples: [new Float32Array(length), new Float32Array(length)],
+        slices: [
+          { start: 0, type: 'Start' as const, stepNum: 0 },
+          { start: length - 1, type: 'End' as const, stepNum: 0 },
+        ],
+      },
+    ])
+    expect(getBestLayerPitch('test-file')).toBe(12)
+  })
+
+  it('counts every step a slice spans, not just the first two', () => {
+    Swing.set(0)
+    // Each slice holds twice the audio of the steps it spans (3 and 13 steps
+    // of 5512.5 samples), so the whole break needs to go up an octave.
+    const firstSliceLength = 2 * 3 * 5512.5
+    const length = firstSliceLength + 2 * 13 * 5512.5
+    LoadedFiles.set([
+      {
+        ...mockFile,
+        samples: [new Float32Array(length), new Float32Array(length)],
+        slices: [
+          { start: 0, type: 'Kick' as const, stepNum: 0 },
+          { start: firstSliceLength, type: 'Snare' as const, stepNum: 3 },
+        ],
+      },
+    ])
+    expect(getBestLayerPitch('test-file')).toBe(12)
+  })
+
+  it('never suggests more than the pitch slider allows', () => {
+    Swing.set(0)
+    const length = 8 * 88200
+    LoadedFiles.set([
+      {
+        ...mockFile,
+        samples: [new Float32Array(length), new Float32Array(length)],
+        slices: [
+          { start: 0, type: 'Start' as const, stepNum: 0 },
+          { start: length - 1, type: 'End' as const, stepNum: 0 },
+        ],
+      },
+    ])
+    expect(getBestLayerPitch('test-file')).toBe(12)
+  })
+
   it('handles last slice correctly', () => {
     const result = getBestLayerPitch('test-file')
     // Last slice should use file length as next slice start
