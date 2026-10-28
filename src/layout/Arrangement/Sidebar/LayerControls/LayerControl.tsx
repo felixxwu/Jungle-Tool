@@ -12,11 +12,10 @@ export const LayerControl = (p: { layer: Layer; index: number }) => {
     p.layer.volume,
     value => {
       const layers = Layers.ref()
-      const layerIndex = layers.findIndex(l => l.filename === p.layer.filename)
-      if (layerIndex === -1) return
+      if (!layers[p.index]) return
 
       const newLayers = [...layers]
-      newLayers[layerIndex] = { ...newLayers[layerIndex], volume: value }
+      newLayers[p.index] = { ...newLayers[p.index], volume: value }
 
       Layers.set(newLayers)
     },
@@ -27,11 +26,10 @@ export const LayerControl = (p: { layer: Layer; index: number }) => {
     p.layer.pitch,
     value => {
       const layers = Layers.ref()
-      const layerIndex = layers.findIndex(l => l.filename === p.layer.filename)
-      if (layerIndex === -1) return
+      if (!layers[p.index]) return
 
       const newLayers = [...layers]
-      newLayers[layerIndex] = { ...newLayers[layerIndex], pitch: value }
+      newLayers[p.index] = { ...newLayers[p.index], pitch: value }
 
       Layers.set(newLayers)
     },
@@ -41,7 +39,7 @@ export const LayerControl = (p: { layer: Layer; index: number }) => {
   const handleDelete = (e: React.MouseEvent<HTMLDivElement>) => {
     e.stopPropagation()
     const layers = Layers.ref()
-    Layers.set(layers.filter(l => l.filename !== p.layer.filename))
+    Layers.set(layers.filter((_, index) => index !== p.index))
   }
 
   const handleReplace = (e: React.MouseEvent<HTMLDivElement>) => {

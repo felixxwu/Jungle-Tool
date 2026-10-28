@@ -2,11 +2,16 @@ import { WaveFile } from 'wavefile'
 import { LoadedFiles, Modal, SelectedFileIndex } from '../lib/store'
 import { TrimWarningModal } from '../modals/TrimWarningModal'
 import { normalize } from '../lib/audio'
+import { SAMPLE_RATE } from '../lib/consts'
 
 export const loadWav = (arrayBuffer: ArrayBuffer, fileName: string) => {
   const uint8Array = new Uint8Array(arrayBuffer)
   const wavefile = new WaveFile()
   wavefile.fromBuffer(uint8Array)
+  // Everything downstream assumes 44.1 kHz, so other rates would play at the wrong speed.
+  if ((wavefile.fmt as { sampleRate: number }).sampleRate !== SAMPLE_RATE) {
+    wavefile.toSampleRate(SAMPLE_RATE)
+  }
   const samples = wavefile.getSamples()
   const isStereo = samples.length === 2
   const left = (isStereo ? samples[0] : samples) as unknown as Float32Array

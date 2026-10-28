@@ -153,4 +153,38 @@ describe('LayerControl', () => {
     expect(layers[0].volume).toBe(80) // layer1 updated
     expect(layers[1].volume).toBe(60) // layer2 unchanged
   })
+
+  it('updates only its own layer when the same break is added twice', async () => {
+    const first: Layer = { filename: 'Break', volume: 50, pitch: 0 }
+    const second: Layer = { filename: 'Break', volume: 60, pitch: 2 }
+    Layers.set([first, second])
+
+    render(<LayerControl layer={second} index={1} />)
+
+    const volumeSlider = screen.getByLabelText(/Vol:/) as HTMLInputElement
+    await act(async () => {
+      Object.defineProperty(volumeSlider, 'value', { writable: true, value: '80' })
+      volumeSlider.dispatchEvent(new Event('input', { bubbles: true }))
+    })
+    await act(async () => {
+      await new Promise(r => setTimeout(r, 520))
+    })
+
+    expect(Layers.ref()[0].volume).toBe(50)
+    expect(Layers.ref()[1].volume).toBe(80)
+  })
+
+  it('removes only its own layer when the same break is added twice', async () => {
+    const first: Layer = { filename: 'Break', volume: 50, pitch: 0 }
+    const second: Layer = { filename: 'Break', volume: 60, pitch: 2 }
+    Layers.set([first, second])
+
+    render(<LayerControl layer={second} index={1} />)
+
+    await act(async () => {
+      screen.getByText('x').click()
+    })
+
+    expect(Layers.ref()).toEqual([first])
+  })
 })

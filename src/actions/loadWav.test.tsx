@@ -8,6 +8,7 @@ import { normalize } from '../lib/audio'
 vi.mock('wavefile', () => ({
   WaveFile: vi.fn().mockImplementation(() => ({
     fromBuffer: vi.fn(),
+    fmt: { sampleRate: 44100 },
     getSamples: vi.fn(() => [new Float32Array(44100), new Float32Array(44100)]),
   })),
 }))
@@ -44,6 +45,7 @@ describe('loadWav', () => {
     const mockSamples = [new Float32Array(1000), new Float32Array(1000)]
     const mockWaveFileInstance = {
       fromBuffer: vi.fn(),
+      fmt: { sampleRate: 44100 },
       getSamples: vi.fn(() => mockSamples),
     }
     ;(WaveFile as ReturnType<typeof vi.fn>).mockImplementation(() => mockWaveFileInstance)
@@ -64,6 +66,7 @@ describe('loadWav', () => {
     const mockMonoSamples = new Float32Array(1000)
     const mockWaveFileInstance = {
       fromBuffer: vi.fn(),
+      fmt: { sampleRate: 44100 },
       getSamples: vi.fn(() => mockMonoSamples),
     }
     ;(WaveFile as ReturnType<typeof vi.fn>).mockImplementation(() => mockWaveFileInstance)
@@ -79,6 +82,7 @@ describe('loadWav', () => {
     const mockSamples = [new Float32Array(1000), new Float32Array(1000)]
     const mockWaveFileInstance = {
       fromBuffer: vi.fn(),
+      fmt: { sampleRate: 44100 },
       getSamples: vi.fn(() => mockSamples),
     }
     ;(WaveFile as ReturnType<typeof vi.fn>).mockImplementation(() => mockWaveFileInstance)
