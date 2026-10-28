@@ -9,7 +9,6 @@ import {
   FillGaps,
   Layers,
   LoadedFiles,
-  MissingBreaks,
   NoteFadeOut,
   NoteLength,
   NumBars,
@@ -20,7 +19,7 @@ import {
   ShortenNotes,
   Swing,
 } from '../lib/store'
-import type { MissingBreak, Slice } from '../lib/types'
+import type { Slice } from '../lib/types'
 import { loadJson } from '../actions/loadJson'
 
 const currentParameters = () => {
@@ -52,12 +51,11 @@ const applyParameters = (values: Record<string, number>) => {
   }
 }
 
-// Imported breaks are served from the user's folder; one that isn't there shows as missing.
-const loadUserBreaks = async (userBreaks: MissingBreak[]) => {
-  for (const userBreak of userBreaks) {
-    const response = await fetch(`/user/${encodeURIComponent(userBreak.id)}.json`)
-    if (response.ok) loadJson(await response.text(), userBreak.name)
-    else MissingBreaks.set([...MissingBreaks.ref(), userBreak])
+// Imported breaks are saved in the project; the plugin serves each one's file to the page.
+const loadProjectBreaks = async (projectBreaks: { id: string; name: string }[]) => {
+  for (const { id, name } of projectBreaks) {
+    const response = await fetch(`/project/${encodeURIComponent(id)}.json`)
+    if (response.ok) loadJson(await response.text(), name)
   }
 }
 
@@ -106,7 +104,7 @@ export const PluginStateSync = () => {
       if (state.arrangement) applyArrangementState(state.arrangement)
       PluginMode.set(state.mode ?? 'midi')
       pendingSliceEdits.current = state.sliceEdits ?? {}
-      loadUserBreaks(state.userBreaks ?? [])
+      loadProjectBreaks(state.projectBreaks ?? [])
       // A new instance hasn't heard the UI's defaults yet, so they're all sent as changes.
       knownParameters.current = state.arrangement ? currentParameters() : {}
       setLoaded(true)

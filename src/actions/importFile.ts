@@ -1,19 +1,16 @@
 import { loadJson } from './loadJson'
 import { loadWav } from './loadWav'
-import { LoadedFiles, MissingBreaks, Modal } from '../lib/store'
+import { LoadedFiles, Modal } from '../lib/store'
 import { uniqueBreakName } from '../helpers/uniqueBreakName'
 import { IS_PLUGIN, pickFile } from '../lib/plugin'
-import { saveUserBreak } from './saveUserBreak'
+import { saveProjectBreak } from './saveProjectBreak'
 
-const takenNames = () => [
-  ...LoadedFiles.ref().map(f => f.name),
-  ...MissingBreaks.ref().map(b => b.name),
-]
+const takenNames = () => LoadedFiles.ref().map(f => f.name)
 
 const loadJsonImport = (text: string) => {
   loadJson(text, uniqueBreakName(JSON.parse(text).name, takenNames()))
   // A .json import is already sliced and has no trim step, so the plugin keeps it straight away.
-  if (IS_PLUGIN) saveUserBreak(LoadedFiles.ref()[LoadedFiles.ref().length - 1], null)
+  if (IS_PLUGIN) saveProjectBreak(LoadedFiles.ref()[LoadedFiles.ref().length - 1])
 }
 
 const importInPlugin = async () => {

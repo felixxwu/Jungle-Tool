@@ -67,28 +67,26 @@ export const FileList = () => {
             <HDivider />
           </>
         )}
-        {loadedFiles
-          .sort((a, b) => b.whosampledCount - a.whosampledCount)
-          .map((file, index) => (
-            <Fragment key={file.name}>
-              {index !== 0 && <HDivider />}
-              <Text
-                onClick={() => handleClick(index)}
-                selected={
-                  localSelectedFile === index ||
-                  (replaceLayerIndex !== null && layers[replaceLayerIndex]?.filename === file.name)
-                }
-              >
-                <FileListItemStyle>
-                  <div>{file.name}</div>
-                  <ArtistAndYear>
-                    <div>{file.artist || '??'}</div>
-                    <div>{file.year || '??'}</div>
-                  </ArtistAndYear>
-                </FileListItemStyle>
-              </Text>
-            </Fragment>
-          ))}
+        {loadedFiles.map((file, index) => (
+          <Fragment key={file.name}>
+            {index !== 0 && <HDivider />}
+            <Text
+              onClick={() => handleClick(index)}
+              selected={
+                localSelectedFile === index ||
+                (replaceLayerIndex !== null && layers[replaceLayerIndex]?.filename === file.name)
+              }
+            >
+              <FileListItemStyle>
+                <div>{file.name}</div>
+                <ArtistAndYear>
+                  <div>{file.artist || '??'}</div>
+                  <div>{file.year || '??'}</div>
+                </ArtistAndYear>
+              </FileListItemStyle>
+            </Text>
+          </Fragment>
+        ))}
       </Scrollable>
       <HDivider />
       <Text onClick={importFile} big>

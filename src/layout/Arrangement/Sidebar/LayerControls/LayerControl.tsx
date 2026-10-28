@@ -1,13 +1,6 @@
 import styled from 'styled-components'
 import { HDivider, VDivider } from '../../../../components/Dividers'
-import {
-  Layers,
-  MissingBreaks,
-  ReplaceLayerIndex,
-  ReplaceOriginalLayer,
-  Tab,
-} from '../../../../lib/store'
-import { locateUserBreak } from '../../../../actions/locateUserBreak'
+import { Layers, ReplaceLayerIndex, ReplaceOriginalLayer, Tab } from '../../../../lib/store'
 import { Slider, sliderHeight } from '../../../../components/Slider'
 import type { Layer } from '../../../../lib/types'
 import { maxPitch, minPitch } from '../../../../lib/consts'
@@ -15,7 +8,6 @@ import { useDebouncedLocalState } from '../../../../hooks/useDebouncedLocalState
 import { colors } from '../../../../lib/colors'
 
 export const LayerControl = (p: { layer: Layer; index: number }) => {
-  const missing = MissingBreaks.useState().find(b => b.name === p.layer.filename)
   const [localVolume, setLocalVolume] = useDebouncedLocalState(
     p.layer.volume,
     value => {
@@ -64,16 +56,7 @@ export const LayerControl = (p: { layer: Layer; index: number }) => {
       <HDivider />
       <Row>
         <NameSide>
-          {missing ? (
-            <NameText
-              onClick={() => locateUserBreak(missing)}
-              title='Find the file on this computer'
-            >
-              {p.layer.filename} (missing, locate)
-            </NameText>
-          ) : (
-            <NameText>{p.layer.filename}</NameText>
-          )}
+          <NameText>{p.layer.filename}</NameText>
         </NameSide>
         <VDivider />
         <SlidersSide>

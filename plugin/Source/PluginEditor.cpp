@@ -112,9 +112,9 @@ JungleToolEditor::JungleToolEditor (JungleToolProcessor& p)
                                                                           complete (juce::var (result));
                                                                       });
                                         })
-                   .withNativeFunction ("saveUserBreak", [this] (const auto& args, auto complete)
+                   .withNativeFunction ("addProjectBreak", [this] (const auto& args, auto complete)
                                         {
-                                            complete (owner.saveUserBreak (args[0].toString(), args[1].toString(), args[2], args[3], args[4].toString(), (bool) args[5]));
+                                            complete (owner.addProjectBreak (args[0].toString(), args[1].toString(), (bool) args[2]));
                                         })
                    .withNativeFunction ("setParameters", [this] (const auto& args, auto complete)
                                         {
@@ -199,13 +199,21 @@ std::optional<juce::WebBrowserComponent::Resource> JungleToolEditor::getResource
 {
     const auto path = url == "/" ? juce::String ("/index.html") : url.upToFirstOccurrenceOf ("?", false, false);
 
-    if (path.startsWith ("/library/") || path.startsWith ("/user/"))
+    if (path.startsWith ("/project/"))
+    {
+        const auto id = path.fromFirstOccurrenceOf ("/project/", false, false).upToLastOccurrenceOf (".json", false, false);
+        const auto json = owner.getProjectBreakJson (id).toStdString();
+        if (json.empty())
+            return std::nullopt;
+        return juce::WebBrowserComponent::Resource { toBytes (json.data(), json.size()), "application/json" };
+    }
+
+    if (path.startsWith ("/library/"))
     {
         juce::MemoryBlock data;
-        const auto isUser = path.startsWith ("/user/");
-        const auto folder = isUser ? BreakLibrary::getUserFolder() : BreakLibrary::getFactoryFolder();
-        const auto file = folder.getChildFile (juce::URL::removeEscapeChars (path.fromFirstOccurrenceOf (isUser ? "/user/" : "/library/", false, false)));
-        // The page only ever asks for files directly inside these folders.
+        const auto folder = BreakLibrary::getFactoryFolder();
+        const auto file = folder.getChildFile (juce::URL::removeEscapeChars (path.fromFirstOccurrenceOf ("/library/", false, false)));
+        // The page only ever asks for files directly inside the library folder.
         if (file.getParentDirectory() != folder || ! file.loadFileAsData (data))
             return std::nullopt;
         return juce::WebBrowserComponent::Resource { toBytes (data.getData(), data.getSize()), getMimeType (path) };

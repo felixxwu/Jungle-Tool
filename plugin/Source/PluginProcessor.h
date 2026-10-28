@@ -43,8 +43,10 @@ public:
     void setUiState (const juce::String&);
     void setParametersFromUi (const juce::var& changes);
     void setSlices (const juce::String& breakName, const juce::var& slices);
-    // With persist off, the plugin only holds the audio in memory, so an import can be previewed while it's trimmed.
-    juce::String saveUserBreak (juce::String id, const juce::String& name, const juce::var& trimStart, const juce::var& trimEnd, const juce::String& json, bool persist);
+    // An imported loop, saved with the project when kept. Before that (while it's trimmed) it's only
+    // held so it can be previewed.
+    juce::String addProjectBreak (const juce::String& name, const juce::String& json, bool keep);
+    juce::String getProjectBreakJson (const juce::String& id) const;
     void playPreview (const juce::String& breakName, int start, int end, bool loop);
     void stopPreview();
     void dropPreviews();
@@ -81,13 +83,14 @@ private:
     juce::var state;
     std::map<juce::String, juce::var> sliceEdits;
 
-    struct UserBreak
+    struct ProjectBreak
     {
         juce::String id, name;
-        juce::var trimStart, trimEnd;
-        std::unique_ptr<Break> audio; // null when this machine doesn't have the file
+        std::unique_ptr<Break> audio;
+        // The break as a JSON file like the factory ones, saved inside the project.
+        juce::String json;
     };
-    std::vector<UserBreak> userBreaks;
+    std::vector<ProjectBreak> projectBreaks;
     // Replaced audio stays alive, because a voice on the audio thread may still be reading it.
     std::vector<std::unique_ptr<Break>> retiredBreaks;
     EngineState::Preview preview;

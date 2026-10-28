@@ -117,15 +117,16 @@ describe('FileList', () => {
     expect(yearElements.length).toBeGreaterThan(0)
   })
 
-  it('sorts files by whosampledCount (descending)', () => {
-    LoadedFiles.set([mockFile2, mockFile3, mockFile1]) // Unsorted order
+  it("shows files in the library's order without reordering it", () => {
+    // A new import sits at the top and is selected; the library is sorted once when it loads.
+    const imported = { ...mockFile3, name: 'break.wav', whosampledCount: 0 }
+    LoadedFiles.set([imported, mockFile1, mockFile2])
+    SelectedFileIndex.set(0)
     render(<FileList />)
 
-    const fileNames = screen.getAllByText(/Amen Brother|Funky Drummer|Apache/)
-    // Should be sorted by whosampledCount: Amen Brother (5000), Funky Drummer (3000), Apache (2000)
-    expect(fileNames[0].textContent).toContain('Amen Brother')
-    expect(fileNames[1].textContent).toContain('Funky Drummer')
-    expect(fileNames[2].textContent).toContain('Apache')
+    const fileNames = screen.getAllByText(/break.wav|Amen Brother|Funky Drummer/)
+    expect(fileNames[0].textContent).toContain('break.wav')
+    expect(LoadedFiles.ref()[0].name).toBe('break.wav')
   })
 
   it('highlights selected file', () => {

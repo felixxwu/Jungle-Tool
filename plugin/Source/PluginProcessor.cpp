@@ -138,24 +138,25 @@ void JungleToolProcessor::loadState (const juce::String& json)
             for (const auto& edit : edits->getProperties())
                 sliceEdits[edit.name.toString()] = edit.value;
 
-        std::vector<UserBreak> loadedBreaks;
-        if (auto* entries = loaded["userBreaks"].getArray())
+        // Imported loops live only in the project, audio included.
+        std::vector<ProjectBreak> loadedBreaks;
+        if (auto* entries = loaded["projectBreaks"].getArray())
         {
             for (const auto& entry : *entries)
             {
-                UserBreak userBreak { entry["id"].toString(), entry["name"].toString(), entry["trimStart"], entry["trimEnd"], nullptr };
-                const auto existing = std::find_if (userBreaks.begin(), userBreaks.end(), [&] (const UserBreak& b) { return b.id == userBreak.id; });
-                if (existing != userBreaks.end() && existing->audio != nullptr)
-                    userBreak.audio = std::move (existing->audio);
-                else if (const auto file = BreakLibrary::getUserFolder().getChildFile (userBreak.id + ".json"); file.existsAsFile())
-                    userBreak.audio = loadBreakJson (file.loadFileAsString(), false);
-                loadedBreaks.push_back (std::move (userBreak));
+                ProjectBreak projectBreak { entry["id"].toString(), entry["name"].toString(), nullptr, entry["json"].toString() };
+                const auto existing = std::find_if (projectBreaks.begin(), projectBreaks.end(), [&] (const ProjectBreak& b) { return b.id == projectBreak.id; });
+                if (existing != projectBreaks.end() && existing->audio != nullptr)
+                    projectBreak.audio = std::move (existing->audio);
+                else
+                    projectBreak.audio = loadBreakJson (projectBreak.json, false);
+                loadedBreaks.push_back (std::move (projectBreak));
             }
         }
-        for (auto& old : userBreaks)
+        for (auto& old : projectBreaks)
             if (old.audio != nullptr)
                 retiredBreaks.push_back (std::move (old.audio));
-        userBreaks = std::move (loadedBreaks);
+        projectBreaks = std::move (loadedBreaks);
     }
 
     // A loaded project sets the parameters; after that only the DAW and the UI's edits change them.
@@ -203,18 +204,17 @@ juce::String JungleToolProcessor::getSavedState() const
     }
 
     juce::Array<juce::var> savedBreaks;
-    for (const auto& userBreak : userBreaks)
+    for (const auto& projectBreak : projectBreaks)
     {
-        if (userBreak.id.isEmpty())
+        if (projectBreak.id.isEmpty())
             continue;
         auto* entry = new juce::DynamicObject();
-        entry->setProperty ("id", userBreak.id);
-        entry->setProperty ("name", userBreak.name);
-        entry->setProperty ("trimStart", userBreak.trimStart);
-        entry->setProperty ("trimEnd", userBreak.trimEnd);
+        entry->setProperty ("id", projectBreak.id);
+        entry->setProperty ("name", projectBreak.name);
+        entry->setProperty ("json", projectBreak.json);
         savedBreaks.add (juce::var (entry));
     }
-    saved.getDynamicObject()->setProperty ("userBreaks", savedBreaks);
+    saved.getDynamicObject()->setProperty ("projectBreaks", savedBreaks);
 
     auto* edits = new juce::DynamicObject();
     for (const auto& [name, slices] : sliceEdits)
@@ -294,7 +294,7 @@ void JungleToolProcessor::setSlices (const juce::String& breakName, const juce::
     {
         const juce::ScopedLock lock (stateLock);
         // Only breaks this project changed are saved.
-        // An imported break never matches here, so its slices are always saved: the project may be their only copy.
+        // An imported break never matches here, so its slices are always saved with the project.
         const auto* source = library->find (breakName);
         if (source != nullptr && juce::JSON::toString (source->slicesJson, true) == juce::JSON::toString (slices, true))
             sliceEdits.erase (breakName);
@@ -326,46 +326,39 @@ const Break* JungleToolProcessor::findBreak (const juce::String& name) const
 {
     if (const auto* factory = library->find (name))
         return factory;
-    for (const auto& userBreak : userBreaks)
-        if (userBreak.name == name)
-            return userBreak.audio.get();
+    for (const auto& projectBreak : projectBreaks)
+        if (projectBreak.name == name)
+            return projectBreak.audio.get();
     return nullptr;
 }
 
-juce::String JungleToolProcessor::saveUserBreak (juce::String id, const juce::String& name, const juce::var& trimStart, const juce::var& trimEnd, const juce::String& json, bool persist)
+juce::String JungleToolProcessor::addProjectBreak (const juce::String& name, const juce::String& json, bool keep)
 {
-    // The id becomes a file name, so only ids this plugin made are accepted.
-    if (! persist)
-        id = {};
-    else if (id.isEmpty() || ! id.containsOnly ("0123456789abcdef"))
-        id = juce::Uuid().toString();
-
-    if (persist)
-    {
-        // Written once and never rewritten: slices live in each project instead.
-        const auto file = BreakLibrary::getUserFolder().getChildFile (id + ".json");
-        file.getParentDirectory().createDirectory();
-        file.replaceWithText (json);
-    }
-
+    const auto id = keep ? juce::Uuid().toString() : juce::String();
     {
         const juce::ScopedLock lock (stateLock);
-        auto existing = std::find_if (userBreaks.begin(), userBreaks.end(), [&] (const UserBreak& b) { return ! id.isEmpty() && b.id == id; });
-        // Saving after the trim replaces the in-memory copy held while trimming.
-        if (existing == userBreaks.end())
-            existing = std::find_if (userBreaks.begin(), userBreaks.end(), [&] (const UserBreak& b) { return b.id.isEmpty() && b.name == name; });
-        if (existing == userBreaks.end())
-            existing = userBreaks.insert (userBreaks.end(), UserBreak {});
+        // Keeping it after the trim replaces the copy held while it was being trimmed.
+        auto existing = std::find_if (projectBreaks.begin(), projectBreaks.end(), [&] (const ProjectBreak& b) { return b.id.isEmpty() && b.name == name; });
+        if (existing == projectBreaks.end())
+            existing = projectBreaks.insert (projectBreaks.end(), ProjectBreak {});
         existing->id = id;
         existing->name = name;
-        existing->trimStart = trimStart;
-        existing->trimEnd = trimEnd;
         if (existing->audio != nullptr)
             retiredBreaks.push_back (std::move (existing->audio));
         existing->audio = loadBreakJson (json, false);
+        existing->json = keep ? json : juce::String();
     }
     publishEngineState();
     return id;
+}
+
+juce::String JungleToolProcessor::getProjectBreakJson (const juce::String& id) const
+{
+    const juce::ScopedLock lock (stateLock);
+    for (const auto& projectBreak : projectBreaks)
+        if (projectBreak.id.isNotEmpty() && projectBreak.id == id)
+            return projectBreak.json;
+    return {};
 }
 
 void JungleToolProcessor::setAuditioning (bool shouldAudition)

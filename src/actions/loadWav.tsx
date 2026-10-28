@@ -4,7 +4,7 @@ import { TrimWarningModal } from '../modals/TrimWarningModal'
 import { normalize } from '../lib/audio'
 import { SAMPLE_RATE } from '../lib/consts'
 import { IS_PLUGIN } from '../lib/plugin'
-import { sendUnsavedBreak } from './saveUserBreak'
+import { sendUnsavedBreak } from './saveProjectBreak'
 
 export const decodeWav = (arrayBuffer: ArrayBuffer) => {
   const uint8Array = new Uint8Array(arrayBuffer)

@@ -52,6 +52,9 @@ export default function App() {
       )
 
       await Promise.all(fetchPromises)
+      // Sorted once here, not while rendering: breaks are selected by position, so the order
+      // mustn't change under a selection, as it would right after an import.
+      LoadedFiles.set([...LoadedFiles.ref()].sort((a, b) => b.whosampledCount - a.whosampledCount))
       LibraryLoading.set(false)
 
       const lowestRMS = LoadedFiles.ref().reduce((lowest, file) => {

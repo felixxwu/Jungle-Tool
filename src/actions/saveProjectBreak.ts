@@ -22,22 +22,10 @@ const breakJson = (file: LoadedFile) => {
   })
 }
 
-// The plugin keeps imported breaks on disk and in the project, so they come back after a restart.
-export const saveUserBreak = (
-  file: LoadedFile,
-  trim: { start: number; end: number } | null,
-  id = ''
-) =>
-  callNative(
-    'saveUserBreak',
-    id,
-    file.name,
-    trim?.start ?? null,
-    trim?.end ?? null,
-    breakJson(file),
-    true
-  )
+// An imported break is saved inside the DAW project, so the project carries its own copy.
+export const saveProjectBreak = (file: LoadedFile) =>
+  callNative('addProjectBreak', file.name, breakJson(file), true)
 
-// Plays an import through the plugin while it's being trimmed, without saving it anywhere yet.
+// Plays an import through the plugin while it's being trimmed, without saving it in the project yet.
 export const sendUnsavedBreak = (file: LoadedFile) =>
-  callNative('saveUserBreak', '', file.name, null, null, breakJson(file), false)
+  callNative('addProjectBreak', file.name, breakJson(file), false)

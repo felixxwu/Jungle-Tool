@@ -1,6 +1,6 @@
 import { singletonState } from 'singleton-state-hook'
 import type { User } from 'firebase/auth'
-import type { ITab, Layer, LoadedFile, MissingBreak, Note } from './types'
+import type { ITab, Layer, LoadedFile, Note } from './types'
 import { maxNoteLength, minNoteFadeOut } from './consts'
 
 export const WindowSize = singletonState({ width: window.innerWidth, height: window.innerHeight })
@@ -45,5 +45,3 @@ export const CurrentUser = singletonState<User | null>(null)
 export const HostPlaying = singletonState(false)
 export const HostBpm = singletonState<number | null>(null)
 export const PluginMode = singletonState<'midi' | 'sequencer'>('midi')
-// Imported breaks this project uses whose audio isn't on this machine.
-export const MissingBreaks = singletonState<MissingBreak[]>([])

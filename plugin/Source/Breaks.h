@@ -23,8 +23,6 @@ public:
     const Break* find (const juce::String& name) const;
 
     static juce::File getFactoryFolder();
-    // Where imported breaks are kept, per user.
-    static juce::File getUserFolder();
 
 private:
     std::vector<std::unique_ptr<Break>> breaks;

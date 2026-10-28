@@ -63,15 +63,6 @@ const Break* BreakLibrary::find (const juce::String& name) const
     return nullptr;
 }
 
-juce::File BreakLibrary::getUserFolder()
-{
-    return juce::File::getSpecialLocation (juce::File::userApplicationDataDirectory)
-#if JUCE_MAC
-        .getChildFile ("Application Support")
-#endif
-        .getChildFile ("Jungle Tool/User");
-}
-
 juce::File BreakLibrary::getFactoryFolder()
 {
     auto folder = juce::File::getSpecialLocation (juce::File::commonApplicationDataDirectory)
