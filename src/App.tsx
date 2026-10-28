@@ -25,6 +25,7 @@ import { onAuthStateChanged } from 'firebase/auth'
 import { auth } from './lib/firebase'
 import { IS_PLUGIN } from './lib/plugin'
 import { PluginStateSync } from './components/PluginStateSync'
+import { HistoryRecorder } from './components/HistoryRecorder'
 
 export default function App() {
   const tab = Tab.useState()
@@ -72,6 +73,7 @@ export default function App() {
   return (
     <>
       {IS_PLUGIN && <PluginStateSync />}
+      <HistoryRecorder />
       {modal && (
         <>
           <ModalBackground />

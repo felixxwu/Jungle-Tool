@@ -1,6 +1,7 @@
 import { Text } from '../components/Text'
 import { VDivider } from '../components/Dividers'
-import { LibraryLoading, SelectedFileIndex, Tab, WindowSize } from '../lib/store'
+import { CanRedo, CanUndo, LibraryLoading, SelectedFileIndex, Tab, WindowSize } from '../lib/store'
+import { redo, undo } from '../lib/history'
 import styled from 'styled-components'
 import { colors } from '../lib/colors'
 import { appWidth, arrangementSidebarWidth, largeTextHeight } from '../lib/consts'
@@ -9,6 +10,8 @@ import type { ITab } from '../lib/types'
 export const TopBar = () => {
   const tab = Tab.useState()
   const libraryLoading = LibraryLoading.useState()
+  const canUndo = CanUndo.useState()
+  const canRedo = CanRedo.useState()
   const windowSize = WindowSize.useState()
   const collapsed = windowSize.width < appWidth - arrangementSidebarWidth
 
@@ -36,6 +39,14 @@ export const TopBar = () => {
       </Text>
       <VDivider />
       <VDivider style={{ marginLeft: 'auto' }} />
+      <Text onClick={undo} disabled={!canUndo}>
+        Undo
+      </Text>
+      <VDivider />
+      <Text onClick={redo} disabled={!canRedo}>
+        Redo
+      </Text>
+      <VDivider />
       <Logo
         href='https://github.com/felixxwu/Jungle-Tool'
         target='_blank'

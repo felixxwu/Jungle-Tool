@@ -1,6 +1,7 @@
 import { useEffect, useRef, useState } from 'react'
 import { applyArrangementState, getCurrentArrangementState } from '../actions/arrangementState'
 import { callNative, listenToTransport, onPluginEvent } from '../lib/plugin'
+import { resetHistory } from '../lib/history'
 import { arrangementToMidi } from '../helpers/arrangementToMidi'
 import { layersWithParameters, parametersFromState } from '../helpers/pluginParameters'
 import {
@@ -102,6 +103,8 @@ export const PluginStateSync = () => {
     callNative<string>('getState').then(saved => {
       const state = saved ? JSON.parse(saved) : {}
       if (state.arrangement) applyArrangementState(state.arrangement)
+      // Undo starts from the project as loaded, not from the defaults shown before it arrived.
+      resetHistory()
       PluginMode.set(state.mode ?? 'midi')
       pendingSliceEdits.current = state.sliceEdits ?? {}
       loadProjectBreaks(state.projectBreaks ?? [])
