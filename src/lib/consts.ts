@@ -58,7 +58,6 @@ export const library = [
   'Wicked Beat',
 ]
 
-// Fixed headroom before the destination. The master chain has no limiter
-// (by design), so this keeps ordinary arrangements clear of the +/-1 ceiling
-// where the WaveShaperNode would hard-clip them.
+// Final output level, applied after the saturation stage. It doesn't stop
+// the WaveShaperNode hard-clipping a layer sum beyond +/-1; nothing does.
 export const masterTrim = 0.3

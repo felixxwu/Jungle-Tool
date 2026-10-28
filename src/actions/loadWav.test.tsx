@@ -138,12 +138,8 @@ describe('loadWav', () => {
 
     loadWav(mockArrayBuffer, 'new-file.wav')
 
-    // New file is unshifted to index 0, so SelectedFileIndex should be set to length - 1
-    // After unshift, length is 2, so SelectedFileIndex = 2 - 1 = 1
-    // But actually, it's set to LoadedFiles.ref().length - 1 after the unshift
     const loadedFiles = LoadedFiles.ref()
-    expect(SelectedFileIndex.ref()).toBe(loadedFiles.length - 1)
-    expect(loadedFiles[0].name).toBe('new-file.wav')
+    expect(loadedFiles[SelectedFileIndex.ref()!].name).toBe('new-file.wav')
   })
 
   it('shows TrimWarningModal after loading', () => {
