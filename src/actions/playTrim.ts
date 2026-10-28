@@ -1,4 +1,5 @@
 import { playSamples, stereoSlice } from '../lib/audio'
+import { IS_PLUGIN, playPluginPreview } from '../lib/plugin'
 import { resumeAudioContext } from '../lib/audioContext'
 import { LoadedFiles, Playing, PreviewSource } from '../lib/store'
 import { calculateDuration, stopPreview, startPreview } from '../lib/playback'
@@ -18,7 +19,15 @@ export const playTrim = async (fileIndex: number) => {
   stopPreview() // Stop and clear state before starting new playback
   await resumeAudioContext()
 
-  const source = playSamples(samples, { loop: true })
+  const file = loadedFiles[fileIndex]
+  const source = IS_PLUGIN
+    ? playPluginPreview(
+        file.name,
+        startSlice?.start ?? 0,
+        endSlice?.start ?? file.samples[0].length,
+        true
+      )
+    : playSamples(samples, { loop: true })
   PreviewSource.set(source)
   source.onended = () => stopPreview()
 

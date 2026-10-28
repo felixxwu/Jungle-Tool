@@ -9,9 +9,14 @@ export const Toggle = (p: {
   checked: boolean
   onClick: () => void
   disabled?: boolean
+  title?: string
 }) => {
   return (
-    <ToggleStyle onClick={p.disabled ? undefined : p.onClick} $disabled={p.disabled}>
+    <ToggleStyle
+      onClick={p.disabled ? undefined : p.onClick}
+      $disabled={p.disabled}
+      title={p.title}
+    >
       <Label>{p.label}</Label>
       <StatusOuter>
         <Status style={{ background: p.checked ? colors.black : colors.white }} />

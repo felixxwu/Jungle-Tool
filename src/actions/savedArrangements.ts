@@ -14,10 +14,10 @@ import {
 import { db } from '../lib/firebase'
 import type { ArrangementState, SavedArrangement } from '../lib/types'
 
-const arrangementsCollection = collection(db, 'arrangements')
+const arrangementsCollection = () => collection(db, 'arrangements')
 
 export const listSavedArrangements = async (uid: string): Promise<SavedArrangement[]> => {
-  const q = query(arrangementsCollection, where('uid', '==', uid), orderBy('updatedAt', 'desc'))
+  const q = query(arrangementsCollection(), where('uid', '==', uid), orderBy('updatedAt', 'desc'))
   const snapshot = await getDocs(q)
 
   return snapshot.docs.map(d => {
@@ -33,11 +33,11 @@ export const listSavedArrangements = async (uid: string): Promise<SavedArrangeme
 
 export const saveNewArrangement = async (uid: string, name: string, state: ArrangementState) => {
   const existing = await getDocs(
-    query(arrangementsCollection, where('uid', '==', uid), where('name', '==', name))
+    query(arrangementsCollection(), where('uid', '==', uid), where('name', '==', name))
   )
   if (!existing.empty) throw new Error('An arrangement with this name already exists.')
 
-  await addDoc(arrangementsCollection, {
+  await addDoc(arrangementsCollection(), {
     uid,
     name,
     state,

@@ -2,7 +2,7 @@ import { WaveFile } from 'wavefile'
 import { LoadedFiles, SelectedFileIndex } from '../lib/store'
 import { normalize } from '../lib/audio'
 
-export const loadJson = (jsonString: string) => {
+export const loadJson = (jsonString: string, name?: string) => {
   const json = JSON.parse(jsonString)
 
   const wavefile = new WaveFile()
@@ -11,7 +11,14 @@ export const loadJson = (jsonString: string) => {
   const left = samples[0] as unknown as Float32Array
   const right = samples[1] as unknown as Float32Array
 
-  const normalisedSamples = normalize([left, right])
+  // The plugin saves imports as already-normalised float WAVs, so they keep their level when reloaded.
+  const isFloat = wavefile.bitDepth === '32f'
+  const normalisedSamples = isFloat
+    ? ([Float32Array.from(left, s => s * 32768), Float32Array.from(right, s => s * 32768)] as [
+        Float32Array,
+        Float32Array,
+      ])
+    : normalize([left, right])
 
   // const slices = json.slices.map((slice: Slice) => ({
   //   ...slice,
@@ -19,7 +26,7 @@ export const loadJson = (jsonString: string) => {
   // }))
 
   LoadedFiles.ref().push({
-    name: json.name,
+    name: name ?? json.name,
     artist: json.artist,
     year: json.year,
     samples: normalisedSamples,

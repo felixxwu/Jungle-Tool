@@ -4,7 +4,15 @@ import { appHeight, appWidth, library, lineThickness } from './lib/consts'
 import { HDivider } from './components/Dividers'
 import { TopBar } from './layout/TopBar'
 import { ArrangementView } from './layout/Arrangement'
-import { CurrentUser, LibraryLoading, LoadedFiles, LowestRMS, Modal, Tab, WindowSize } from './lib/store'
+import {
+  CurrentUser,
+  LibraryLoading,
+  LoadedFiles,
+  LowestRMS,
+  Modal,
+  Tab,
+  WindowSize,
+} from './lib/store'
 import { Library } from './layout/Library'
 import { useEffect, useRef } from 'react'
 import { loadJson } from './actions/loadJson'
@@ -15,6 +23,8 @@ import { getRMS } from './helpers/getRMS'
 import { mono } from './lib/audio'
 import { onAuthStateChanged } from 'firebase/auth'
 import { auth } from './lib/firebase'
+import { IS_PLUGIN } from './lib/plugin'
+import { PluginStateSync } from './components/PluginStateSync'
 
 export default function App() {
   const tab = Tab.useState()
@@ -26,6 +36,7 @@ export default function App() {
   useCleanupTempLayer()
 
   useEffect(() => {
+    if (IS_PLUGIN) return
     return onAuthStateChanged(auth, user => CurrentUser.set(user))
   }, [])
 
@@ -57,6 +68,7 @@ export default function App() {
 
   return (
     <>
+      {IS_PLUGIN && <PluginStateSync />}
       {modal && (
         <>
           <ModalBackground />

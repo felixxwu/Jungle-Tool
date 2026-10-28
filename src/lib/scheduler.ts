@@ -1,6 +1,7 @@
 import { getScheduledNotes } from '../helpers/getScheduledNotes'
 import { getStepSeconds } from '../helpers/getStepSeconds'
 import { getAudioContext } from './audioContext'
+import { IS_PLUGIN, getPluginLoopPosition } from './plugin'
 import { fireNote } from './fireNote'
 import { buildGraph } from './graph'
 import type { Graph } from './graph'
@@ -159,6 +160,7 @@ export const stopScheduler = async () => {
 export const isSchedulerRunning = () => intervalId !== null
 
 export const getLoopPosition = () => {
+  if (IS_PLUGIN) return getPluginLoopPosition()
   if (!ctx || !passes.length) return null
   const now = audibleTime()
 

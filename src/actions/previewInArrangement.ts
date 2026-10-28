@@ -2,6 +2,7 @@ import { getBestLayerPitch } from '../helpers/getBestLayerPitch'
 import { getBestLayerVolume } from '../helpers/getBestLayerVolume'
 import { isUntrimmed } from '../helpers/isUntrimmed'
 import { Layers, LoadedFiles } from '../lib/store'
+import { isLayerLimitReached } from '../lib/plugin'
 
 /**
  * Auditions a library file by hot-adding it as a temporary layer into the
@@ -20,6 +21,7 @@ export const previewInArrangement = (index: number) => {
 
   const existingTemp = current.find(l => l.temp)
   if (existingTemp && existingTemp.filename === layerName) {
+    if (isLayerLimitReached(current)) return
     Layers.set(current.map(l => (l === existingTemp ? { ...l, temp: false } : l)))
     return
   }

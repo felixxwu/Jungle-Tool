@@ -1,10 +1,11 @@
 import { maxPitch } from '../lib/consts'
-import { BPM, LoadedFiles, Swing } from '../lib/store'
+import { BPM, HostBpm, HostPlaying, LoadedFiles, Swing } from '../lib/store'
 import { getSliceIndexFromStepNum } from './getSliceIndexFromStepNum'
 import { getStepSize } from './getStepSize'
 
 const getSwungStepSize = (index: number) => {
-  const bpm = BPM.ref()
+  // While the DAW plays, suggest pitches for its tempo rather than the BPM slider's.
+  const bpm = (HostPlaying.ref() && HostBpm.ref()) || BPM.ref()
   const stepSizeInSamples = getStepSize(bpm)
   if (index % 2 === 1) {
     return stepSizeInSamples - (Swing.ref() / 100) * stepSizeInSamples

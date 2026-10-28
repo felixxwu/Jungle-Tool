@@ -1,6 +1,7 @@
 import { initializeApp } from 'firebase/app'
-import { GoogleAuthProvider, getAuth } from 'firebase/auth'
-import { getFirestore } from 'firebase/firestore'
+import { type Auth, GoogleAuthProvider, getAuth } from 'firebase/auth'
+import { type Firestore, getFirestore } from 'firebase/firestore'
+import { IS_PLUGIN } from './plugin'
 
 const firebaseConfig = {
   apiKey: import.meta.env.VITE_FIREBASE_API_KEY,
@@ -11,8 +12,9 @@ const firebaseConfig = {
   appId: import.meta.env.VITE_FIREBASE_APP_ID,
 }
 
-const app = initializeApp(firebaseConfig)
+// The plugin has no accounts, so it never starts Firebase.
+const app = IS_PLUGIN ? undefined : initializeApp(firebaseConfig)
 
-export const auth = getAuth(app)
+export const auth = (app && getAuth(app)) as Auth
 export const googleProvider = new GoogleAuthProvider()
-export const db = getFirestore(app)
+export const db = (app && getFirestore(app)) as Firestore

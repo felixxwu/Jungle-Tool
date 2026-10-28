@@ -1,0 +1,110 @@
+# Builds the plugin for macOS and Windows and attaches the installers to a GitHub Release.
+# Push a tag like plugin-v0.1.0 to release; run it by hand to just check the builds.
+name: Build plugin
+
+on:
+  push:
+    tags: ['plugin-v*']
+  workflow_dispatch:
+
+jobs:
+  build:
+    strategy:
+      fail-fast: false
+      matrix:
+        include:
+          - os: macos-latest
+            name: macos
+          - os: windows-latest
+            name: windows
+    runs-on: ${{ matrix.os }}
+
+    steps:
+      - uses: actions/checkout@v4
+
+      - uses: actions/setup-node@v4
+        with:
+          node-version: 22
+          cache: npm
+
+      - run: npm ci
+
+      # The plugin embeds the UI, so the web checks gate the plugin too.
+      - name: Web tests
+        run: npm run test:run
+
+      # Cache the fetched JUCE and CLAP trees; they only change when the pinned versions do.
+      - uses: actions/cache@v4
+        with:
+          path: plugin/build-release/_deps
+          key: deps-${{ matrix.os }}-${{ hashFiles('plugin/CMakeLists.txt') }}
+
+      - name: Version
+        shell: bash
+        run: |
+          version="${GITHUB_REF_NAME#plugin-v}"
+          [[ "$version" =~ ^[0-9.]+$ ]] || version=0.0.0
+          echo "VERSION=$version" >> "$GITHUB_ENV"
+
+      # Universal (arm64 + Intel) is set in CMakeLists.txt; the runners are arm64 only.
+      - name: Build and package (macOS)
+        if: matrix.name == 'macos'
+        run: |
+          plugin/package-mac.sh
+          cp "plugin/build-release/Jungle Tool $VERSION.pkg" plugin/jungle-tool-macos.pkg
+          pkgutil --payload-files plugin/jungle-tool-macos.pkg
+
+      # JUCE's web view on Windows needs the WebView2 SDK from NuGet at build time.
+      - name: Build (Windows)
+        if: matrix.name == 'windows'
+        shell: bash
+        run: |
+          npm run build:plugin
+          nuget install Microsoft.Web.WebView2 -Version 1.0.3485.44 -OutputDirectory "$RUNNER_TEMP/nuget"
+          cmake -S plugin -B plugin/build-release -DJUNGLE_TOOL_DEV_BUILD=OFF \
+            -DJUCE_WEBVIEW2_PACKAGE_LOCATION="$RUNNER_TEMP/nuget"
+          cmake --build plugin/build-release --config Release
+
+      - name: Scheduling checks
+        shell: bash
+        run: find plugin/build-release -name 'SchedulingTests*' -type f -perm -u+x ! -name '*.pdb' -exec {} \;
+
+      - name: Package (Windows)
+        if: matrix.name == 'windows'
+        shell: bash
+        run: |
+          plugin/stage-library.sh plugin/build-release/library
+          choco install innosetup --no-progress -y
+          JUNGLE_TOOL_VERSION="$VERSION" "/c/Program Files (x86)/Inno Setup 6/ISCC.exe" plugin/installer-windows.iss
+          ls -l plugin/jungle-tool-windows.exe
+
+      - uses: actions/upload-artifact@v4
+        with:
+          name: jungle-tool-${{ matrix.name }}
+          path: |
+            plugin/jungle-tool-macos.pkg
+            plugin/jungle-tool-windows.exe
+          if-no-files-found: error
+
+  release:
+    needs: build
+    if: startsWith(github.ref, 'refs/tags/plugin-v')
+    runs-on: ubuntu-latest
+    permissions:
+      contents: write
+    steps:
+      - uses: actions/download-artifact@v4
+        with: { path: artifacts }
+      - uses: softprops/action-gh-release@v2
+        with:
+          files: |
+            artifacts/**/*.pkg
+            artifacts/**/*.exe
+          body: |
+            Jungle Tool as a plugin for your DAW.
+
+            - **macOS**: installer for the AU, VST3 and CLAP plugins and the breaks library
+            - **Windows**: installer for the VST3 and CLAP plugins and the breaks library
+
+            Both are unsigned. On macOS, open the installer once, then click Open Anyway under
+            System Settings > Privacy & Security. On Windows, click More info > Run anyway.

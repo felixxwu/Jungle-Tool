@@ -12,6 +12,7 @@ export const Text = (p: {
   onPointerLeave?: () => void
   style?: React.CSSProperties
   big?: boolean
+  title?: string
 }) => {
   return (
     <TextStyle
@@ -24,6 +25,7 @@ export const Text = (p: {
       onPointerCancel={p.onPointerLeave}
       style={p.style}
       $big={p.big}
+      title={p.title}
     >
       {p.children}
     </TextStyle>

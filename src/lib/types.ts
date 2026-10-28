@@ -34,3 +34,12 @@ export type SavedArrangement = {
   updatedAt: number
   state: ArrangementState
 }
+
+// An imported break a plugin project uses whose audio isn't on this machine. A break imported as
+// .json has no trim range.
+export type MissingBreak = {
+  id: string
+  name: string
+  trimStart: number | null
+  trimEnd: number | null
+}

@@ -10,6 +10,7 @@ export const FillGapsToggle = () => {
       <HDivider />
       <Toggle
         label='Fill Gaps'
+        title="Plays each slice and then the same slice reversed, cut off where the break's next slice starts, so no step is left silent."
         checked={fillGaps}
         onClick={() => {
           const newValue = !fillGaps

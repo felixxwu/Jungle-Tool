@@ -2,6 +2,7 @@ import { describe, it, expect, beforeEach, vi, afterEach } from 'vitest'
 import { importFile } from './importFile'
 import { loadJson } from './loadJson'
 import { loadWav } from './loadWav'
+import { LoadedFiles } from '../lib/store'
 
 // Mock actions
 vi.mock('./loadJson', () => ({
@@ -18,6 +19,17 @@ describe('importFile', () => {
 
   beforeEach(() => {
     vi.clearAllMocks()
+    LoadedFiles.set([
+      {
+        name: 'Apache',
+        artist: '',
+        year: 0,
+        samples: [new Float32Array(1), new Float32Array(1)],
+        slices: [],
+        whosampledLink: '',
+        whosampledCount: 0,
+      },
+    ])
 
     // Mock FileReader
     mockFileReader = {
@@ -96,7 +108,7 @@ describe('importFile', () => {
 
     // Simulate FileReader onload
     Object.defineProperty(mockFileReader, 'result', {
-      value: '{"test": "data"}',
+      value: '{"name": "Apache"}',
       writable: true,
       configurable: true,
     })
@@ -104,8 +116,21 @@ describe('importFile', () => {
       mockFileReader.onload({ target: mockFileReader } as any)
     }
 
-    expect(loadJson).toHaveBeenCalledWith('{"test": "data"}')
+    // Apache is already loaded, so the import gets a name of its own.
+    expect(loadJson).toHaveBeenCalledWith('{"name": "Apache"}', 'Apache (2)')
   })
+
+  it.each(['audio/x-wav', 'audio/vnd.wave', ''])(
+    'loads a .wav file whose type the browser reports as %j',
+    type => {
+      importFile()
+      const mockFile = { type, name: 'BREAK.WAV' } as File
+      const changeEvent = { target: { files: { 0: mockFile, length: 1 } } } as any
+      mockFileInput.onchange?.(changeEvent)
+
+      expect(mockFileReader.readAsArrayBuffer).toHaveBeenCalledWith(mockFile)
+    }
+  )
 
   it('loads WAV file when WAV file is selected', () => {
     importFile()

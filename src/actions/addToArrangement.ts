@@ -1,12 +1,14 @@
 import { getBestLayerPitch } from '../helpers/getBestLayerPitch'
 import { getBestLayerVolume } from '../helpers/getBestLayerVolume'
 import { Layers, LoadedFiles, Tab } from '../lib/store'
+import { isLayerLimitReached } from '../lib/plugin'
 
 export const addToArrangement = (index: number) => {
   const loadedFiles = LoadedFiles.ref()
   const layerName = loadedFiles[index].name
 
   const layers = Layers.ref()
+  if (isLayerLimitReached(layers)) return
   const existingTemp = layers.find(l => l.filename === layerName && l.temp)
 
   if (existingTemp) {

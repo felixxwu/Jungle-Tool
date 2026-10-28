@@ -2,6 +2,7 @@ import { useEffect } from 'react'
 import { Playing, WindowSize } from '../lib/store'
 import { playArrangement } from '../actions/playArrangement'
 import { stopArrangement } from '../lib/playback'
+import { IS_PLUGIN } from '../lib/plugin'
 
 export const useWindowListeners = () => {
   useEffect(() => {
@@ -10,7 +11,7 @@ export const useWindowListeners = () => {
     }
 
     const handleKeydown = (e: KeyboardEvent) => {
-      if (e.key === ' ') {
+      if (e.key === ' ' && !IS_PLUGIN) {
         if (Playing.ref()) {
           stopArrangement()
         } else {

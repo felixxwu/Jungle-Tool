@@ -1,6 +1,7 @@
 import { PreviewSource, Playing, PlayStartTimestamp, PlayDuration } from './store'
 import { SAMPLE_RATE } from './consts'
 import { stopScheduler } from './scheduler'
+import { IS_PLUGIN, callNative } from './plugin'
 
 /**
  * Calculates audio duration in seconds from sample count
@@ -13,7 +14,8 @@ export const calculateDuration = (sampleCount: number): number => {
  * Stops the arrangement. The Library preview is stopPreview's job.
  */
 export const stopArrangement = async () => {
-  await stopScheduler()
+  if (IS_PLUGIN) await callNative('setAuditioning', false)
+  else await stopScheduler()
   Playing.set(false)
 }
 

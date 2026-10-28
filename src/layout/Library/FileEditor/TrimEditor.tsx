@@ -6,6 +6,8 @@ import { HDivider } from '../../../components/Dividers'
 import { stereoSlice } from '../../../lib/audio'
 import { autoSlice } from '../../../actions/autoSlice'
 import { stopPreview } from '../../../lib/playback'
+import { IS_PLUGIN } from '../../../lib/plugin'
+import { saveUserBreak } from '../../../actions/saveUserBreak'
 
 export const TrimEditor = () => {
   const selectedFileIndex = SelectedFileIndex.useState()
@@ -28,6 +30,7 @@ export const TrimEditor = () => {
     EditSliceMode.set(true)
     AutoSliceMode.set(true)
     autoSlice()
+    if (IS_PLUGIN) saveUserBreak(selectedFile, { start, end })
   }
 
   return (

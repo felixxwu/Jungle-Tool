@@ -10,6 +10,7 @@ export const ShortenNotesToggle = () => {
       <HDivider />
       <Toggle
         label='Shorten Notes'
+        title='Fades every note out once it has played for the note length, over the fade-out time.'
         checked={shortenNotes}
         onClick={() => {
           const newValue = !shortenNotes

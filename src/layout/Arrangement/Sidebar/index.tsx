@@ -2,7 +2,7 @@ import styled from 'styled-components'
 import { BPMSlider } from './BPMSlider'
 import { LayerControls } from './LayerControls'
 import { appWidth, arrangementSidebarWidth } from '../../../lib/consts'
-import { ShortenNotes, Tab, WindowSize } from '../../../lib/store'
+import { HostPlaying, ShortenNotes, Tab, WindowSize } from '../../../lib/store'
 import { SwingSlider } from './SwingSlider'
 import { BottomBar } from '../Main/BottomBar'
 import { HDivider } from '../../../components/Dividers'
@@ -17,6 +17,7 @@ export const Sidebar = () => {
   const collapsed = windowSize.width < appWidth - arrangementSidebarWidth
   const tab = Tab.useState()
   const shortenNotes = ShortenNotes.useState()
+  const hostPlaying = HostPlaying.useState()
 
   if (!collapsed && tab === 'layers') {
     Tab.set('arrangement')
@@ -25,7 +26,7 @@ export const Sidebar = () => {
   return (
     <SidebarStyle style={collapsed ? { width: '100vw' } : {}}>
       <LayerControls />
-      <BPMSlider />
+      {!hostPlaying && <BPMSlider />}
       <SwingSlider />
       <SaturationSlider />
       <ShortenNotesToggle />

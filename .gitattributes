@@ -1,0 +1,2 @@
+# Bash scripts run on the Windows CI runner too, which breaks on CRLF line endings.
+*.sh text eol=lf
