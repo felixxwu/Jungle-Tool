@@ -3,6 +3,11 @@
 
 namespace
 {
+// Shared by every plugin window in the process, so the check runs once per DAW session and
+// "Later" isn't asked again until the DAW restarts. Only touched on the message thread.
+std::optional<std::optional<updater::Release>> checkedRelease;
+bool updateDismissed = false;
+
 constexpr int uiWidth = 1000;
 constexpr int uiHeight = 650;
 constexpr int stripHeight = 40;
@@ -112,6 +117,13 @@ JungleToolEditor::JungleToolEditor (JungleToolProcessor& p)
                                                                           complete (juce::var (result));
                                                                       });
                                         })
+                   .withNativeFunction ("checkForUpdate", [this] (const auto&, auto complete) { checkForUpdate (std::move (complete)); })
+                   .withNativeFunction ("dismissUpdate", [] (const auto&, auto complete)
+                                        {
+                                            updateDismissed = true;
+                                            complete ({});
+                                        })
+                   .withNativeFunction ("startUpdate", [this] (const auto&, auto complete) { startUpdate (std::move (complete)); })
                    .withNativeFunction ("addProjectBreak", [this] (const auto& args, auto complete)
                                         {
                                             complete (owner.addProjectBreak (args[0].toString(), args[1].toString(), (bool) args[2]));
@@ -166,6 +178,69 @@ JungleToolEditor::JungleToolEditor (JungleToolProcessor& p)
     startTimerHz (30);
 }
 
+void JungleToolEditor::checkForUpdate (juce::WebBrowserComponent::NativeFunctionCompletion complete)
+{
+    const auto reply = [complete] (const std::optional<updater::Release>& release)
+    {
+        complete (release && ! updateDismissed ? juce::var (release->version) : juce::var());
+    };
+
+    if (checkedRelease)
+        return reply (*checkedRelease);
+
+    juce::Thread::launch ([safeThis = juce::Component::SafePointer (this), reply]
+                          {
+                              auto release = updater::findNewerRelease();
+                              juce::MessageManager::callAsync ([safeThis, reply, release]
+                                                               {
+                                                                   checkedRelease = release;
+                                                                   if (safeThis != nullptr)
+                                                                       reply (release);
+                                                               });
+                          });
+}
+
+void JungleToolEditor::startUpdate (juce::WebBrowserComponent::NativeFunctionCompletion complete)
+{
+    if (! checkedRelease || ! *checkedRelease || download != nullptr)
+        return complete ("failed");
+
+    const auto& release = **checkedRelease;
+    auto file = updater::installerFile (release);
+    file.getParentDirectory().createDirectory();
+    updateFinished = std::move (complete);
+    auto url = release.installer;
+    download = url.downloadToFile (file, juce::URL::DownloadTaskOptions().withExtraHeaders (updater::headers).withListener (this));
+    if (download == nullptr)
+        finished (nullptr, false);
+}
+
+void JungleToolEditor::progress (juce::URL::DownloadTask*, juce::int64 downloaded, juce::int64 total)
+{
+    const auto fraction = total > 0 ? (double) downloaded / (double) total : 0.0;
+    juce::MessageManager::callAsync ([safeThis = juce::Component::SafePointer (this), fraction]
+                                     {
+                                         if (safeThis != nullptr)
+                                             safeThis->webView.emitEventIfBrowserIsVisible ("updateProgress", fraction);
+                                     });
+}
+
+void JungleToolEditor::finished (juce::URL::DownloadTask* task, bool success)
+{
+    const auto ok = success && task != nullptr && ! task->hadError() && task->getTargetLocation().getSize() > 0;
+    const auto file = task != nullptr ? task->getTargetLocation() : juce::File();
+    juce::MessageManager::callAsync ([safeThis = juce::Component::SafePointer (this), ok, file]
+                                     {
+                                         if (safeThis == nullptr)
+                                             return;
+                                         // Opening the .pkg launches Installer; the .exe asks for admin rights and runs.
+                                         const auto opened = ok && file.startAsProcess();
+                                         safeThis->download.reset();
+                                         if (auto done = std::exchange (safeThis->updateFinished, nullptr))
+                                             done (opened ? "opened" : "failed");
+                                     });
+}
+
 void JungleToolEditor::timerCallback()
 {
     auto* transport = new juce::DynamicObject();
@@ -183,6 +258,9 @@ void JungleToolEditor::timerCallback()
 
 JungleToolEditor::~JungleToolEditor()
 {
+    // Cancels an unfinished download before this listener goes away.
+    download.reset();
+
     // The web view that started a preview is going away, so nothing could stop or keep it.
     owner.stopPreview();
     owner.dropPreviews();

@@ -2,7 +2,9 @@ cmake_minimum_required(VERSION 3.22)
 # These only take effect when set before project().
 set(CMAKE_OSX_DEPLOYMENT_TARGET "11.0" CACHE STRING "")
 set(CMAKE_OSX_ARCHITECTURES "arm64;x86_64" CACHE STRING "")
-project(JungleTool VERSION 0.1.0)
+# Releases pass the version from their git tag; local builds are 0.0.0 and never look for updates.
+set(JUNGLE_TOOL_VERSION "0.0.0" CACHE STRING "Plugin version")
+project(JungleTool VERSION ${JUNGLE_TOOL_VERSION})
 
 set(CMAKE_CXX_STANDARD 20)
 
@@ -42,7 +44,8 @@ target_sources(JungleTool PRIVATE
   Source/PluginProcessor.cpp
   Source/PluginEditor.cpp
   Source/Breaks.cpp
-  Source/Engine.cpp)
+  Source/Engine.cpp
+  Source/Updater.cpp)
 
 file(GLOB_RECURSE UI_FILES CONFIGURE_DEPENDS "${CMAKE_SOURCE_DIR}/../dist-plugin/*")
 # Breaks are read from the library folder on disk, not embedded.
@@ -83,3 +86,8 @@ target_compile_definitions(Render PRIVATE
   JUCE_USE_CURL=0
   JUNGLE_TOOL_DEV_LIBRARY="${CMAKE_SOURCE_DIR}/../public/library")
 target_link_libraries(Render PRIVATE juce::juce_audio_formats juce::juce_dsp juce::juce_recommended_config_flags)
+
+juce_add_console_app(UpdaterTests)
+target_sources(UpdaterTests PRIVATE Tests/UpdaterTests.cpp Source/Updater.cpp)
+target_compile_definitions(UpdaterTests PRIVATE JUCE_USE_CURL=0 JucePlugin_VersionString="0.1.0")
+target_link_libraries(UpdaterTests PRIVATE juce::juce_core juce::juce_recommended_config_flags)

@@ -16,6 +16,8 @@ PrivilegesRequired=admin
 OutputDir=.
 OutputBaseFilename=jungle-tool-windows
 UninstallDisplayName=Jungle Tool
+; A running DAW holds the plugin open, so Windows can't replace it until the DAW closes.
+CloseApplications=yes
 
 [Files]
 Source: "build-release\JungleTool_artefacts\Release\VST3\Jungle Tool.vst3\*"; DestDir: "{commoncf64}\VST3\Jungle Tool.vst3"; Flags: recursesubdirs ignoreversion

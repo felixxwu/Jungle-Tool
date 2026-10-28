@@ -3,7 +3,7 @@
 set -euo pipefail
 
 cd "$(dirname "$0")/.."
-VERSION=${VERSION:-$(sed -n 's/^project(JungleTool VERSION \(.*\))/\1/p' plugin/CMakeLists.txt)}
+VERSION=${VERSION:-0.0.0}
 BUILD=plugin/build-release
 ARTEFACTS="$BUILD/JungleTool_artefacts/Release"
 STAGE="$BUILD/pkg-root"
@@ -11,7 +11,7 @@ STAGE="$BUILD/pkg-root"
 npm run build:plugin
 GENERATOR=()
 command -v ninja >/dev/null && GENERATOR=(-G Ninja)
-cmake -S plugin -B "$BUILD" "${GENERATOR[@]}" -DCMAKE_BUILD_TYPE=Release -DJUNGLE_TOOL_DEV_BUILD=OFF
+cmake -S plugin -B "$BUILD" "${GENERATOR[@]}" -DCMAKE_BUILD_TYPE=Release -DJUNGLE_TOOL_DEV_BUILD=OFF -DJUNGLE_TOOL_VERSION="$VERSION"
 cmake --build "$BUILD"
 
 rm -rf "$STAGE"

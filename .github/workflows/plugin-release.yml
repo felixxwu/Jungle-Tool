@@ -61,13 +61,15 @@ jobs:
         run: |
           npm run build:plugin
           nuget install Microsoft.Web.WebView2 -Version 1.0.3485.44 -OutputDirectory "$RUNNER_TEMP/nuget"
-          cmake -S plugin -B plugin/build-release -DJUNGLE_TOOL_DEV_BUILD=OFF \
+          cmake -S plugin -B plugin/build-release -DJUNGLE_TOOL_DEV_BUILD=OFF -DJUNGLE_TOOL_VERSION="$VERSION" \
             -DJUCE_WEBVIEW2_PACKAGE_LOCATION="$RUNNER_TEMP/nuget"
           cmake --build plugin/build-release --config Release
 
-      - name: Scheduling checks
+      - name: C++ checks
         shell: bash
-        run: find plugin/build-release -name 'SchedulingTests*' -type f -perm -u+x ! -name '*.pdb' -exec {} \;
+        run: |
+          find plugin/build-release -name 'SchedulingTests*' -type f -perm -u+x ! -name '*.pdb' -exec {} \;
+          find plugin/build-release -name 'UpdaterTests*' -type f -perm -u+x ! -name '*.pdb' -exec {} \;
 
       - name: Package (Windows)
         if: matrix.name == 'windows'

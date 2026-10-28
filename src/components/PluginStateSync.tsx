@@ -2,6 +2,7 @@ import { useEffect, useRef, useState } from 'react'
 import { applyArrangementState, getCurrentArrangementState } from '../actions/arrangementState'
 import { callNative, listenToTransport, onPluginEvent } from '../lib/plugin'
 import { resetHistory } from '../lib/history'
+import { UpdateModal } from '../modals/UpdateModal'
 import { arrangementToMidi } from '../helpers/arrangementToMidi'
 import { layersWithParameters, parametersFromState } from '../helpers/pluginParameters'
 import {
@@ -10,6 +11,7 @@ import {
   FillGaps,
   Layers,
   LoadedFiles,
+  Modal,
   NoteFadeOut,
   NoteLength,
   NumBars,
@@ -110,6 +112,9 @@ export const PluginStateSync = () => {
       loadProjectBreaks(state.projectBreaks ?? [])
       // A new instance hasn't heard the UI's defaults yet, so they're all sent as changes.
       knownParameters.current = state.arrangement ? currentParameters() : {}
+      callNative<string | null>('checkForUpdate').then(version => {
+        if (version) Modal.set(<UpdateModal version={version} />)
+      })
       setLoaded(true)
     })
   }, [])
