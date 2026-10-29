@@ -56,7 +56,7 @@ export const LayerControl = (p: { layer: Layer; index: number }) => {
       <HDivider />
       <Row>
         <NameSide>
-          <NameText>{p.layer.filename}</NameText>
+          <NameText title={p.layer.filename}>{p.layer.filename}</NameText>
         </NameSide>
         <VDivider />
         <SlidersSide>
@@ -113,11 +113,15 @@ const NameSide = styled('div')`
   overflow: hidden;
 `
 
+// Long names stop at three lines with "..." and show in full on hover.
 const NameText = styled('div')`
   width: 100%;
-  word-break: break-all;
-  overflow-wrap: break-word;
+  overflow-wrap: anywhere;
   color: ${colors.black};
+  display: -webkit-box;
+  -webkit-box-orient: vertical;
+  -webkit-line-clamp: 3;
+  overflow: hidden;
 `
 
 const SlidersSide = styled('div')`

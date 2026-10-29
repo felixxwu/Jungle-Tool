@@ -6,20 +6,16 @@ const ticksPerStep = 240
 export const arrangementToMidi = (arrangement: Note[], numBars: number, swing: number) => {
   const swingTicks = Math.round((swing / 100) * ticksPerStep)
   const clipEnd = numBars * 16 * ticksPerStep
-  const notes = arrangement
-    .map(note => ({
-      pitch: 36 + note.stepNumToPlay,
-      start: note.startStep * ticksPerStep + (note.startStep % 2 === 1 ? swingTicks : 0),
-    }))
-    .sort((a, b) => a.start - b.start)
+  const stepTick = (step: number) => step * ticksPerStep + (step % 2 === 1 ? swingTicks : 0)
 
-  // Many DAWs merge overlapping notes of the same pitch, so a note ends where the next one starts.
-  const events = notes.flatMap((note, i) => {
-    const next = notes.slice(i + 1).find(n => n.pitch === note.pitch)
-    const end = Math.min(note.start + ticksPerStep, next?.start ?? Infinity, clipEnd)
+  // Each note lasts until the next step starts on the swing grid, so swung notes neither leave
+  // gaps nor overlap the next one.
+  const events = arrangement.flatMap(note => {
+    const start = stepTick(note.startStep)
+    const end = Math.min(stepTick(note.startStep + 1), clipEnd)
     return [
-      { tick: note.start, bytes: [0x90, note.pitch, 100] },
-      { tick: end, bytes: [0x80, note.pitch, 0] },
+      { tick: start, bytes: [0x90, 36 + note.stepNumToPlay, 100] },
+      { tick: end, bytes: [0x80, 36 + note.stepNumToPlay, 0] },
     ]
   })
   events.push({ tick: clipEnd, bytes: [0xff, 0x2f, 0x00] })

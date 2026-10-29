@@ -22,10 +22,12 @@ cp -R "$ARTEFACTS/CLAP/Jungle Tool.clap" "$STAGE/Library/Audio/Plug-Ins/CLAP/"
 
 plugin/stage-library.sh "$STAGE/Library/Application Support/Jungle Tool/Library"
 
-# Stop the installer from "relocating" a bundle to wherever an older copy happens to be.
+# Stop the installer from "relocating" a bundle to wherever an older copy happens to be, and
+# from skipping one because the installed copy has a higher version (local builds are 0.0.0).
 pkgbuild --analyze --root "$STAGE" "$BUILD/components.plist"
 i=0
 while plutil -replace "$i.BundleIsRelocatable" -bool NO "$BUILD/components.plist" 2>/dev/null; do
+  plutil -replace "$i.BundleIsVersionChecked" -bool NO "$BUILD/components.plist"
   i=$((i + 1))
 done
 

@@ -91,7 +91,7 @@ describe('arrangementToMidi', () => {
     expect(midi.notes.map(n => n.start)).toEqual([240 + 79, 480])
   })
 
-  it('ends a note early at the next note of the same pitch', () => {
+  it('ends a note where its repeat starts, so the two never merge', () => {
     const midi = parse(
       arrangementToMidi(
         [
@@ -104,7 +104,7 @@ describe('arrangementToMidi', () => {
     )
     expect(midi.notes).toEqual([
       { pitch: 36, velocity: 100, start: 360, end: 480 },
-      { pitch: 36, velocity: 100, start: 480, end: 720 },
+      { pitch: 36, velocity: 100, start: 480, end: 840 },
     ])
   })
 
@@ -112,5 +112,26 @@ describe('arrangementToMidi', () => {
     const midi = parse(arrangementToMidi([{ stepNumToPlay: 0, startStep: 15 }], 1, 50))
     expect(midi.notes).toEqual([{ pitch: 36, velocity: 100, start: 3720, end: 3840 }])
     expect(midi.trackEnd).toBe(3840)
+  })
+
+  it('with swing, ends each note where the next step starts, so swung notes neither gap nor overlap', () => {
+    const midi = parse(
+      arrangementToMidi(
+        [
+          { stepNumToPlay: 0, startStep: 0 },
+          { stepNumToPlay: 1, startStep: 1 },
+          { stepNumToPlay: 2, startStep: 2 },
+          { stepNumToPlay: 5, startStep: 5 },
+        ],
+        1,
+        50
+      )
+    )
+    expect(midi.notes).toEqual([
+      { pitch: 36, velocity: 100, start: 0, end: 360 },
+      { pitch: 37, velocity: 100, start: 360, end: 480 },
+      { pitch: 38, velocity: 100, start: 480, end: 840 },
+      { pitch: 41, velocity: 100, start: 1320, end: 1440 },
+    ])
   })
 })
