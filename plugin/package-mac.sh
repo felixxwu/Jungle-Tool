@@ -1,5 +1,6 @@
 #!/bin/bash
-# Builds an unsigned macOS installer: the plugins in all three formats plus the factory breaks.
+# Builds the macOS installer: the plugins in all three formats plus the factory breaks.
+# It is signed and notarized when the Developer ID certificates and NOTARY_PROFILE are available.
 set -euo pipefail
 
 cd "$(dirname "$0")/.."
@@ -22,6 +23,15 @@ cp -R "$ARTEFACTS/CLAP/Jungle Tool.clap" "$STAGE/Library/Audio/Plug-Ins/CLAP/"
 
 plugin/stage-library.sh "$STAGE/Library/Application Support/Jungle Tool/Library"
 
+identity() { security find-identity -v ${2:-} | grep -o "\"Developer ID $1[^\"]*\"" | head -1 | tr -d '"' || true; }
+APP_ID=$(identity Application "-p codesigning")
+INSTALLER_ID=$(identity Installer)
+if [[ -n $APP_ID ]]; then
+  for bundle in "$STAGE"/Library/Audio/Plug-Ins/*/*; do
+    codesign --force --timestamp --options runtime --sign "$APP_ID" "$bundle"
+  done
+fi
+
 # Stop the installer from "relocating" a bundle to wherever an older copy happens to be, and
 # from skipping one because the installed copy has a higher version (local builds are 0.0.0).
 pkgbuild --analyze --root "$STAGE" "$BUILD/components.plist"
@@ -34,5 +44,12 @@ done
 pkgbuild --root "$STAGE" --component-plist "$BUILD/components.plist" \
   --identifier com.jungletool.plugin --version "$VERSION" --install-location / \
   "$BUILD/Jungle Tool Plugins.pkg"
-productbuild --package "$BUILD/Jungle Tool Plugins.pkg" "$BUILD/Jungle Tool $VERSION.pkg"
-echo "$BUILD/Jungle Tool $VERSION.pkg"
+PKG="$BUILD/Jungle Tool $VERSION.pkg"
+productbuild --package "$BUILD/Jungle Tool Plugins.pkg" ${INSTALLER_ID:+--timestamp --sign "$INSTALLER_ID"} "$PKG"
+
+# Notarizing lets a downloaded installer open without Gatekeeper's "can't verify" warning.
+if [[ -n ${NOTARY_PROFILE:-} ]]; then
+  xcrun notarytool submit "$PKG" --keychain-profile "$NOTARY_PROFILE" --wait
+  xcrun stapler staple "$PKG"
+fi
+echo "$PKG"

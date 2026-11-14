@@ -46,6 +46,31 @@ jobs:
           [[ "$version" =~ ^[0-9.]+$ ]] || version=0.0.0
           echo "VERSION=$version" >> "$GITHUB_ENV"
 
+      - name: Load the signing certificates and notarization login
+        if: matrix.name == 'macos' && startsWith(github.ref, 'refs/tags/plugin-v')
+        env:
+          APP_P12: ${{ secrets.DEVELOPER_ID_P12 }}
+          P12_PASSWORD: ${{ secrets.DEVELOPER_ID_P12_PASSWORD }}
+          INSTALLER_P12: ${{ secrets.DEVELOPER_ID_INSTALLER_P12 }}
+          NOTARY_APPLE_ID: ${{ secrets.NOTARY_APPLE_ID }}
+          NOTARY_PASSWORD: ${{ secrets.NOTARY_PASSWORD }}
+        run: |
+          kc="$RUNNER_TEMP/signing.keychain-db"
+          security create-keychain -p "" "$kc"
+          security set-keychain-settings "$kc"
+          security unlock-keychain -p "" "$kc"
+          security default-keychain -s "$kc"
+          security list-keychains -d user -s "$kc" login.keychain
+          echo "$APP_P12" | base64 -D > "$RUNNER_TEMP/app.p12"
+          echo "$INSTALLER_P12" | base64 -D > "$RUNNER_TEMP/installer.p12"
+          security import "$RUNNER_TEMP/app.p12" -k "$kc" -P "$P12_PASSWORD" -T /usr/bin/codesign
+          security import "$RUNNER_TEMP/installer.p12" -k "$kc" -P "$P12_PASSWORD" -T /usr/bin/productbuild
+          curl -fsSL -o "$RUNNER_TEMP/g2.cer" https://www.apple.com/certificateauthority/DeveloperIDG2CA.cer
+          security import "$RUNNER_TEMP/g2.cer" -k "$kc"
+          security set-key-partition-list -S apple-tool:,apple: -k "" "$kc"
+          xcrun notarytool store-credentials notary --apple-id "$NOTARY_APPLE_ID" --team-id 9CHRYGF3QD --password "$NOTARY_PASSWORD"
+          echo "NOTARY_PROFILE=notary" >> "$GITHUB_ENV"
+
       # Universal (arm64 + Intel) is set in CMakeLists.txt; the runners are arm64 only.
       - name: Build and package (macOS)
         if: matrix.name == 'macos'
@@ -108,5 +133,4 @@ jobs:
             - **macOS**: installer for the AU, VST3 and CLAP plugins and the breaks library
             - **Windows**: installer for the VST3 and CLAP plugins and the breaks library
 
-            Both are unsigned. On macOS, open the installer once, then click Open Anyway under
-            System Settings > Privacy & Security. On Windows, click More info > Run anyway.
+            The Windows installer is unsigned: click More info > Run anyway.
