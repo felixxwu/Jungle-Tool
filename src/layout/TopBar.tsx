@@ -4,6 +4,7 @@ import { CanRedo, CanUndo, LibraryLoading, SelectedFileIndex, Tab, WindowSize } 
 import { redo, undo } from '../lib/history'
 import styled from 'styled-components'
 import { colors } from '../lib/colors'
+import { IS_PLUGIN } from '../lib/plugin'
 import { appWidth, arrangementSidebarWidth, largeTextHeight } from '../lib/consts'
 import type { ITab } from '../lib/types'
 
@@ -39,6 +40,18 @@ export const TopBar = () => {
       </Text>
       <VDivider />
       <VDivider style={{ marginLeft: 'auto' }} />
+      {!IS_PLUGIN && !collapsed && (
+        <>
+          <Text
+            onClick={() =>
+              window.open('https://github.com/felixxwu/Jungle-Tool/releases/latest', '_blank')
+            }
+          >
+            Plugin Version
+          </Text>
+          <VDivider />
+        </>
+      )}
       <Text onClick={undo} disabled={!canUndo}>
         Undo
       </Text>
